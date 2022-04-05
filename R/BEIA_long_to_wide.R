@@ -33,5 +33,8 @@ dat <- rio::import("data/SCP3_raw_25oct_10feb.csv") %>%
 # Total number of rows in original data divided by 6 measurements
 assertthat::are_equal(nrow(dat),73392/6)
 
+# Check that no values are missing
+table(is.na(dat))
+
 # Write to file
 write.csv(dat,"data/BEIA_wide_format.csv")
