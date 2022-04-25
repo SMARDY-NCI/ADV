@@ -5,7 +5,7 @@ library(lubridate)
 dat <- rio::import("data/SCP3_raw_25oct_10feb.csv") %>%
   select(-V2) %>%
   
-  separate(V1, sep = " ", into = c("date", "time"), remove = F) %>%
+  separate(V1, sep = " ", into = c("date", "time")) %>%
   # Replace problematic records taken on a specific minute by adding 1 second
   mutate(time = stringr::str_replace(time, ":00$", ":01$")) %>%
   # Round up to nearest minute
@@ -37,4 +37,4 @@ assertthat::are_equal(nrow(dat),73392/6)
 table(is.na(dat))
 
 # Write to file
-write.csv(dat,"data/BEIA_wide_format.csv")
+write.csv(dat,"data/BEIA_wide_format.csv", row.names = FALSE)

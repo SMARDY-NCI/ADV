@@ -1,0 +1,155 @@
+---
+title: "Extra Dataset Report"
+author: "LAM"
+date: "4/14/2022"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, out.width='50%', fig.align = "center")
+
+library(dplyr)
+library(magrittr)
+library(factoextra)
+
+pca_fun <- function(dat){
+pca <- prcomp(select_if(dat, is.numeric),
+              center = TRUE,
+              scale = TRUE)
+}
+
+scree_plot <- function(pca){
+factoextra::fviz_eig(pca,
+  geom = c("bar"),
+  addlabels = T
+) +
+  geom_line(aes(x = , y = head(get_eig(pca),10)$cumulative.variance.percent),)
+}
+
+# Create loading plot
+loading_plot <- function(pca){
+  
+  factoextra::fviz(
+  pca,
+  element = "var",
+  title = "Loading plot",
+  geom = c("point", "text")
+)
+
+}
+
+# Create score plot
+score_plot <- function(pca) {
+  
+  factoextra::fviz(pca,
+                 element = "ind",
+                 # Using "." makes the plotting faster
+                 pointshape = ".",
+                 geom = "point",
+                 title = "Score plot",
+                 addEllipses = T,
+                 ellipse.level = 0.95) +
+  scale_x_continuous(limits = c(-10, 16)) +
+  labs(caption = "Conf. Ellipse - 95%")
+}
+```
+
+## Data report
+
+### MHEALTH
+
+```{r}
+dat <- read.csv(here::here("data/MHEALTH_cleaned.csv")) %>%
+  select_if(is.numeric) %>%
+  filter(complete.cases(.))
+```
+
+The MHEALTH (Mobile Health) dataset is devised to benchmark techniques dealing with human behavior analysis based on multimodal body sensing. It contains `r ncol(dat)` numeric variables, and has `r nrow(dat)` complete observations.
+
+```{r, out.width='70%'}
+pca <- dat %>% 
+  pca_fun()
+
+scree_plot(pca)
+```
+
+```{r, fig.align='default', fig.show = 'hold'}
+score_plot(pca)
+loading_plot(pca)
+```
+
+\newpage
+
+## Dow Jones dataset
+
+```{r}
+dat <- read.csv(here::here("data_raw/dow_jones_index.data")) %>%
+  select_if(is.numeric) %>%
+  filter(complete.cases(.))
+```
+
+This dataset contains weekly data for the Dow Jones Industrial Index. It contains `r ncol(dat)` numeric variables, and has `r nrow(dat)` complete observations.
+
+```{r, out.width='70%'}
+pca <-  dat %>%
+  pca_fun()
+
+scree_plot(pca)
+```
+
+```{r, fig.align='default', fig.show = 'hold'}
+score_plot(pca)
+loading_plot(pca)
+```
+
+\newpage
+
+## City power consumption
+
+```{r}
+dat <- read.csv(here::here("data_raw/Tetuan_City_power_consumption.csv")) %>%
+  select_if(is.numeric) %>%
+  filter(complete.cases(.))
+```
+
+This dataset is related to power consumption of three different distribution networks of Tetouan city which is located in north Morocco. It contains `r ncol(dat)` numeric variables, and has `r nrow(dat)` complete observations.
+
+```{r, out.width='70%'}
+pca_power <- dat %>%
+  pca_fun()
+
+scree_plot(pca_power)
+```
+
+```{r, fig.align='default', fig.show = 'hold'}
+score_plot(pca_power)
+loading_plot(pca_power)
+```
+
+\newpage
+
+## Metro Interstate Traffic Volume
+
+```{r}
+dat <- read.csv(here::here("data_raw/Metro_Interstate_Traffic_Volume.csv.gz")) %>%
+  select_if(is.numeric) %>%
+  filter(complete.cases(.))
+```
+
+This dataset describes hourly Minneapolis-St Paul, MN traffic volume for westbound I-94. *Note:* this dataset contains information on weather events and so could give a natural subset of observations (e.g. only want to examine traffic volume when it is raining). This dataset contains `r ncol(dat)` numeric variables, and has `r nrow(dat)` complete observations.
+
+```{r, out.width='70%'}
+pca_power <- dat %>%
+  pca_fun()
+
+scree_plot(pca_power)
+```
+
+```{r, fig.align='default', fig.show = 'hold'}
+score_plot(pca_power)
+loading_plot(pca_power)
+```
+
+\newpage
+
+
