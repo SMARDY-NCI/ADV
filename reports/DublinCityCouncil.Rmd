@@ -34,7 +34,7 @@ To do so, we apply the philosophy of dimensionality reduction as a way to extrac
 These dimensionality reduction techniques are known for their compression power, using them frequently as denoising strategies.
 Thus, it seems reasonable to expect that the parameters of that lower-dimensionality space, would change accordingly to the degree of change on the dataset structure, while staying safe of unsubstantial changes.
 
-# Methodology 
+# Methodology
 
 Two different approaches are compared in this report: the parameters extracted by a Principal Component Analysis (PCA) model and by a Vanilla Autoencoder.
 This set of parameters would be integrated as part of the metadata, enabling a quantitative and standard framework for data comparison that could be performed based on a set of metadata fields.
@@ -54,6 +54,8 @@ library(qqplotr)
 library(tictoc)
 library(caret)
 library(keras)
+library(ggplot2)
+library(tidyr)
 library(tensorflow)
 source(here::here("R","pcals.R"))
 source(here::here("R","autoencoder.R"))
@@ -81,6 +83,37 @@ dat <- dat[,seq(1,ncol(dat),by=3)]
 Moreover, a quick exploratory data analysis is performed to study the distribution and features of the variables in the dataset, as well as the existence of phenomena such as missing data or subpopulations.
 
 ```{r univanalysis}
+summary(dat)
+boxplot(dat,
+data=dat,
+main="Counts of pedestrians per each street",
+xlab="Street",
+ylab="Counts",
+col="green3",
+border="black"
+)
+dat %>% gather() %>% head()
+
+ggplot(gather(dat), aes(value, after_stat(density))) + 
+    geom_histogram(bins = 30) + 
+    facet_wrap(~key, scales = 'free')
+
+library(gridExtra)
+lapply(1:ncol(dat),function(x){
+  p1 <- ggplot(data = dat, mapping = aes(sample = dat[,x])) +
+  stat_qq_band(fill="blue",alpha = 0.15) +
+  stat_qq_line(col="blue") +
+  stat_qq_point(col="black",size=1)+
+  labs(title = colnames(dat)[x])+theme_bw()
+  
+  p2 <- ggplot(data = dat.log, mapping = aes(sample = dat.log[,x])) +
+  stat_qq_band(fill="green",alpha = 0.15) +
+  stat_qq_line(col="green") +
+  stat_qq_point(col="black",size=1)+
+  labs(title = colnames(dat.log)[x])+theme_bw()
+  
+  p1p2 <- grid.arrange(p1,p2,ncol=2)
+  p1p2})
 
 ```
 
@@ -95,7 +128,7 @@ The loss function used to set the optimal model, will be the Mean Squared Error,
 
 ```{r optmodels, echo=FALSE}
 tic("Autoencoder optimization")
-opt.AE.results <- autoenc_opt(dat, A.values = c(1:10), tr = NULL, kcv = 10) 
+opt.AE.results <- autoenc_opt(dat, A.values = c(1:10), tr = NULL, kcv = 10, act.fun = "relu", n.epochs = 50) 
 time.EA.opt <- toc()
 
 tic("PCA optimization")
@@ -128,8 +161,10 @@ A number of four latent variables (4 PCs in the PCA case and 4 units in the late
 This selection is based on the fact that from 4 latent variables, the MSE decay slows down for the PCA model, yielding to almost non-statistically significant differences within the range between four and eight PCs.
 
 ```{r optmodels}
-model.AE <- fit_autoencoder(X, 4, "tanh")
-model.PCA <- fit_pca(X, 4)
+# Activation functions:
+model.AE <- fit_autoencoder(dat, 4, "relu")
+plot(model.AErelu$trainhist)
+model.PCA <- fit_pca(dat, 4)
 ```
 
 ## Versioning scenario 1: change in the cell values
@@ -181,3 +216,15 @@ autoencoder_remrows <- vautoencoder_removerows(data = dat, A,
 ```{r remvars, results = "hide"}
 
 ```
+
+# Conclusions
+
+# References
+
+    @misc{chollet2017kerasR,
+      title={R Interface to Keras},
+      author={Chollet, Fran\c{c}ois and Allaire, JJ and others},
+      year={2017},
+      publisher={GitHub},
+      howpublished={\url{https://github.com/rstudio/keras}},
+    }

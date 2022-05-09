@@ -163,7 +163,7 @@ plot_qr <- function(dat){
 #' @return The model and the obtained loss function (MSE)
 #' @export
 #' 
-fit_autoencoder <- function(X, k.A, act.fun){
+fit_autoencoder <- function(X, k.A, act.fun, n.epochs=50){
   X <- as.matrix(X)
   modelA <- keras_model_sequential()
   modelA %>%
@@ -181,16 +181,17 @@ fit_autoencoder <- function(X, k.A, act.fun){
     optimizer="adam")
   tensorflow::tf$config$run_functions_eagerly(TRUE)
   tensorflow::tf$data$experimental$enable_debug_mode()
-  modelA %>% fit(
+  history <- modelA %>% fit(
     x=X,
     y=X,
-    epochs=50,
+    epochs=n.epochs,
     verbose=0,
     batch_size = 5
   )
+  # plot(history)
   # Evaluate the model
   loss <- evaluate(modelA, X, X)
-  return(list(model = modelA, loss = loss))
+  return(list(model = modelA, loss = loss, trainhist = history))
 }
 
 #' Fit Autoencoder with different levels of row removal percentages

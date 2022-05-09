@@ -10,9 +10,12 @@ pca_opt <- function(dat, A.values = c(1:10), tr = NULL, kcv = 10) {
   X <- as.matrix(dat)
   # If training and testing partitions of the cross validation are not supplied 
   # in tr, then create them:
+  Xts <- X[c((nrow(X)-50):nrow(X)),,drop=F]
+  Xtr <- X[-c((nrow(X)-50):nrow(X)),,drop=F]
   if (is.null(tr)){
-    tr <- createFolds(c(1:nrow(X)), k = kcv, list = TRUE, returnTrain = TRUE)
-    if(length(tr$Fold01)<10){
+    tr <- createTimeSlices(c(1:nrow(Xtr)), nrow(Xtr) - kcv, horizon = 1, fixedWindow = TRUE, skip = 0)
+    kcv <- length(tr$train)
+    if(kcv<10){
       tr <- createFolds(c(1:nrow(X)), k = nrow(X), list = TRUE, returnTrain = TRUE)
       kcv <- nrow(X)
     }
@@ -23,11 +26,11 @@ pca_opt <- function(dat, A.values = c(1:10), tr = NULL, kcv = 10) {
   # Initialise the matrix storing the results of the loss function to be optimised
   loss_opt_tr <- matrix(NA, maxA, kcv)
   loss_opt_ts <- matrix(NA, maxA, kcv)
-  
+  loss_opt_ts_cv <- matrix(NA, maxA, kcv)
   for (k.A in A.values){
     for (k.cv in c(1:kcv)){
-      X.tr <- X[tr[[k.cv]],,drop=F]
-      X.ts <- X[(c(1:nrow(X) %in% tr[[k.cv]])),,drop=F]
+      Xtr.cv <- Xtr[tr$train[[k.cv]],,drop=F]
+      Xts.cv <- Xtr[-tr$train[[k.cv]],,drop=F]
       pca <-  X.tr %>%
         pcals(A = k.A)
       
@@ -35,18 +38,25 @@ pca_opt <- function(dat, A.values = c(1:10), tr = NULL, kcv = 10) {
       Xrec <- sweep(sweep(pca$x%*%t(pca$rotation),2,pca$scale,"*"),2,pca$center,"+")
       E.tr <- X.tr - Xrec
       
-      # MSE for test set
+      # MSE for test set of the cross-validation
       X.prepo <- sweep(sweep(X.ts,2,pca$center,"-"),2,pca$scale,"/")
       Xrec.ts <- sweep(sweep(X.prepo%*%pca$rotation%*%t(pca$rotation),2,pca$scale,"*"),2,pca$center,"+")
       E.ts <- X.ts - Xrec
       
+      # MSE for test set
+      X.cv.prepo <- sweep(sweep(Xts.cv,2,pca$center,"-"),2,pca$scale,"/")
+      Xrec.ts.cv <- sweep(sweep(X.cv.prepo%*%pca$rotation%*%t(pca$rotation),2,pca$scale,"*"),2,pca$center,"+")
+      E.ts.cv <- Xts.cv - Xrec.ts.cv
+      
       # Evaluate the model
       loss_opt_tr[k.A, k.cv] <- mean(E.tr^2)
+      loss_opt_ts_cv[k.A, k.cv] <- mean(E.ts.cv^2)
       loss_opt_ts[k.A, k.cv] <- mean(E.ts^2)
     }
   }
   return(loss_results = list(losstr = loss_opt_tr, 
                              lossts = loss_opt_ts,
+                             losstscv = loss_opt_ts_cv,
                              A = A.values, 
                              tr = tr))
   
