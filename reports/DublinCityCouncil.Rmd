@@ -3,7 +3,46 @@ title: "Dublin council dataset"
 author: "NCI - Smardy"
 date: '2022-05-04'
 output: html_document
+editor_options: 
+  markdown: 
+    wrap: sentence
 ---
+
+# Introduction
+
+This report contains the results of the experiments run for different data versioning approaches.
+The interest of data versioning is closely related to the FAIR principles of data:
+
+-   *Interoperability principle I3. (Meta)data include qualified references to other (meta)data.* Cross-reference that explains as many meaningful links as possible between (meta)data resources to enrich the contextual knowledge about the data.
+    To be more concrete, you should specify if one dataset builds on another data set, if additional datasets are needed to complete the data, or if complementary information is stored in a different dataset.
+    In particular, the scientific links between the datasets need to be described.
+    Furthermore, all datasets need to be properly cited (i.e., including their globally unique and persistent identifiers).
+
+-   *Reusability principle R2. R1.2. (Meta)data are associated with detailed provenance.* There should be a clear story of the workflow that finally lead to the used data: Who generated or collected it?
+    How has it been processed?
+    Has it been published before?
+    Does it contain data from someone else that you may have transformed or completed?
+    Ideally, this workflow is described in a machine-readable format.
+
+As far as we ar concerned, there is not a clear consensus on how to address the aforementioned issues.
+How to measure the relations between linked databases and what terms use for the definition of that relationships, are questions that remain open about the mature implantation of the FAIR principles.
+Nonetheless, the benefits of having that information available would be undeniable, specially in the context of scientific and research data, where bibliography review and comparison could be much more insightful and objective if based on a standard system of data versioning.
+
+In this work, we propose and compare two different strategies as the core of a data versioning algorithm.
+The goal of these techniques is to extract statistical parameters about datasets in such a way that they inform about the degree of difference between a new version and the original one.
+To do so, we apply the philosophy of dimensionality reduction as a way to extract these relevant features.
+These dimensionality reduction techniques are known for their compression power, using them frequently as denoising strategies.
+Thus, it seems reasonable to expect that the parameters of that lower-dimensionality space, would change accordingly to the degree of change on the dataset structure, while staying safe of unsubstantial changes.
+
+# Methodology 
+
+Two different approaches are compared in this report: the parameters extracted by a Principal Component Analysis (PCA) model and by a Vanilla Autoencoder.
+This set of parameters would be integrated as part of the metadata, enabling a quantitative and standard framework for data comparison that could be performed based on a set of metadata fields.
+Some further steps would include the definition of versioning tags based on such set of parameters and the implications on the comparability between data objects.
+In this report, the outcomes of both approaches are tested on an open data repository about Dublin city footfall counts from January 1st to April 3rd 2022.
+It is time series data that also present some technical particularities, such as the subsetting specific time windows or the transformation of variables to another units.
+Nonetheless, time series data are also frequent as the type of data registered in the Internet Of Things paradigm.
+Hence, we consider that although this work focuses on this particular nature of the data, it is still a relevant and significant problem encountered in the data science community.
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, out.width='50%', fig.align = "center")
@@ -19,32 +58,42 @@ library(tensorflow)
 source(here::here("R","pcals.R"))
 source(here::here("R","autoencoder.R"))
 source(here::here("R","pca_opt.R"))
-# 2022 Pedestrian Footfall Dublin City
-
-## PCA approach
 ```
+
 Load the data:
-```{r}
+
+```{r load data}
 dat <- read.csv(here::here("data","pedestrian-count-dcc-2022.csv")) %>%
   select_if(is.numeric) %>%
   filter(complete.cases(.))
 ```
 
-This dataset contains Dublin city footfall counts. Jan 1- April 3 2022.
+We check if there are variables with null variance that should be deleted:
 
-```{r, out.width='70%'}
+```{r delnullvar, out.width='70%'}
 print("These variables show null variance. Consider their deletion before the PCA")
 summary(dat[,(apply(dat,2,var)==0),drop=F])
 dat.or <- dat
 dat <- dat[,!(apply(dat,2,var)==0),drop=F]
 dat <- dat[,seq(1,ncol(dat),by=3)]
 ```
-## Reference models
-### Principal Component Analysis model
-The following plot shows the explained variance by each PC. This serves to decide the latent dimension of the PCA model. In this case, there is a clear first principal component explaining almost the 70% of the variability seen in the data set. Nonetheless, the a total of four PCs will be selected, explaining the 80% of the total variability. 
 
-### Reference models
-```{r optAUTOENCODER, echo=FALSE}
+Moreover, a quick exploratory data analysis is performed to study the distribution and features of the variables in the dataset, as well as the existence of phenomena such as missing data or subpopulations.
+
+```{r univanalysis}
+
+```
+
+# Results
+
+## Reference models
+
+The first thing to do is to compute the reference models.
+These would yield the set of parameters characterizing the very initial version of the dataset.
+At this stage, an hyperparameter optimization should be carried out to determine the optimal model architecture, that is, the number of the latent variables to be extracted, the activation functions to be used on the autoencoder neurons, etc.
+The loss function used to set the optimal model, will be the Mean Squared Error, computed as the average squared reconstruction error obtained on the original data matrix.
+
+```{r optmodels, echo=FALSE}
 tic("Autoencoder optimization")
 opt.AE.results <- autoenc_opt(dat, A.values = c(1:10), tr = NULL, kcv = 10) 
 time.EA.opt <- toc()
@@ -73,16 +122,21 @@ lsd.width <- sqrt(mse.lsd.log*2/length(unique(df.anova.test.log$Repetition)))*
 lsdfig(df.anova.test.log, lsd.width, col=rgb(0,1,0,0.5), ytext="log10 (MSE)", 
        xtext="Latent dimension", tittext = "Reference models")
 ```
-Only the PCA model is showing a noticeable decay in the Mean Squared Error of the reconstructed matrices. 
-A number of four latent variables (4 PCs in the PCA case and 4 units in the latent layer of the Autoencoder) is chosen. This selection is based on the fact that from 4 latent variables, the MSE decay slows down for the PCA model, yielding to almost non-statistically significant differences within the range between four and eight PCs. 
+
+Only the PCA model is showing a noticeable decay in the Mean Squared Error of the reconstructed matrices.
+A number of four latent variables (4 PCs in the PCA case and 4 units in the latent layer of the Autoencoder) is chosen.
+This selection is based on the fact that from 4 latent variables, the MSE decay slows down for the PCA model, yielding to almost non-statistically significant differences within the range between four and eight PCs.
+
 ```{r optmodels}
 model.AE <- fit_autoencoder(X, 4, "tanh")
 model.PCA <- fit_pca(X, 4)
 ```
 
+## Versioning scenario 1: change in the cell values
 
-## Removing observations
-```{r, results="hide"}
+### Missing data imputation
+
+```{r mdimputation, results="hide"}
 pca_remrows <- vpca_removerows(data = dat, A, ref.P = model.PCA$model$rotation, 
                                k_ho = 1000, rowrm_pctges = c(1,5,10,seq(20,80,by=20)))
 
@@ -94,9 +148,36 @@ autoencoder_remrows <- vautoencoder_removerows(data = dat, A,
 
 ```
 
-```
-```{r}
+### Transformation of variables
+
+```{r transform, results="hide"}
+pca_remrows <- vpca_removerows(data = dat, A, ref.P = model.PCA$model$rotation, 
+                               k_ho = 1000, rowrm_pctges = c(1,5,10,seq(20,80,by=20)))
+
+autoencoder_remrows <- vautoencoder_removerows(data = dat, A, 
+                                               ref.P = model.AE$model$layers[[2]]$weights[[1]],
+                                               k_ho = 1000, 
+                                               rowrm_pctges = c(1,5,10,seq(20,80,by=20)))
+
 
 ```
 
+## Versioning scenario 2: change in the number of rows
 
+```{r remrows, results="hide"}
+pca_remrows <- vpca_removerows(data = dat, A, ref.P = model.PCA$model$rotation, 
+                               k_ho = 1000, rowrm_pctges = c(1,5,10,seq(20,80,by=20)))
+
+autoencoder_remrows <- vautoencoder_removerows(data = dat, A, 
+                                               ref.P = model.AE$model$layers[[2]]$weights[[1]],
+                                               k_ho = 1000, 
+                                               rowrm_pctges = c(1,5,10,seq(20,80,by=20)))
+
+
+```
+
+## Versioning scenario 3: change in the number of variables
+
+```{r remvars, results = "hide"}
+
+```
