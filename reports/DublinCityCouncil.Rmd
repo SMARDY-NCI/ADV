@@ -1,0 +1,102 @@
+---
+title: "Dublin council dataset"
+author: "NCI - Smardy"
+date: '2022-05-04'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, out.width='50%', fig.align = "center")
+
+library(dplyr)
+library(magrittr)
+library(factoextra)
+library(qqplotr)
+library(tictoc)
+library(caret)
+library(keras)
+library(tensorflow)
+source(here::here("R","pcals.R"))
+source(here::here("R","autoencoder.R"))
+source(here::here("R","pca_opt.R"))
+# 2022 Pedestrian Footfall Dublin City
+
+## PCA approach
+```
+Load the data:
+```{r}
+dat <- read.csv(here::here("data","pedestrian-count-dcc-2022.csv")) %>%
+  select_if(is.numeric) %>%
+  filter(complete.cases(.))
+```
+
+This dataset contains Dublin city footfall counts. Jan 1- April 3 2022.
+
+```{r, out.width='70%'}
+print("These variables show null variance. Consider their deletion before the PCA")
+summary(dat[,(apply(dat,2,var)==0),drop=F])
+dat.or <- dat
+dat <- dat[,!(apply(dat,2,var)==0),drop=F]
+dat <- dat[,seq(1,ncol(dat),by=3)]
+```
+## Reference models
+### Principal Component Analysis model
+The following plot shows the explained variance by each PC. This serves to decide the latent dimension of the PCA model. In this case, there is a clear first principal component explaining almost the 70% of the variability seen in the data set. Nonetheless, the a total of four PCs will be selected, explaining the 80% of the total variability. 
+
+### Reference models
+```{r optAUTOENCODER, echo=FALSE}
+tic("Autoencoder optimization")
+opt.AE.results <- autoenc_opt(dat, A.values = c(1:10), tr = NULL, kcv = 10) 
+time.EA.opt <- toc()
+
+tic("PCA optimization")
+opt.PCA.results <- pca_opt(dat, A.values = c(1:10), tr = opt.AE.results$tr, kcv = 10) 
+time.PCA.opt <- toc()
+
+df.anova.test <- as.data.frame(c(as.vector(opt.AE.results$lossts[1:10,]), 
+                                     as.vector(opt.PCA.results$lossts)))
+colnames(df.anova.test) <- "MSE"
+df.anova.test$Method <- rep(c("Autoencoder", "PCA"),each = 10*10)
+df.anova.test$NLVs <- as.factor(rep(c(1:10),times = 2*10))
+df.anova.test$Repetition <- as.factor(rep(rep(c(1:10),each = 10), times=2))
+lsd.MSE <- aov(MSE ~ Method + NLVs + Repetition, data = df.anova.test)
+summary(lsd.MSE)
+
+df.anova.test.log <- df.anova.test
+df.anova.test.log$MSE <- log10(df.anova.test$MSE)
+lsd.log.MSE <- aov(MSE ~ Method + NLVs + Repetition, data = df.anova.test.log)
+summary(lsd.log.MSE)
+
+mse.lsd.log <- sum(lsd.log.MSE$residuals^2)/(lsd.log.MSE$df.residual)
+lsd.width <- sqrt(mse.lsd.log*2/length(unique(df.anova.test.log$Repetition)))*
+  (qt(1-0.025,lsd.log.MSE$df.residual))
+lsdfig(df.anova.test.log, lsd.width, col=rgb(0,1,0,0.5), ytext="log10 (MSE)", 
+       xtext="Latent dimension", tittext = "Reference models")
+```
+Only the PCA model is showing a noticeable decay in the Mean Squared Error of the reconstructed matrices. 
+A number of four latent variables (4 PCs in the PCA case and 4 units in the latent layer of the Autoencoder) is chosen. This selection is based on the fact that from 4 latent variables, the MSE decay slows down for the PCA model, yielding to almost non-statistically significant differences within the range between four and eight PCs. 
+```{r optmodels}
+model.AE <- fit_autoencoder(X, 4, "tanh")
+model.PCA <- fit_pca(X, 4)
+```
+
+
+## Removing observations
+```{r, results="hide"}
+pca_remrows <- vpca_removerows(data = dat, A, ref.P = model.PCA$model$rotation, 
+                               k_ho = 1000, rowrm_pctges = c(1,5,10,seq(20,80,by=20)))
+
+autoencoder_remrows <- vautoencoder_removerows(data = dat, A, 
+                                               ref.P = model.AE$model$layers[[2]]$weights[[1]],
+                                               k_ho = 1000, 
+                                               rowrm_pctges = c(1,5,10,seq(20,80,by=20)))
+
+
+```
+
+```
+```{r}
+
+```
+
+
