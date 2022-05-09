@@ -246,7 +246,7 @@ vautoencoder_removerows <- function (data, A, ref.P, k_ho=1000,
       ho <- ho.list[[jmd]][[jrep]]
       Xtr <- X[ho,,drop=F]
       Xts <- X[-ho,,drop=F]
-      model.AE_test <- fit_autoencoder(Xtr, A, "tanh")
+      model.AE_test <- fit_autoencoder(Xtr, A, "relu")
       intermediate_layer_model <- keras_model(inputs = model.AE_test$model$input, 
                                               outputs = get_layer(model.AE_test$model,"latent")$output)
       intermediate_layer_coefs <- intermediate_layer_model$layers[[3]]$weights[[1]]
@@ -268,4 +268,75 @@ vautoencoder_removerows <- function (data, A, ref.P, k_ho=1000,
   }
   colnames(d.sum) <- colnames(para_test)[cols.sum]
   return(list(para_test = para_test, d.sum = d.sum, ho = ho.list))
+}
+
+vae_removecells <- function (data, A, ref.P, k_ho=1000,
+                             rm_pctges=c(1,5,10,seq(20,80,by=20)),
+                             ho.part = NULL){
+  X <- as.matrix(data)
+  n.elems <- nrow(X)*ncol(X)
+  nrep <- k_ho
+  nlevels <- length(rm_pctges)
+  n.results <- nrep*nlevels
+  
+  # Build list containing the results
+  para_test <- list(limspe = matrix(NA,n.results,1), 
+                    limt2 = matrix(NA,n.results,1), 
+                    log10mspe = matrix(NA,n.results,1),
+                    log10msie = matrix(NA,n.results,1))
+  
+  for(a in 1:A){
+    para_test <- cbind(para_test,as.data.frame(matrix(NA,nrow = n.results,ncol=2)))
+    colnames(para_test)[(ncol(para_test)-1):ncol(para_test)] <- 
+      c(paste0("t",a,"radius"), paste0("p",a,"corr"))
+  }
+  para_test$Repetition <- rep(c(1:nrep),each = nlevels)
+  para_test$RWoutpctge <- rep(rm_pctges,times = nrep)
+  
+  print("Parameter avge (sd)")
+  cols.sum <- which(!(colnames(para_test)%in%c("Repetition", "MD pctge")))
+  d.sum <- data.frame(matrix(NA,nlevels, length(cols.sum)))
+  rownames(d.sum) <- paste0("cell rem ", rm_pctges)
+  if(is.null(ho.part)){
+    ho.list <- vector(mode = "list", length = nlevels)
+  }
+  for (jmd in 1:nlevels){
+    print(paste0("Cells removal at ", rm_pctges[jmd], " %"))
+    print("Parameter avge (sd)")
+    if(is.null(ho.part)){
+      ho.list[[jmd]] <- vector(mode = "list", length = nrep)
+    }
+    for (jrep in c(1:nrep)){
+      if(is.null(ho.part)){
+        ho.list[[jmd]][[jrep]] <- sample(c(1:n.elems), rm_pctges[jmd]/100*n.elems)
+      }
+      ho <- ho.list[[jmd]][[jrep]]
+      Xtr <- as.matrix(X)
+      Xtr[ho] <- NA
+      mod.tsr <-pcambtsrR(Xtr,A,maxiter = 200)
+      Xtr.imp <- mod.tsr$X
+      
+      model.AE_test <- fit_autoencoder(Xtr.imp, A, "relu")
+      intermediate_layer_model <- keras_model(inputs = model.AE_test$model$input, 
+                                              outputs = get_layer(model.AE_test$model,"latent")$output)
+      intermediate_layer_coefs <- intermediate_layer_model$layers[[3]]$weights[[1]]
+      intermediate_layer_output <- predict(intermediate_layer_model, Xtr)
+      z <- ((nrow(Xtr) - 1) * (nrow(Xtr) - 1)/nrow(Xtr)) * stats::qbeta(1 - 0.05, 1, 
+                                                                        (nrow(Xtr) - 3)/2)
+      for(a in c(1:A)){
+        para_test[[paste0("t",a,"radius")]][jrep] <- sqrt(stats::var(intermediate_layer_output[, a]) * z)
+        para_test[[paste0("p",a,"corr")]][jrep] <- abs(cor(as.numeric(intermediate_layer_coefs[,a]),
+                                                           as.numeric(ref.P[,a])))
+      }
+      id.loc <- and((para_test$Repetition==jrep),(para_test$RWoutpctge==rowrm_pctges[jmd]))
+      para_test$log10mspe[id.loc] <- log10(evaluate(model.AE_test$model, Xtr, Xtr))
+    }
+    d.sum[jmd,] <- paste0(round(colMeans(para_test[para_test$RWoutpctge == rm_pctges[jmd],cols.sum], 
+                                         na.rm = TRUE), 4), 
+                          " (", round(apply(para_test[para_test$RWoutpctge == rm_pctges[jmd],cols.sum], 
+                                            2, sd, na.rm = TRUE), 4), ")")
+    # print(d.sum[jmd,])
+  }
+  colnames(d.sum) <- colnames(para_test)[cols.sum]
+  return(list(para_test = para_test, d.sum = d.sum, ho = ho))
 }

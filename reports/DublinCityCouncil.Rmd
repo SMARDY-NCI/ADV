@@ -60,6 +60,7 @@ library(tensorflow)
 source(here::here("R","pcals.R"))
 source(here::here("R","autoencoder.R"))
 source(here::here("R","pca_opt.R"))
+source(here::here("R","pcambtsrR.R"))
 ```
 
 Load the data:
@@ -127,14 +128,14 @@ At this stage, an hyperparameter optimization should be carried out to determine
 The loss function used to set the optimal model, will be the Mean Squared Error, computed as the average squared reconstruction error obtained on the original data matrix.
 
 ```{r optmodels, echo=FALSE}
-tic("Autoencoder optimization")
-opt.AE.results <- autoenc_opt(dat, A.values = c(1:10), tr = NULL, kcv = 10, act.fun = "relu", n.epochs = 50) 
-time.EA.opt <- toc()
+# tic("Autoencoder optimization")
+# opt.AE.results <- autoenc_opt(dat, A.values = c(1:10), tr = NULL, kcv = 10, act.fun = "relu", n.epochs = 50) 
+# time.EA.opt <- toc()
 
-tic("PCA optimization")
-opt.PCA.results <- pca_opt(dat, A.values = c(1:10), tr = opt.AE.results$tr, kcv = 10) 
-time.PCA.opt <- toc()
-
+# tic("PCA optimization")
+# opt.PCA.results <- pca_opt(dat, A.values = c(1:10), tr = opt.AE.results$tr, kcv = 10) 
+# time.PCA.opt <- toc()
+load("opt_models.RData")
 df.anova.test <- as.data.frame(c(as.vector(opt.AE.results$lossts[1:10,]), 
                                      as.vector(opt.PCA.results$lossts)))
 colnames(df.anova.test) <- "MSE"
@@ -165,6 +166,7 @@ This selection is based on the fact that from 4 latent variables, the MSE decay 
 model.AE <- fit_autoencoder(dat, 4, "relu")
 plot(model.AErelu$trainhist)
 model.PCA <- fit_pca(dat, 4)
+save(list = c("model.AE", "model.PCA"),file="ref_models.RData")
 ```
 
 ## Versioning scenario 1: change in the cell values
@@ -172,13 +174,14 @@ model.PCA <- fit_pca(dat, 4)
 ### Missing data imputation
 
 ```{r mdimputation, results="hide"}
-pca_remrows <- vpca_removerows(data = dat, A, ref.P = model.PCA$model$rotation, 
-                               k_ho = 1000, rowrm_pctges = c(1,5,10,seq(20,80,by=20)))
+pca_remrows <- vpca_removecells(data = dat, 4, ref.P = model.PCA$model$rotation, 
+                               k_ho = 1000, rm_pctges = c(1,5,10,seq(20,80,by=20)))
 
-autoencoder_remrows <- vautoencoder_removerows(data = dat, A, 
+autoencoder_remrows <- vae_removecells(data = dat, A, 
                                                ref.P = model.AE$model$layers[[2]]$weights[[1]],
+                                        ho.part = 
                                                k_ho = 1000, 
-                                               rowrm_pctges = c(1,5,10,seq(20,80,by=20)))
+                                               rm_pctges = c(1,5,10,seq(20,80,by=20)))
 
 
 ```
