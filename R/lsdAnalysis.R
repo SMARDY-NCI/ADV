@@ -32,17 +32,22 @@ lsdAnalysis <- function(){
   i.metrics <- which((grepl("*radius", names(para_test)) | grepl("*corr", names(para_test))))
   para_test$RWoutpctge <- as.factor(para_test$RWoutpctge)
   para_test$Repetition <- as.factor(para_test$Repetition)
-  t = tiledlayout(2,2)
   for (j_metric in i.metrics){
     metric_name <- (colnames(para_test)[j_metric])
-    lsdAnalysis[[metric_name]] <- aov(para_test[[metric_name]] ~ RWoutpctge/Repetition, data = para_test)
+    lsdAnalysis[[metric_name]] <- aov(para_test[[metric_name]] ~ 
+                                     para_test[[artifact.factor]], 
+                                   data = para_test)
     a.tbl <- lsdAnalysis[[metric_name]]
     n.rep <- unique(para_test$Repetition)
-    mse.lsd <- sum(a.tbl$residuals^2)/(nrow(para_test)-2)
-    lsd.width <- sqrt(mse.lsd*2/n.rep)*(qt(1-0.025,stats.dfe)); 
-    
-    lsdfig()
-    legend('off')
+    m.lsd <- sum(a.tbl$residuals^2)/(nrow(para_test)-2)
+    if (!any(grepl("Method", colnames(para_test)))){
+      para_test$Method <- rep("", nrow(para_test))
+    }
+    lsd.width <- sqrt(m.lsd*2/length(unique(para_test$Repetition)))*
+      (qt(1-0.025,lsdAnalysis.metric_name$df.residual))
+    lsdfig(para_test,metric_name, artifact.factor, lsd.width, col=rgb(0,1,0,0.5), 
+           ytext= metric_name, 
+           xtext=artifact.factor, tittext = "LSD intervals")
   }
   title(t,'Case II Rows deletion')
   xlabel(t,'RW removed(#)')

@@ -59,7 +59,7 @@ library(tidyr)
 library(tensorflow)
 source(here::here("R","pcals.R"))
 source(here::here("R","autoencoder.R"))
-source(here::here("R","pca_opt.R"))
+source(here::here("R","pca_functions.R"))
 source(here::here("R","pcambtsrR.R"))
 ```
 
@@ -174,14 +174,14 @@ save(list = c("model.AE", "model.PCA"),file="ref_models.RData")
 ### Missing data imputation
 
 ```{r mdimputation, results="hide"}
-pca_remrows <- vpca_removecells(data = dat, 4, ref.P = model.PCA$model$rotation, 
+pca_remcells <- vpca_removecells(data = dat, 4, ref.P = model.PCA$model$rotation, 
                                k_ho = 20, rm_pctges = c(1,5,10,seq(20,80,by=20)))
 
-autoencoder_remrows <- vae_removecells(data = dat, 4, 
-                                               ref.P = model.AE$model$layers[[2]]$weights[[1]],
-                                        ho.part = pca_remrows$ho,
-                                               k_ho = 20, 
-                                               rm_pctges = c(1,5,10,seq(20,80,by=20)))
+# autoencoder_remrows <- vae_removecells(data = dat, 4, 
+#                                                ref.P = model.AE$model$layers[[2]]$weights[[1]],
+#                                         ho.part = pca_remrows$ho,
+#                                                k_ho = 20, 
+#                                                rm_pctges = c(1,5,10,seq(20,80,by=20)))
 
 
 ```
@@ -189,7 +189,7 @@ autoencoder_remrows <- vae_removecells(data = dat, 4,
 ### Transformation of variables
 
 ```{r transform, results="hide"}
-pca_remrows <- vpca_removerows(data = dat, A, ref.P = model.PCA$model$rotation, 
+pca_transvars <- vpca_removerows(data = dat, A, ref.P = model.PCA$model$rotation, 
                                k_ho = 1000, rowrm_pctges = c(1,5,10,seq(20,80,by=20)))
 
 autoencoder_remrows <- vautoencoder_removerows(data = dat, A, 
