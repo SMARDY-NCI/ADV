@@ -199,18 +199,18 @@ fit_autoencoder <- function(X, k.A, act.fun, n.epochs=50){
 #' @param data A dataframe or matrix with the data
 #' @param A The dimensionality of the latent space
 #' @param k_ho The number of holdout repetitions at each percentage
-#' @param rowrm_pctges The percentages of rows being removed
+#' @param rm_pctges The percentages of rows being removed
 #'
 #' @return The model and the obtained loss function (MSE)
 #' @export
 #' 
 vautoencoder_removerows <- function (data, A, ref.P, k_ho=1000,
-                                     rowrm_pctges=c(1,5,10,seq(20,80,by=20)),
+                                     rm_pctges=c(1,5,10,seq(20,80,by=20)),
                                      ho.part = NULL){
   library(caret)
   X <- as.matrix(data)
   nrep <- k_ho
-  nlevels <- length(rowrm_pctges)
+  nlevels <- length(rm_pctges)
   n.results <- nrep*nlevels
   
   # Build list containing the results
@@ -221,20 +221,20 @@ vautoencoder_removerows <- function (data, A, ref.P, k_ho=1000,
       c(paste0("t",a,"radius"), paste0("p",a,"corr"))
   }
   para_test$Repetition <- rep(c(1:nrep),each = nlevels)
-  para_test$RWoutpctge <- rep(rowrm_pctges,times = nrep)
+  para_test$RWoutpctge <- rep(rm_pctges,times = nrep)
   
   print("Parameter avge (sd)")
   cols.sum <- which(!(colnames(para_test)%in%c("Repetition", "RWoutpctge")))
   d.sum <- data.frame(matrix(NA, nlevels, length(cols.sum)))
-  rownames(d.sum) <- paste0("rw rem ", rowrm_pctges)
+  rownames(d.sum) <- paste0("rw rem ", rm_pctges)
   if(is.null(ho.part)){
     ho.list <- vector(mode = "list", length = nlevels)
   }
   # LOOP with rest of row percentage removal
   for (jmd in 1:nlevels){
-    print(paste0("Rows removal at ", rowrm_pctges[jmd], " %"))
+    print(paste0("Rows removal at ", rm_pctges[jmd], " %"))
     print("Parameter avge (sd)")
-    N.lim <- floor(nrow(X) - rowrm_pctges[jmd]/100*nrow(X))
+    N.lim <- floor(nrow(X) - rm_pctges[jmd]/100*nrow(X))
     if(is.null(ho.part)){
       ho  <- createTimeSlices(c(1:nrow(X)), N.lim, horizon = 1, 
                               fixedWindow = TRUE, skip = 0)
@@ -259,11 +259,11 @@ vautoencoder_removerows <- function (data, A, ref.P, k_ho=1000,
         para_test[[paste0("p",a,"corr")]][jrep] <- abs(cor(as.numeric(intermediate_layer_coefs[,a]),
                                                            as.numeric(ref.P[,a])))
       }
-      id.loc <- and((para_test$Repetition==jrep),(para_test$RWoutpctge==rowrm_pctges[jmd]))
+      id.loc <- and((para_test$Repetition==jrep),(para_test$RWoutpctge==rm_pctges[jmd]))
       para_test$log10mspe[id.loc] <- log10(evaluate(model.AE_test$model, Xtr, Xtr))
     }
-    d.sum[jmd,] <- paste0(round(colMeans(para_test[para_test$RWoutpctge == rowrm_pctges[jmd],cols.sum]), 4), 
-                          " (", round(apply(para_test[para_test$RWoutpctge == rowrm_pctges[jmd],cols.sum], 2, sd), 4), ")")
+    d.sum[jmd,] <- paste0(round(colMeans(para_test[para_test$RWoutpctge == rm_pctges[jmd],cols.sum]), 4), 
+                          " (", round(apply(para_test[para_test$RWoutpctge == rm_pctges[jmd],cols.sum], 2, sd), 4), ")")
     # print(d.sum[jmd,])
   }
   colnames(d.sum) <- colnames(para_test)[cols.sum]
@@ -299,6 +299,8 @@ vae_removecells <- function (data, A, ref.P, k_ho=1000,
   rownames(d.sum) <- paste0("cell rem ", rm_pctges)
   if(is.null(ho.part)){
     ho.list <- vector(mode = "list", length = nlevels)
+  } else {
+    ho.list <- ho.part
   }
   for (jmd in 1:nlevels){
     print(paste0("Cells removal at ", rm_pctges[jmd], " %"))
@@ -306,7 +308,7 @@ vae_removecells <- function (data, A, ref.P, k_ho=1000,
     if(is.null(ho.part)){
       ho.list[[jmd]] <- vector(mode = "list", length = nrep)
     }
-    for (jrep in c(1:nrep)){
+    for (jrep in c(1:length(ho.list[[jmd]]))){
       if(is.null(ho.part)){
         ho.list[[jmd]][[jrep]] <- sample(c(1:n.elems), rm_pctges[jmd]/100*n.elems)
       }
@@ -328,7 +330,7 @@ vae_removecells <- function (data, A, ref.P, k_ho=1000,
         para_test[[paste0("p",a,"corr")]][jrep] <- abs(cor(as.numeric(intermediate_layer_coefs[,a]),
                                                            as.numeric(ref.P[,a])))
       }
-      id.loc <- and((para_test$Repetition==jrep),(para_test$RWoutpctge==rowrm_pctges[jmd]))
+      id.loc <- and((para_test$Repetition==jrep),(para_test$RWoutpctge==rm_pctges[jmd]))
       para_test$log10mspe[id.loc] <- log10(evaluate(model.AE_test$model, Xtr, Xtr))
     }
     d.sum[jmd,] <- paste0(round(colMeans(para_test[para_test$RWoutpctge == rm_pctges[jmd],cols.sum], 

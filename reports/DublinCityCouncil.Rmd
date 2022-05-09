@@ -175,12 +175,12 @@ save(list = c("model.AE", "model.PCA"),file="ref_models.RData")
 
 ```{r mdimputation, results="hide"}
 pca_remrows <- vpca_removecells(data = dat, 4, ref.P = model.PCA$model$rotation, 
-                               k_ho = 1000, rm_pctges = c(1,5,10,seq(20,80,by=20)))
+                               k_ho = 20, rm_pctges = c(1,5,10,seq(20,80,by=20)))
 
-autoencoder_remrows <- vae_removecells(data = dat, A, 
+autoencoder_remrows <- vae_removecells(data = dat, 4, 
                                                ref.P = model.AE$model$layers[[2]]$weights[[1]],
-                                        ho.part = 
-                                               k_ho = 1000, 
+                                        ho.part = pca_remrows$ho,
+                                               k_ho = 20, 
                                                rm_pctges = c(1,5,10,seq(20,80,by=20)))
 
 

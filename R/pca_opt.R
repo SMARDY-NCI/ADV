@@ -207,7 +207,7 @@ vpca_removecells <- function (data, A, ref.P, k_ho=1000,
     }
     for (jrep in c(1:nrep)){
       if(is.null(ho.part)){
-        ho.list[[jmd]][[jrep]] <- sample(c(1:n.elems), rm_pctges[jmd]/100*n.elems)
+        ho.list[[jmd]][[jrep]] <- sample(c(1:n.elems), round(rm_pctges[jmd]/100*n.elems))
       }
       ho <- ho.list[[jmd]][[jrep]]
       Xtr <- as.matrix(X)
@@ -238,7 +238,7 @@ vpca_removecells <- function (data, A, ref.P, k_ho=1000,
     # print(d.sum[jmd,])
   }
   colnames(d.sum) <- colnames(para_test)[cols.sum]
-  return(list(para_test = para_test, d.sum = d.sum, ho = ho))
+  return(list(para_test = para_test, d.sum = d.sum, ho = ho.list))
 }
 
 #' Fit PCA with different levels of row removal percentages
@@ -389,5 +389,5 @@ vpca_transcols <- function (data, A, ref.P, k_ho=1000,
     # print(d.sum[jmd,])
   }
   colnames(d.sum) <- colnames(para_test)[cols.sum]
-  return(list(para_test = para_test, d.sum = d.sum, ho = ho))
+  return(list(para_test = para_test, d.sum = d.sum, ho = ho.list))
 }
