@@ -70,9 +70,9 @@ pca_opt <- function(dat, A.values = c(1:10), tr = NULL, kcv = 10) {
 #' @return The model and the obtained loss function (MSE)
 #' @export
 #' 
-fit_pca <- function(X, k.A){
+fit_pca <- function(X, k.A, xscale = FALSE){
   X <- as.matrix(X)
-  model.A <- pcals(X, A = k.A) 
+  model.A <- pcals(X, A = k.A, xscale = xscale) 
   # MSE
   X.prepo <- sweep(sweep(X,2,model.A$center,"-"),2,model.A$scale,"/")
   Xrec <- sweep(sweep(X.prepo%*%model.A$rotation%*%t(model.A$rotation),
@@ -101,7 +101,7 @@ vpca_removerows <- function (data, A, ref.P, k_ho=1000,
   nrep <- k_ho
   nlevels <- length(rm_pctges)
   n.results <- nrep*nlevels
-  
+  n.elems <- nrow(X)
   # Build list containing the results
   para_test <- list(limspe = matrix(NA,n.results,1), 
                     limt2 = matrix(NA,n.results,1), 
@@ -119,34 +119,39 @@ vpca_removerows <- function (data, A, ref.P, k_ho=1000,
   cols.sum <- which(!(colnames(para_test)%in%c("Repetition", "RWoutpctge")))
   d.sum <- data.frame(matrix(NA,nlevels, length(cols.sum)))
   rownames(d.sum) <- paste0("rw rem ", rm_pctges)
-  ho.list <- vector(mode = "list", length = nlevels)
+
+  if(is.null(ho.part)){
+    ho.list <- vector(mode = "list", length = nlevels)
+  } else {
+    ho.list <- ho.part
+  }
   for (jmd in 1:nlevels){
     print(paste0("Rows removal at ", rm_pctges[jmd], " %"))
     print("Parameter avge (sd)")
-    N.lim <- floor(nrow(X) - rm_pctges[jmd]/100*nrow(X))
     if(is.null(ho.part)){
-      ho  <- createTimeSlices(c(1:nrow(X)), N.lim, horizon = 1, 
-                              fixedWindow = TRUE, skip = 0)
-      ho.list[[jmd]] <- ho$train
-    } else {
-      ho.list[[jmd]] <- ho.part[[jmd]]
+      ho.list[[jmd]] <- vector(mode = "list", length = nrep)
     }
     for (jrep in c(1:length(ho.list[[jmd]]))){
+      if(is.null(ho.part)){
+        ho.list[[jmd]][[jrep]] <- sample(c(1:n.elems), rm_pctges[jmd]/100*n.elems)
+      }
       ho <- ho.list[[jmd]][[jrep]]
       Xtr <- X[ho,,drop=F]
+      Xts <- X[-ho,,drop=F]
       try({
         pcamodel_test <- fit_pca(Xtr, A)
         Xrec_cv <- sweep(sweep(pcamodel_test$model$x%*%t(pcamodel_test$model$rotation),2,
                                pcamodel_test$model$scale,"*"),2,pcamodel_test$model$center,"+")
-        for(a in c(1:A)){
-          para_test[[paste0("t",a,"radius")]][jrep] <- pcamodel_test$model$limits_t[[paste0("pc",a)]][2]
-          para_test[[paste0("p",a,"corr")]][jrep] <- abs(cor(pcamodel_test$model$rotation[,a],
-                                                             ref.P[,a]))
-        }
         id.loc <- and((para_test$Repetition==jrep),(para_test$RWoutpctge==rm_pctges[jmd]))
+        for(a in c(1:A)){
+          para_test[[paste0("t",a,"radius")]][id.loc] <- pcamodel_test$model$limits_t[[paste0("pc",a)]][2]
+          para_test[[paste0("p",a,"corr")]][id.loc] <- abs(cor(pcamodel_test$model$rotation[,a],
+                                                               ref.P[,a]))
+        }
+        
         para_test$limspe[id.loc] <- pcamodel_test$model$limspe
         para_test$limt2[id.loc] <- pcamodel_test$model$limt2
-        para_test$log10mspe[id.loc] <- log10(model$loss)
+        para_test$log10mspe[id.loc] <- log10(pcamodel_test$loss)
       })
     }
     d.sum[jmd,] <- paste0(round(colMeans(para_test[para_test$RWoutpctge == rm_pctges[jmd],cols.sum], 
@@ -156,7 +161,7 @@ vpca_removerows <- function (data, A, ref.P, k_ho=1000,
     # print(d.sum[jmd,])
   }
   colnames(d.sum) <- colnames(para_test)[cols.sum]
-  return(list(para_test = para_test, d.sum = d.sum, ho = ho))
+  return(list(para_test = para_test, d.sum = d.sum, ho = ho.list))
 }
 
 
@@ -235,7 +240,7 @@ vpca_removecols <- function (data, A, ref.P, k_ho=1000,
   return(list(para_test = para_test, d.sum = d.sum, ho = ho))
 }
 
-#' Fit PCA with different levels of row removal percentages
+#' Fit PCA with different levels of variable transformations
 #'
 #' @param data A dataframe or matrix with the data
 #' @param A The dimensionality of the latent space
@@ -246,8 +251,8 @@ vpca_removecols <- function (data, A, ref.P, k_ho=1000,
 #' @export
 #' 
 vpca_transcols <- function (data, A, ref.P, k_ho=1000,
-                             rm_pctges=c(1,5,10,seq(20,100,by=20)),
-                             ho.part = NULL){
+                            rm_pctges=c(1,5,10,seq(20,100,by=20)),
+                            ho.part = NULL){
   X <- as.matrix(data)
   nrep <- k_ho
   nlevels <- length(rm_pctges)
@@ -264,10 +269,10 @@ vpca_transcols <- function (data, A, ref.P, k_ho=1000,
       c(paste0("t",a,"radius"), paste0("p",a,"corr"))
   }
   para_test$Repetition <- rep(c(1:nrep),each = nlevels)
-  para_test$RWoutpctge <- rep(rm_pctges,times = nrep)
+  para_test$Coltrans <- rep(rm_pctges,times = nrep)
   
   print("Parameter avge (sd)")
-  cols.sum <- which(!(colnames(para_test)%in%c("Repetition", "RWoutpctge")))
+  cols.sum <- which(!(colnames(para_test)%in%c("Repetition", "Coltrans")))
   d.sum <- data.frame(matrix(NA,nlevels, length(cols.sum)))
   rownames(d.sum) <- paste0("rw rem ", rm_pctges)
   if(is.null(ho.part)){
@@ -285,28 +290,107 @@ vpca_transcols <- function (data, A, ref.P, k_ho=1000,
       }
       ho <- ho.list[[jmd]][[jrep]]
       Xtr <- X
-      Xtr[,ho] <- log(X[,ho,drop=F])
+      for (jk in ho){
+        # lambda = -1. is a reciprocal transform.
+        # lambda = -0.5 is a reciprocal square root transform.
+        # lambda = 0.0 is a log transform.
+        # lambda = 0.5 is a square root transform.
+        # lambda = 1.0 is no transform.
+        # print(jk)
+        out <- boxcoxnc(Xtr[,jk], method = "mle", lambda = seq(-2,2,0.5), verbose = F, plot = F,
+                        lambda2 = 0.0001)
+        x.lambda <- out$lambda.hat
+        Xtr[,jk] <- (Xtr[,jk] ^ x.lambda - 1) / x.lambda
+      }
       try({
-        pcamodel_test <- fit_pca(Xtr, A)
+        pcamodel_test <- fit_pca(Xtr, A, xscale = FALSE)
         Xrec_cv <- sweep(sweep(pcamodel_test$model$x%*%t(pcamodel_test$model$rotation),2,
                                pcamodel_test$model$scale,"*"),2,pcamodel_test$model$center,"+")
+        id.loc <- and((para_test$Repetition==jrep),(para_test$Coltrans==rm_pctges[jmd]))
         for(a in c(1:A)){
-          para_test[[paste0("t",a,"radius")]][jrep] <- pcamodel_test$model$limits_t[[paste0("pc",a)]][2]
-          para_test[[paste0("p",a,"corr")]][jrep] <- abs(cor(pcamodel_test$model$rotation[,a],
-                                                             ref.P[,a]))
+          para_test[[paste0("t",a,"radius")]][id.loc] <- pcamodel_test$model$limits_t[[paste0("pc",a)]][2]
+          para_test[[paste0("p",a,"corr")]][id.loc] <- abs(cor(pcamodel_test$model$rotation[,a],
+                                                               ref.P[,a]))
         }
-        id.loc <- and((para_test$Repetition==jrep),(para_test$RWoutpctge==rm_pctges[jmd]))
+        
         para_test$limspe[id.loc] <- pcamodel_test$model$limspe
         para_test$limt2[id.loc] <- pcamodel_test$model$limt2
         para_test$log10mspe[id.loc] <- log10(pcamodel_test$loss)
       })
     }
-    d.sum[jmd,] <- paste0(round(colMeans(para_test[para_test$RWoutpctge == rm_pctges[jmd],cols.sum], 
+    d.sum[jmd,] <- paste0(round(colMeans(para_test[para_test$Coltrans == rm_pctges[jmd],cols.sum], 
                                          na.rm = TRUE), 4), 
-                          " (", round(apply(para_test[para_test$RWoutpctge == rm_pctges[jmd],cols.sum], 
+                          " (", round(apply(para_test[para_test$Coltrans == rm_pctges[jmd],cols.sum], 
                                             2, sd, na.rm = TRUE), 4), ")")
     # print(d.sum[jmd,])
   }
   colnames(d.sum) <- colnames(para_test)[cols.sum]
   return(list(para_test = para_test, d.sum = d.sum, ho = ho.list))
+}
+
+
+#' Fit PCA with different levels of variable transformations
+#'
+#' @param data A dataframe or matrix with the data
+#' @param A The dimensionality of the latent space
+#' @param k_ho The number of holdout repetitions at each percentage
+#' @param rm_pctges The percentages of rows being removed
+#'
+#' @return The model and the obtained loss function (MSE)
+#' @export
+#' 
+vpca_rowpctge <- function (data, A, ref.P, k_ho=1000,
+                           rm_pctges=c(1,5,10,seq(20,100,by=20)),
+                           ho.part = NULL){
+  X <- as.matrix(data)
+  nrep <- k_ho
+  # nlevels <- length(rm_pctges)
+  nlevels <- 1
+  n.results <- nrep*nlevels
+  n.elems <- ncol(X)
+  # Build list containing the results
+  para_test <- list(limspe = matrix(NA,n.results,1), 
+                    limt2 = matrix(NA,n.results,1), 
+                    log10mspe = matrix(NA,n.results,1))
+  
+  for(a in 1:A){
+    para_test <- cbind(para_test,as.data.frame(matrix(NA,nrow = n.results,ncol=2)))
+    colnames(para_test)[(ncol(para_test)-1):ncol(para_test)] <- 
+      c(paste0("t",a,"radius"), paste0("p",a,"corr"))
+  }
+  para_test$Repetition <- rep(c(1:nrep),each = nlevels)
+  # para_test$Coltrans <- rep(rm_pctges,times = nrep)
+  
+  print("Parameter avge (sd)")
+  cols.sum <- which(!(colnames(para_test)%in%c("Repetition")))
+  d.sum <- data.frame(matrix(NA,nrep, length(cols.sum)))
+  # rownames(d.sum) <- paste0("rw rem ", rm_pctges)
+  rownames(d.sum) <- paste0("rep ", c(1:nrep))
+  if(is.null(ho.part)){
+    ho.list <- createFolds(c(1:nrow(X)), k = k_ho, list = TRUE, returnTrain = TRUE)
+  }
+  for (jrep in c(1:nrep)){
+    ho <- ho.list[[jrep]]
+    Xtr <-  sweep(X[ho,,drop=F], 1, rowSums(X[ho,,drop=F]), "/")
+    try({
+      pcamodel_test <- fit_pca(Xtr, A)
+      Xrec_cv <- sweep(sweep(pcamodel_test$model$x%*%t(pcamodel_test$model$rotation),2,
+                             pcamodel_test$model$scale,"*"),2,pcamodel_test$model$center,"+")
+      id.loc <- (para_test$Repetition==jrep)
+      for(a in c(1:A)){
+        para_test[[paste0("t",a,"radius")]][id.loc] <- pcamodel_test$model$limits_t[[paste0("pc",a)]][2]
+        para_test[[paste0("p",a,"corr")]][id.loc] <- abs(cor(pcamodel_test$model$rotation[,a],
+                                                             ref.P[,a]))
+      }
+      
+      para_test$limspe[id.loc] <- pcamodel_test$model$limspe
+      para_test$limt2[id.loc] <- pcamodel_test$model$limt2
+      para_test$log10mspe[id.loc] <- log10(pcamodel_test$loss)
+    })
+  }
+  d.sum <- paste0(round(colMeans(para_test[,cols.sum],na.rm = TRUE), 4), 
+                        " (", round(apply(para_test[,cols.sum], 2, sd, na.rm = TRUE), 4), ")")
+  print(d.sum)
+names(d.sum) <- colnames(para_test)[cols.sum]
+return(list(para_test = para_test, d.sum = d.sum, ho = ho.list))
 }

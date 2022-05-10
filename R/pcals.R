@@ -1,7 +1,12 @@
-pcals <- function(X, A=0, alpha = 0.05){
+pcals <- function(X, A=0, alpha = 0.05, xscale = FALSE){
   
   mX <- colMeans(X)
-  sX <- apply(X,2,sd)
+  if (xscale){
+    sX <- apply(X,2,sd)
+  } else {
+    sX <- rep(1,length(mX))
+  }
+  
   n <- nrow(X)
   p <- ncol(X)
   Xc <- sweep(sweep(X, 2, mX, FUN="-"),2,sX,FUN="/")

@@ -45,7 +45,9 @@ Nonetheless, time series data are also frequent as the type of data registered i
 Hence, we consider that although this work focuses on this particular nature of the data, it is still a relevant and significant problem encountered in the data science community.
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, warning = FALSE, out.width='50%', fig.align = "center")
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, 
+                      out.width='50%', fig.align = "center",
+                      message=FALSE)
 
 library(dplyr)
 library(magrittr)
@@ -173,45 +175,57 @@ save(list = c("model.AE", "model.PCA"),file="ref_models.RData")
 
 ### Missing data imputation
 
-```{r mdimputation, results="hide"}
+```{r mdimputation, results="hide",echo=FALSE}
 pca_remcells <- vpca_removecells(data = dat, 4, ref.P = model.PCA$model$rotation, 
                                k_ho = 20, rm_pctges = c(1,5,10,seq(20,80,by=20)))
 
-# autoencoder_remrows <- vae_removecells(data = dat, 4, 
-#                                                ref.P = model.AE$model$layers[[2]]$weights[[1]],
-#                                         ho.part = pca_remrows$ho,
-#                                                k_ho = 20, 
-#                                                rm_pctges = c(1,5,10,seq(20,80,by=20)))
-
+autoencoder_remcells <- vae_removecells(data = dat, 4,
+                                               ref.P = model.AE$model$layers[[2]]$weights[[1]],
+                                        ho.part = pca_remcells$ho,
+                                               k_ho = 20,
+                                               rm_pctges = c(1,5,10,seq(20,80,by=20)))
+save(list = c("pca_remcells", "autoencoder_remcells"),file="MissingData_models.RData")
 
 ```
 
 ### Transformation of variables
 
-```{r transform, results="hide"}
-pca_transvars <- vpca_removerows(data = dat, A, ref.P = model.PCA$model$rotation, 
-                               k_ho = 1000, rowrm_pctges = c(1,5,10,seq(20,80,by=20)))
+```{r transform, results="hide", echo=FALSE}
+pca_transvars <- vpca_rowpctge(data = dat, 4, ref.P = model.PCA$model$rotation, 
+                               k_ho = 20, rm_pctges = c(5,10,seq(20,80,by=20)))
 
-autoencoder_remrows <- vautoencoder_removerows(data = dat, A, 
-                                               ref.P = model.AE$model$layers[[2]]$weights[[1]],
-                                               k_ho = 1000, 
-                                               rowrm_pctges = c(1,5,10,seq(20,80,by=20)))
+autoencoder_transvars <- vae_rowpctge(data = dat, 4, 
+                                               ref.P = model.AE$model$layers[[2]]$weights[[1]], ho.part = pca_transvars$ho,
+                                               k_ho = 20, 
+                                               rm_pctges = c(5,10,seq(20,80,by=20)))
+save(list = c("pca_transvars", "autoencoder_transvars"),file="RowsPctge_models.RData")
+```
 
+```{r coxtransforn, results='hide', echo=FALSE, message=FALSE}
+library(AID)
+load("ref_models.RData")
+pca_transvarscox <- vpca_transcols(data = dat, 4, ref.P = model.PCA$model$rotation, 
+                               k_ho = 20, rm_pctges = c(5,10,seq(20,80,by=20)))
 
+autoencoder_transvarscox <- vae_transcols(data = dat, 4, 
+                                               ref.P = model.AE$model$layers[[2]]$weights[[1]], ho.part = pca_transvarscox$ho,
+                                               k_ho = 20, 
+                                               rm_pctges = c(5,10,seq(20,80,by=20)))
+save(list = c("pca_transvarscox", "autoencoder_transvarscox"),file="CoxTrans_models.RData")
 ```
 
 ## Versioning scenario 2: change in the number of rows
 
 ```{r remrows, results="hide"}
-pca_remrows <- vpca_removerows(data = dat, A, ref.P = model.PCA$model$rotation, 
-                               k_ho = 1000, rowrm_pctges = c(1,5,10,seq(20,80,by=20)))
+pca_remrows <- vpca_removerows(data = dat, 4, ref.P = model.PCA$model$rotation, 
+                               k_ho = 20, rm_pctges = c(2,5,10,seq(20,80,by=20)))
 
-autoencoder_remrows <- vautoencoder_removerows(data = dat, A, 
+autoencoder_remrows <- vautoencoder_removerows(data = dat, 4, 
                                                ref.P = model.AE$model$layers[[2]]$weights[[1]],
-                                               k_ho = 1000, 
-                                               rowrm_pctges = c(1,5,10,seq(20,80,by=20)))
+                                               k_ho = 20, ho.part = pca_remrows$ho,
+                                               rm_pctges = c(2,5,10,seq(20,80,by=20)))
 
-
+save(list = c("pca_remrows", "autoencoder_remrows"),file="CoxTrans_models.RData")
 ```
 
 ## Versioning scenario 3: change in the number of variables
