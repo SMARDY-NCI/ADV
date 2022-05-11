@@ -186,6 +186,8 @@ load(file="ref_loadings.RData")
 ### Missing data imputation
 
 ```{r mdimputation, results="hide",echo=FALSE}
+load(file="ref_models.RData")
+load(file="ref_loadings.RData")
 pca_remcells <- vpca_removecells(data = dat, 4, ref.P = P.pca.ref, 
                                k_ho = 20, rm_pctges = c(1,5,10,seq(20,80,by=20)))
 
@@ -214,7 +216,7 @@ save(list = c("pca_transvars", "autoencoder_transvars"),file="RowsPctge_models.R
 
 ```{r coxtransforn, results='hide', echo=FALSE, message=FALSE}
 library(AID)
-load("ref_models.RData")
+# load("ref_models.RData")
 pca_transvarscox <- vpca_transcols(data = dat, 4, ref.P = P.pca.ref, 
                                k_ho = 20, rm_pctges = c(5,10,seq(20,80,by=20)))
 
