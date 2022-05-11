@@ -291,7 +291,7 @@ vae_removecells <- function (data, A, ref.P, k_ho=1000,
       c(paste0("t",a,"radius"), paste0("p",a,"corr"))
   }
   para_test$Repetition <- rep(c(1:nrep),each = nlevels)
-  para_test$RWoutpctge <- rep(rm_pctges,times = nrep)
+  para_test$MDpctge <- rep(rm_pctges,times = nrep)
   
   print("Parameter avge (sd)")
   cols.sum <- which(!(colnames(para_test)%in%c("Repetition", "MD pctge")))
@@ -325,7 +325,7 @@ vae_removecells <- function (data, A, ref.P, k_ho=1000,
       intermediate_layer_output <- predict(intermediate_layer_model, Xtr)
       z <- ((nrow(Xtr) - 1) * (nrow(Xtr) - 1)/nrow(Xtr)) * stats::qbeta(1 - 0.05, 1, 
                                                                         (nrow(Xtr) - 3)/2)
-      id.loc <- and((para_test$Repetition==jrep),(para_test$RWoutpctge==rm_pctges[jmd]))
+      id.loc <- and((para_test$Repetition==jrep),(para_test$MDpctge==rm_pctges[jmd]))
       for(a in c(1:A)){
         para_test[[paste0("t",a,"radius")]][id.loc] <- sqrt(stats::var(intermediate_layer_output[, a]) * z)
         para_test[[paste0("p",a,"corr")]][id.loc] <- abs(cor(as.numeric(intermediate_layer_coefs[,a]),
@@ -334,14 +334,14 @@ vae_removecells <- function (data, A, ref.P, k_ho=1000,
       
       para_test$log10mspe[id.loc] <- log10(evaluate(model.AE_test$model, Xtr, Xtr))
     }
-    d.sum[jmd,] <- paste0(round(colMeans(para_test[para_test$RWoutpctge == rm_pctges[jmd],cols.sum], 
+    d.sum[jmd,] <- paste0(round(colMeans(para_test[para_test$MDpctge == rm_pctges[jmd],cols.sum], 
                                          na.rm = TRUE), 4), 
-                          " (", round(apply(para_test[para_test$RWoutpctge == rm_pctges[jmd],cols.sum], 
+                          " (", round(apply(para_test[para_test$MDpctge == rm_pctges[jmd],cols.sum], 
                                             2, sd, na.rm = TRUE), 4), ")")
     # print(d.sum[jmd,])
   }
   colnames(d.sum) <- colnames(para_test)[cols.sum]
-  return(list(para_test = para_test, d.sum = d.sum, ho = ho))
+  return(list(para_test = para_test, d.sum = d.sum, ho = ho.list))
 }
 
 

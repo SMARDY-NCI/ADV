@@ -13,12 +13,17 @@ editor_options:
 This report contains the results of the experiments run for different data versioning approaches.
 The interest of data versioning is closely related to the FAIR principles of data:
 
--   *Interoperability principle I3. (Meta)data include qualified references to other (meta)data.* Cross-reference that explains as many meaningful links as possible between (meta)data resources to enrich the contextual knowledge about the data.
+-   Interoperability principle I3.
+    (Meta)data include qualified references to other (meta)data.
+    Cross-reference that explains as many meaningful links as possible between (meta)data resources to enrich the contextual knowledge about the data.
     To be more concrete, you should specify if one dataset builds on another data set, if additional datasets are needed to complete the data, or if complementary information is stored in a different dataset.
     In particular, the scientific links between the datasets need to be described.
     Furthermore, all datasets need to be properly cited (i.e., including their globally unique and persistent identifiers).
 
--   *Reusability principle R2. R1.2. (Meta)data are associated with detailed provenance.* There should be a clear story of the workflow that finally lead to the used data: Who generated or collected it?
+-   Reusability principle R2.
+    R1.2.
+    (Meta)data are associated with detailed provenance.
+    There should be a clear story of the workflow that finally lead to the used data: Who generated or collected it?
     How has it been processed?
     Has it been published before?
     Does it contain data from someone else that you may have transformed or completed?
@@ -168,7 +173,12 @@ This selection is based on the fact that from 4 latent variables, the MSE decay 
 model.AE <- fit_autoencoder(dat, 4, "relu")
 plot(model.AErelu$trainhist)
 model.PCA <- fit_pca(dat, 4)
+P.ae.ref <- as.matrix(model.AE$model$layers[[2]]$weights[[1]])
+P.pca.ref <- model.PCA$model$rotation
+save(list = c("P.ae.ref", "P.pca.ref"),file="ref_loadings.RData")
 save(list = c("model.AE", "model.PCA"),file="ref_models.RData")
+load(file="ref_models.RData")
+load(file="ref_loadings.RData")
 ```
 
 ## Versioning scenario 1: change in the cell values
@@ -176,26 +186,27 @@ save(list = c("model.AE", "model.PCA"),file="ref_models.RData")
 ### Missing data imputation
 
 ```{r mdimputation, results="hide",echo=FALSE}
-pca_remcells <- vpca_removecells(data = dat, 4, ref.P = model.PCA$model$rotation, 
+pca_remcells <- vpca_removecells(data = dat, 4, ref.P = P.pca.ref, 
                                k_ho = 20, rm_pctges = c(1,5,10,seq(20,80,by=20)))
 
 autoencoder_remcells <- vae_removecells(data = dat, 4,
-                                               ref.P = model.AE$model$layers[[2]]$weights[[1]],
+                                               ref.P = P.ae.ref,
                                         ho.part = pca_remcells$ho,
                                                k_ho = 20,
                                                rm_pctges = c(1,5,10,seq(20,80,by=20)))
 save(list = c("pca_remcells", "autoencoder_remcells"),file="MissingData_models.RData")
-
+# load(file="MissingData_models.RData")
 ```
 
 ### Transformation of variables
 
 ```{r transform, results="hide", echo=FALSE}
-pca_transvars <- vpca_rowpctge(data = dat, 4, ref.P = model.PCA$model$rotation, 
+pca_transvars <- vpca_rowpctge(data = dat, 4, ref.P = P.pca.ref, 
                                k_ho = 20, rm_pctges = c(5,10,seq(20,80,by=20)))
 
 autoencoder_transvars <- vae_rowpctge(data = dat, 4, 
-                                               ref.P = model.AE$model$layers[[2]]$weights[[1]], ho.part = pca_transvars$ho,
+                                               ref.P = P.ae.ref,
+                                      ho.part = pca_transvars$ho,
                                                k_ho = 20, 
                                                rm_pctges = c(5,10,seq(20,80,by=20)))
 save(list = c("pca_transvars", "autoencoder_transvars"),file="RowsPctge_models.RData")
@@ -204,11 +215,11 @@ save(list = c("pca_transvars", "autoencoder_transvars"),file="RowsPctge_models.R
 ```{r coxtransforn, results='hide', echo=FALSE, message=FALSE}
 library(AID)
 load("ref_models.RData")
-pca_transvarscox <- vpca_transcols(data = dat, 4, ref.P = model.PCA$model$rotation, 
+pca_transvarscox <- vpca_transcols(data = dat, 4, ref.P = P.pca.ref, 
                                k_ho = 20, rm_pctges = c(5,10,seq(20,80,by=20)))
 
 autoencoder_transvarscox <- vae_transcols(data = dat, 4, 
-                                               ref.P = model.AE$model$layers[[2]]$weights[[1]], ho.part = pca_transvarscox$ho,
+                                               ref.P = P.ae.ref, ho.part = pca_transvarscox$ho,
                                                k_ho = 20, 
                                                rm_pctges = c(5,10,seq(20,80,by=20)))
 save(list = c("pca_transvarscox", "autoencoder_transvarscox"),file="CoxTrans_models.RData")
@@ -217,15 +228,15 @@ save(list = c("pca_transvarscox", "autoencoder_transvarscox"),file="CoxTrans_mod
 ## Versioning scenario 2: change in the number of rows
 
 ```{r remrows, results="hide"}
-pca_remrows <- vpca_removerows(data = dat, 4, ref.P = model.PCA$model$rotation, 
+pca_remrows <- vpca_removerows(data = dat, 4, ref.P = P.pca.ref, 
                                k_ho = 20, rm_pctges = c(2,5,10,seq(20,80,by=20)))
 
 autoencoder_remrows <- vautoencoder_removerows(data = dat, 4, 
-                                               ref.P = model.AE$model$layers[[2]]$weights[[1]],
+                                               ref.P = P.ae.ref,
                                                k_ho = 20, ho.part = pca_remrows$ho,
                                                rm_pctges = c(2,5,10,seq(20,80,by=20)))
 
-save(list = c("pca_remrows", "autoencoder_remrows"),file="CoxTrans_models.RData")
+save(list = c("pca_remrows", "autoencoder_remrows"),file="RemRows_models.RData")
 ```
 
 ## Versioning scenario 3: change in the number of variables
