@@ -251,7 +251,7 @@ if(file.exists("../CoxTrans_models.RData")){
                                             k_ho = 20, rm_pctges = c(5,10,seq(20,80,by=20)))
   save(list = c("pca_transvarscox", "autoencoder_transvarscox"),file="CoxTrans_models.RData")
 }
-pca_transvarscox$para_test$Method <- "PCA"
+# pca_transvarscox$para_test$Method <- "PCA"
 autoencoder_transvarscox$para_test$Method <- "AutoEncoder"
 exp3.data <- rbind(pca_transvarscox$para_test[,-c(1,2)], autoencoder_transvarscox$para_test)
 exp3.lsd.results <- lsdAnalysis(exp3.data, "Method", "Coltrans")
