@@ -13,12 +13,17 @@ editor_options:
 This report contains the results of the experiments run for different data versioning approaches.
 The interest of data versioning is closely related to the FAIR principles of data:
 
--   *Interoperability principle I3. (Meta)data include qualified references to other (meta)data.* Cross-reference that explains as many meaningful links as possible between (meta)data resources to enrich the contextual knowledge about the data.
+-   Interoperability principle I3.
+    (Meta)data include qualified references to other (meta)data.
+    Cross-reference that explains as many meaningful links as possible between (meta)data resources to enrich the contextual knowledge about the data.
     To be more concrete, you should specify if one dataset builds on another data set, if additional datasets are needed to complete the data, or if complementary information is stored in a different dataset.
     In particular, the scientific links between the datasets need to be described.
     Furthermore, all datasets need to be properly cited (i.e., including their globally unique and persistent identifiers).
 
--   *Reusability principle R2. R1.2. (Meta)data are associated with detailed provenance.* There should be a clear story of the workflow that finally lead to the used data: Who generated or collected it?
+-   Reusability principle R2.
+    R1.2.
+    (Meta)data are associated with detailed provenance.
+    There should be a clear story of the workflow that finally lead to the used data: Who generated or collected it?
     How has it been processed?
     Has it been published before?
     Does it contain data from someone else that you may have transformed or completed?
@@ -45,7 +50,9 @@ Nonetheless, time series data are also frequent as the type of data registered i
 Hence, we consider that although this work focuses on this particular nature of the data, it is still a relevant and significant problem encountered in the data science community.
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, warning = FALSE, out.width='50%', fig.align = "center")
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, 
+                      out.width='50%', fig.align = "center",
+                      message=FALSE)
 
 library(dplyr)
 library(magrittr)
@@ -59,7 +66,8 @@ library(tidyr)
 library(tensorflow)
 source(here::here("R","pcals.R"))
 source(here::here("R","autoencoder.R"))
-source(here::here("R","pca_opt.R"))
+source(here::here("R","pca_functions.R"))
+source(here::here("R","pcambtsrR.R"))
 ```
 
 Load the data:
@@ -127,14 +135,14 @@ At this stage, an hyperparameter optimization should be carried out to determine
 The loss function used to set the optimal model, will be the Mean Squared Error, computed as the average squared reconstruction error obtained on the original data matrix.
 
 ```{r optmodels, echo=FALSE}
-tic("Autoencoder optimization")
-opt.AE.results <- autoenc_opt(dat, A.values = c(1:10), tr = NULL, kcv = 10, act.fun = "relu", n.epochs = 50) 
-time.EA.opt <- toc()
+# tic("Autoencoder optimization")
+# opt.AE.results <- autoenc_opt(dat, A.values = c(1:10), tr = NULL, kcv = 10, act.fun = "relu", n.epochs = 50) 
+# time.EA.opt <- toc()
 
-tic("PCA optimization")
-opt.PCA.results <- pca_opt(dat, A.values = c(1:10), tr = opt.AE.results$tr, kcv = 10) 
-time.PCA.opt <- toc()
-
+# tic("PCA optimization")
+# opt.PCA.results <- pca_opt(dat, A.values = c(1:10), tr = opt.AE.results$tr, kcv = 10) 
+# time.PCA.opt <- toc()
+load("../opt_models.RData")
 df.anova.test <- as.data.frame(c(as.vector(opt.AE.results$lossts[1:10,]), 
                                      as.vector(opt.PCA.results$lossts)))
 colnames(df.anova.test) <- "MSE"
@@ -152,7 +160,7 @@ summary(lsd.log.MSE)
 mse.lsd.log <- sum(lsd.log.MSE$residuals^2)/(lsd.log.MSE$df.residual)
 lsd.width <- sqrt(mse.lsd.log*2/length(unique(df.anova.test.log$Repetition)))*
   (qt(1-0.025,lsd.log.MSE$df.residual))
-lsdfig(df.anova.test.log, lsd.width, col=rgb(0,1,0,0.5), ytext="log10 (MSE)", 
+lsdfig(df.anova.test.log,"MSE","NLVs", lsd.width, col=rgb(0,1,0,0.5), ytext="log10 (MSE)", 
        xtext="Latent dimension", tittext = "Reference models")
 ```
 
@@ -160,55 +168,122 @@ Only the PCA model is showing a noticeable decay in the Mean Squared Error of th
 A number of four latent variables (4 PCs in the PCA case and 4 units in the latent layer of the Autoencoder) is chosen.
 This selection is based on the fact that from 4 latent variables, the MSE decay slows down for the PCA model, yielding to almost non-statistically significant differences within the range between four and eight PCs.
 
-```{r optmodels}
-# Activation functions:
-model.AE <- fit_autoencoder(dat, 4, "relu")
-plot(model.AErelu$trainhist)
-model.PCA <- fit_pca(dat, 4)
+```{r refmodels}
+if(file.exists("../ref_models.RData") & file.exists(file="../ref_loadings.RData")){
+  load("../ref_models.RData")
+  load(file="../ref_loadings.RData")
+} else {
+  model.AE <- fit_autoencoder(dat, 4, "relu")
+  plot(model.AErelu$trainhist)
+  model.PCA <- fit_pca(dat, 4)
+  P.ae.ref <- as.matrix(model.AE$model$layers[[2]]$weights[[1]])
+  P.pca.ref <- model.PCA$model$rotation
+  save(list = c("P.ae.ref", "P.pca.ref"),file="ref_loadings.RData")
+  save(list = c("model.AE", "model.PCA"),file="ref_models.RData")
+}
 ```
 
 ## Versioning scenario 1: change in the cell values
 
 ### Missing data imputation
 
-```{r mdimputation, results="hide"}
-pca_remrows <- vpca_removerows(data = dat, A, ref.P = model.PCA$model$rotation, 
-                               k_ho = 1000, rowrm_pctges = c(1,5,10,seq(20,80,by=20)))
-
-autoencoder_remrows <- vautoencoder_removerows(data = dat, A, 
-                                               ref.P = model.AE$model$layers[[2]]$weights[[1]],
-                                               k_ho = 1000, 
-                                               rowrm_pctges = c(1,5,10,seq(20,80,by=20)))
-
-
+```{r mdimputation,echo=FALSE,out.width="50%",fig.asp=0.9}
+if(file.exists("../MissingData_models.RData")){
+  load("../MissingData_models.RData")
+} else {
+  pca_remcells <- vpca_removecells(data = dat, 4, ref.P = P.pca.ref, 
+                                   k_ho = 20, rm_pctges = c(1,5,10,seq(20,80,by=20)))
+  
+  autoencoder_remcells <- vae_removecells(data = dat, 4,
+                                          ref.P = P.ae.ref,
+                                          ho.part = pca_remcells$ho,
+                                          k_ho = 20,
+                                          rm_pctges = c(1,5,10,seq(20,80,by=20)))
+  save(list = c("pca_remcells", "autoencoder_remcells"),file="MissingData_models.RData")
+}
+pca_remcells$para_test$Method <- "PCA"
+autoencoder_remcells$para_test$Method <- "AutoEncoder"
+mdi.exp.data <- rbind(pca_remcells$para_test, autoencoder_remcells$para_test)
+lsd.results <- lsdAnalysis(mdi.exp.data, "Method", "MDpctge")
+mdi.plots <- ggpubr::ggarrange(plotlist = lsd.results$l.plots, ncol = 2, nrow = 4,
+                  font.label = list(size = 3, color = "black", face = "bold", family = NULL),
+                  common.legend = TRUE)
+ggpubr::annotate_figure(mdi.plots[[2]], top = ggpubr::text_grob("Experiment MD (LSD interval)",
+                                       color = "black", face = "bold", size = 12))
 ```
 
 ### Transformation of variables
 
-```{r transform, results="hide"}
-pca_remrows <- vpca_removerows(data = dat, A, ref.P = model.PCA$model$rotation, 
-                               k_ho = 1000, rowrm_pctges = c(1,5,10,seq(20,80,by=20)))
+```{r transform, results="hide", echo=FALSE,out.width="50%",fig.asp=0.9}
+if(file.exists("../RowsPctge_models.RData")){
+  load("../RowsPctge_models.RData")
+} else {
+  pca_transvars <- vpca_rowpctge(data = dat, 4, ref.P = P.pca.ref, 
+                                 k_ho = 20, rm_pctges = c(5,10,seq(20,80,by=20)))
+  
+  autoencoder_transvars <- vae_rowpctge(data = dat, 4, 
+                                        ref.P = P.ae.ref,
+                                        ho.part = pca_transvars$ho,
+                                        k_ho = 20, 
+                                        rm_pctges = c(5,10,seq(20,80,by=20)))
+  save(list = c("pca_transvars", "autoencoder_transvars"),file="RowsPctge_models.RData")
+}
+pca_transvars$para_test$Method <- "PCA"
+autoencoder_transvars$para_test$Method <- "AutoEncoder"
+exp2.data <- rbind(pca_transvars$para_test, autoencoder_transvars$para_test)
+exp2.lsd.results <- lsdAnalysis(exp2.data, "Method", hier = F)
+exp2.plots <- ggpubr::ggarrange(plotlist = exp2.lsd.results$l.plots, ncol = 2, nrow = 4,
+                  font.label = list(size = 3, color = "black", face = "bold", family = NULL),
+                  common.legend = TRUE)
+ggpubr::annotate_figure(exp2.plots, top = ggpubr::text_grob("Experiment transformation to pctage (LSD interval)", color = "black", face = "bold", size = 12))
+```
 
-autoencoder_remrows <- vautoencoder_removerows(data = dat, A, 
-                                               ref.P = model.AE$model$layers[[2]]$weights[[1]],
-                                               k_ho = 1000, 
-                                               rowrm_pctges = c(1,5,10,seq(20,80,by=20)))
-
-
+```{r coxtransforn, results='hide', echo=FALSE, message=FALSE}
+library(AID)
+# load("ref_models.RData")
+if(file.exists("../CoxTrans_models.RData")){
+  load("../CoxTrans_models.RData")
+} else {
+  pca_transvarscox <- vpca_transcols(data = dat, 4, ref.P = P.pca.ref, 
+                               k_ho = 20, rm_pctges = c(5,10,seq(20,80,by=20)))
+  autoencoder_transvarscox <- vae_transcols(data = dat, 4, 
+                                            ref.P = P.ae.ref, ho.part = pca_transvarscox$ho,
+                                            k_ho = 20, rm_pctges = c(5,10,seq(20,80,by=20)))
+  save(list = c("pca_transvarscox", "autoencoder_transvarscox"),file="CoxTrans_models.RData")
+}
+# pca_transvarscox$para_test$Method <- "PCA"
+autoencoder_transvarscox$para_test$Method <- "AutoEncoder"
+exp3.data <- rbind(pca_transvarscox$para_test[,-c(1,2)], autoencoder_transvarscox$para_test)
+exp3.lsd.results <- lsdAnalysis(exp3.data, "Method", "Coltrans")
+exp3.plots <- ggpubr::ggarrange(plotlist = exp3.lsd.results$l.plots, ncol = 2, nrow = 4,
+                  font.label = list(size = 3, color = "black", face = "bold", family = NULL),
+                  common.legend = TRUE)
+ggpubr::annotate_figure(exp3.mdi.plots[[2]], top = ggpubr::text_grob("Experiment BoxCox Transform. (LSD interval)",
+                                       color = "black", face = "bold", size = 12))
 ```
 
 ## Versioning scenario 2: change in the number of rows
 
-```{r remrows, results="hide"}
-pca_remrows <- vpca_removerows(data = dat, A, ref.P = model.PCA$model$rotation, 
-                               k_ho = 1000, rowrm_pctges = c(1,5,10,seq(20,80,by=20)))
-
-autoencoder_remrows <- vautoencoder_removerows(data = dat, A, 
-                                               ref.P = model.AE$model$layers[[2]]$weights[[1]],
-                                               k_ho = 1000, 
-                                               rowrm_pctges = c(1,5,10,seq(20,80,by=20)))
-
-
+```{r remrows, results="hide",out.width="50%",fig.asp=0.9}
+if(file.exists("../RemRows_models.RData")){
+  load("../RemRows_models.RData")
+} else {
+  pca_remrows <- vpca_removerows(data = dat, 4, ref.P = P.pca.ref, k_ho = 20, 
+                                 rm_pctges = c(2,5,10,seq(20,80,by=20)))
+  autoencoder_remrows <- vautoencoder_removerows(data = dat, 4, ref.P = P.ae.ref,k_ho = 20, 
+                                                 ho.part = pca_remrows$ho,
+                                                 rm_pctges = c(2,5,10,seq(20,80,by=20)))
+  save(list = c("pca_remrows", "autoencoder_remrows"),file="RemRows_models.RData")
+}
+pca_remrows$para_test$Method <- "PCA"
+autoencoder_remrows$para_test$Method <- "AutoEncoder"
+exp4.data <- rbind(pca_remrows$para_test[,-c(1,2)], autoencoder_remrows$para_test)
+exp4.lsd.results <- lsdAnalysis(exp4.data, "Method", "RWoutpctge")
+exp4.mdi.plots <- ggpubr::ggarrange(plotlist = exp4.lsd.results$l.plots, ncol = 2, nrow = 4,
+                  font.label = list(size = 3, color = "black", face = "bold", family = NULL),
+                  common.legend = TRUE)
+ggpubr::annotate_figure(exp4.mdi.plots[[2]], top = ggpubr::text_grob("Experiment Rows reduction (LSD interval)",
+                                       color = "black", face = "bold", size = 12))
 ```
 
 ## Versioning scenario 3: change in the number of variables
