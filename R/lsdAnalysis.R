@@ -1,54 +1,56 @@
-lsdAnalysis <- function(){
-  # To begin, the complete matrix will be used to calibrate the ground truth of 
-  # the PCA model. This model estimation step is typically referred as 
-  # PCA-Model Building (PCA-MB). 
-  
-  # Then, the imputed versions will be used for PCA-MB using the TSR algorithm, 
-  # which has proved to work well with a wide variety of datasets. 
-  
-  # Nonetheless, the Mean Squared Prediction Error (MSPE) will be kept to measure 
-  # the estimation error due to the missing data imputation effect.
-  
-  # The following figure shows the plots with the average values of each 
-  # parameter and the associated uncertainty calculated as the Least Squared 
-  # Significant intervals, using the mean squared error after performing an 
-  # ANOVA on each parameter, considering the simple effect of the factor 
-  # "RW out (#)" and the nested random factor "Repetition". 
-  # The dashed and solid orange lines are the percentile 2.5#, 50# and 97.5# 
-  # of the distribution of each parameter obtained by resampling with k=200 
-  # repetitions in which only a 1# of observations are removed. This is 
-  # intended to give an idea of the expected uncertainty of the parameters 
-  # caused just by a minimum removal of observations to fit the model. 
-  # It is important to remark that these percentiles do not vary with 
-  # "RW out (#)", and are just plotted as a reference level of results.
-  # As it can be seen in most cases, the increase in the percentage of 
-  # removed rows leads to significant changes on the model estimates. 
-  # This can be appreciated by the fact that LSD intervals do not overlap as 
-  # the "RW out (#)" values increase. However, these differences don't seem 
-  # to be relevant in practice since the paremeter values are still within 
-  # the expected values obtained with different samples of the 99#-rows database.
-  lsdAnalysis <- list()
+lsdAnalysis <- function(data.anova, factor1="", factor2=NULL, 
+                        factorrnd="Repetition", alpha = 0.05, hier=T, 
+                        tittext=paste("Experiment", factor1, "(LSD intervals)"),
+                        xtext = factor2){
+  # Use factor 1 for the method
+  # Use factor 2 for the artifact
+  lsd.Analysis <- list()
   orange_rgb <- c(0.8500, 0.3250, 0.0980)
-  i.metrics <- which((grepl("*radius", names(para_test)) | grepl("*corr", names(para_test))))
-  para_test$RWoutpctge <- as.factor(para_test$RWoutpctge)
-  para_test$Repetition <- as.factor(para_test$Repetition)
-  for (j_metric in i.metrics){
-    metric_name <- (colnames(para_test)[j_metric])
-    lsdAnalysis[[metric_name]] <- aov(para_test[[metric_name]] ~ 
-                                     para_test[[artifact.factor]], 
-                                   data = para_test)
-    a.tbl <- lsdAnalysis[[metric_name]]
-    n.rep <- unique(para_test$Repetition)
-    m.lsd <- sum(a.tbl$residuals^2)/(nrow(para_test)-2)
-    if (!any(grepl("Method", colnames(para_test)))){
-      para_test$Method <- rep("", nrow(para_test))
-    }
-    lsd.width <- sqrt(m.lsd*2/length(unique(para_test$Repetition)))*
-      (qt(1-0.025,lsdAnalysis.metric_name$df.residual))
-    lsdfig(para_test,metric_name, artifact.factor, lsd.width, col=rgb(0,1,0,0.5), 
-           ytext= metric_name, 
-           xtext=artifact.factor, tittext = "LSD intervals")
+  i.metrics <- which((grepl("*radius", names(data.anova)) | grepl("*corr", names(data.anova))))
+  data.anova[,factor1] <- as.factor(data.anova[,factor1])
+  if(!is.null(factor2)){
+    data.anova[,factor2] <- as.factor(data.anova[,factor2])
   }
-  title(t,'Case II Rows deletion')
-  xlabel(t,'RW removed(#)')
+  if(!is.null(factorrnd)){
+    data.anova[,factorrnd] <- as.factor(data.anova[,factorrnd])
+  }
+  lsd.plot <- vector(mode = "list", length = length(i.metrics))
+  names(lsd.plot) <-  names(data.anova)[i.metrics]
+  for (j_metric in i.metrics){
+    metric_name <- (colnames(data.anova)[j_metric])
+    if(!is.null(factor2) & !hier){
+      lsd.Analysis[[metric_name]] <- aov(data.anova[,metric_name] ~ 
+                                          data.anova[,factor1] + data.anova[,factor2], 
+                                        data = data.anova)
+      factor.x <- factor2
+    } else if(!is.null(factor2) & hier){
+      lsd.Analysis[[metric_name]] <- aov(data.anova[,metric_name] ~ 
+                                          data.anova[,factor1] + data.anova[,factor2]/data.anova[,factorrnd], 
+                                        data = data.anova)
+      factor.x <- factor2
+    } else if(is.null(factor2) & hier){
+      lsd.Analysis[[metric_name]] <- aov(data.anova[,metric_name] ~ 
+                                          data.anova[,factor1]/data.anova[,factorrnd], 
+                                        data = data.anova)
+      factor.x <- factor1
+    } else {
+      lsd.Analysis[[metric_name]] <- aov(data.anova[,metric_name] ~ 
+                                           data.anova[,factor1], 
+                                         data = data.anova)
+      factor.x <- factor1
+    }
+    a.tbl <- lsd.Analysis[[metric_name]]
+    n.rep <- unique(data.anova$Repetition)
+    m.lsd <- sum(a.tbl$residuals^2)/(nrow(data.anova)-2)
+    if (!any(grepl("Method", colnames(data.anova)))){
+      data.anova$Method <- rep("PCA", nrow(data.anova))
+    }
+    lsd.width <- sqrt(m.lsd*2/length(unique(data.anova$Repetition)))*
+      (qt(1-alpha/2,lsd.Analysis[[metric_name]]$df.residual))
+    lsd.plot[[metric_name]] <- lsdfig(data.anova, metric_name, factor.x, 
+                                      lsd.width, col=rgb(0,1,0,0.5), 
+                                      ytext= metric_name, xtext= factor.x, 
+                                      tittext = "")
+  }
+  return(list(l.plots = lsd.plot, l.aov = lsd.Analysis))
 }
