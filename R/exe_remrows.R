@@ -17,7 +17,8 @@ source(here::here("R","pcals.R"))
 source(here::here("R","autoencoder.R"))
 source(here::here("R","pca_functions.R"))
 source(here::here("R","pcambtsrR.R"))
-
+source(here::here("R","lsdAnalysis.R"))
+source(here::here("R","lsdfig.R"))
 
 ## ----load data----------------------------------------------------------------------------------------------------
 dat <- read.csv(here::here("data","pedestrian-count-dcc-2022.csv")) %>%
