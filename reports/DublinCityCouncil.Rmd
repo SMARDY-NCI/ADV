@@ -114,11 +114,11 @@ lapply(1:ncol(dat),function(x){
   stat_qq_point(col="black",size=1)+
   labs(title = colnames(dat)[x])+theme_bw()
   
-  p2 <- ggplot(data = dat.log, mapping = aes(sample = dat.log[,x])) +
+  p2 <- ggplot(data = dat, mapping = aes(sample = dat[,x])) +
   stat_qq_band(fill="green",alpha = 0.15) +
   stat_qq_line(col="green") +
   stat_qq_point(col="black",size=1)+
-  labs(title = colnames(dat.log)[x])+theme_bw()
+  labs(title = colnames(dat)[x])+theme_bw()
   
   p1p2 <- grid.arrange(p1,p2,ncol=2)
   p1p2})
