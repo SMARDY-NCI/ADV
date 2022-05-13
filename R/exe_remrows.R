@@ -49,8 +49,8 @@ exp4.lsd.results <- lsdAnalysis(exp4.data, "Method", "RWoutpctge")
 exp4.mdi.plots <- ggpubr::ggarrange(plotlist = exp4.lsd.results$l.plots, ncol = 2, nrow = 4,
                                     font.label = list(size = 3, color = "black", face = "bold", family = NULL),
                                     common.legend = TRUE)
-ggpubr::annotate_figure(exp4.mdi.plots[[2]], top = ggpubr::text_grob("Experiment Rows reduction (LSD interval)",
-                                                                     color = "black", face = "bold", size = 12))
+# ggpubr::annotate_figure(exp4.mdi.plots[[2]], top = ggpubr::text_grob("Experiment Rows reduction (LSD interval)",
+#                                                                      color = "black", face = "bold", size = 12))
 
 
 ## ----remvars, results = "hide"------------------------------------------------------------------------------------
