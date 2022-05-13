@@ -33,7 +33,7 @@ dat <- dat[,!(apply(dat,2,var)==0),drop=F]
 dat <- dat[,seq(1,ncol(dat),by=3)]
 
 ## ----remrows, results="hide",out.width="50%",fig.asp=0.9----------------------------------------------------------
-load("../ref_loadings.RData")
+load("ref_loadings.RData")
   pca_remrows <- vpca_removerows(data = dat, 4, ref.P = P.pca.ref, k_ho = 20, 
                                  rm_pctges = c(2,5,10,seq(20,80,by=20)))
   autoencoder_remrows <- vautoencoder_removerows(data = dat, 4, ref.P = P.ae.ref,k_ho = 20, 
