@@ -243,8 +243,8 @@ vautoencoder_removerows <- function (data, A, ref.P, k_ho=1000,
         ho.list[[jmd]][[jrep]] <- sample(c(1:n.elems), round(rm_pctges[jmd]/100*n.elems))
       }
       ho <- ho.list[[jmd]][[jrep]]
-      Xtr <- X[ho,,drop=F]
-      Xts <- X[-ho,,drop=F]
+      Xtr <- X[-ho,,drop=F]
+      Xts <- X[ho,,drop=F]
       model.AE_test <- fit_autoencoder(Xtr, A, "relu")
       intermediate_layer_model <- keras_model(inputs = model.AE_test$model$input, 
                                               outputs = get_layer(model.AE_test$model,"latent")$output)

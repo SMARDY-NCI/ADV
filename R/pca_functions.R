@@ -136,8 +136,8 @@ vpca_removerows <- function (data, A, ref.P, k_ho=1000,
         ho.list[[jmd]][[jrep]] <- sample(c(1:n.elems), rm_pctges[jmd]/100*n.elems)
       }
       ho <- ho.list[[jmd]][[jrep]]
-      Xtr <- X[ho,,drop=F]
-      Xts <- X[-ho,,drop=F]
+      Xtr <- X[-ho,,drop=F]
+      Xts <- X[ho,,drop=F]
       try({
         pcamodel_test <- fit_pca(Xtr, A)
         Xrec_cv <- sweep(sweep(pcamodel_test$model$x%*%t(pcamodel_test$model$rotation),2,

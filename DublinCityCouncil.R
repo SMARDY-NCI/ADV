@@ -1,55 +1,4 @@
----
-title: "Dublin council dataset"
-author: "NCI - Smardy"
-date: '2022-05-04'
-output: html_document
-editor_options: 
-  markdown: 
-    wrap: sentence
----
-
-# Introduction
-
-This report contains the results of the experiments run for different data versioning approaches.
-The interest of data versioning is closely related to the FAIR principles of data:
-
--   Interoperability principle I3.
-    (Meta)data include qualified references to other (meta)data.
-    Cross-reference that explains as many meaningful links as possible between (meta)data resources to enrich the contextual knowledge about the data.
-    To be more concrete, you should specify if one dataset builds on another data set, if additional datasets are needed to complete the data, or if complementary information is stored in a different dataset.
-    In particular, the scientific links between the datasets need to be described.
-    Furthermore, all datasets need to be properly cited (i.e., including their globally unique and persistent identifiers).
-
--   Reusability principle R2.
-    R1.2.
-    (Meta)data are associated with detailed provenance.
-    There should be a clear story of the workflow that finally lead to the used data: Who generated or collected it?
-    How has it been processed?
-    Has it been published before?
-    Does it contain data from someone else that you may have transformed or completed?
-    Ideally, this workflow is described in a machine-readable format.
-
-As far as we ar concerned, there is not a clear consensus on how to address the aforementioned issues.
-How to measure the relations between linked databases and what terms use for the definition of that relationships, are questions that remain open about the mature implantation of the FAIR principles.
-Nonetheless, the benefits of having that information available would be undeniable, specially in the context of scientific and research data, where bibliography review and comparison could be much more insightful and objective if based on a standard system of data versioning.
-
-In this work, we propose and compare two different strategies as the core of a data versioning algorithm.
-The goal of these techniques is to extract statistical parameters about datasets in such a way that they inform about the degree of difference between a new version and the original one.
-To do so, we apply the philosophy of dimensionality reduction as a way to extract these relevant features.
-These dimensionality reduction techniques are known for their compression power, using them frequently as denoising strategies.
-Thus, it seems reasonable to expect that the parameters of that lower-dimensionality space, would change accordingly to the degree of change on the dataset structure, while staying safe of unsubstantial changes.
-
-# Methodology
-
-Two different approaches are compared in this report: the parameters extracted by a Principal Component Analysis (PCA) model and by a Vanilla Autoencoder.
-This set of parameters would be integrated as part of the metadata, enabling a quantitative and standard framework for data comparison that could be performed based on a set of metadata fields.
-Some further steps would include the definition of versioning tags based on such set of parameters and the implications on the comparability between data objects.
-In this report, the outcomes of both approaches are tested on an open data repository about Dublin city footfall counts from January 1st to April 3rd 2022.
-It is time series data that also present some technical particularities, such as the subsetting specific time windows or the transformation of variables to another units.
-Nonetheless, time series data are also frequent as the type of data registered in the Internet Of Things paradigm.
-Hence, we consider that although this work focuses on this particular nature of the data, it is still a relevant and significant problem encountered in the data science community.
-
-```{r setup, include=FALSE}
+## ----setup, include=FALSE-----------------------------------------------------------------------------------------
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, 
                       out.width='50%', fig.align = "center",
                       message=FALSE)
@@ -68,29 +17,23 @@ source(here::here("R","pcals.R"))
 source(here::here("R","autoencoder.R"))
 source(here::here("R","pca_functions.R"))
 source(here::here("R","pcambtsrR.R"))
-```
 
-Load the data:
 
-```{r load data}
+## ----load data----------------------------------------------------------------------------------------------------
 dat <- read.csv(here::here("data","pedestrian-count-dcc-2022.csv")) %>%
   select_if(is.numeric) %>%
   filter(complete.cases(.))
-```
 
-We check if there are variables with null variance that should be deleted:
 
-```{r delnullvar, out.width='70%'}
+## ----delnullvar, out.width='70%'----------------------------------------------------------------------------------
 print("These variables show null variance. Consider their deletion before the PCA")
 summary(dat[,(apply(dat,2,var)==0),drop=F])
 dat.or <- dat
 dat <- dat[,!(apply(dat,2,var)==0),drop=F]
 dat <- dat[,seq(1,ncol(dat),by=3)]
-```
 
-Moreover, a quick exploratory data analysis is performed to study the distribution and features of the variables in the dataset, as well as the existence of phenomena such as missing data or subpopulations.
 
-```{r univanalysis}
+## ----univanalysis-------------------------------------------------------------------------------------------------
 summary(dat)
 boxplot(dat,
 data=dat,
@@ -123,18 +66,9 @@ lapply(1:ncol(dat),function(x){
   p1p2 <- grid.arrange(p1,p2,ncol=2)
   p1p2})
 
-```
 
-# Results
 
-## Reference models
-
-The first thing to do is to compute the reference models.
-These would yield the set of parameters characterizing the very initial version of the dataset.
-At this stage, an hyperparameter optimization should be carried out to determine the optimal model architecture, that is, the number of the latent variables to be extracted, the activation functions to be used on the autoencoder neurons, etc.
-The loss function used to set the optimal model, will be the Mean Squared Error, computed as the average squared reconstruction error obtained on the original data matrix.
-
-```{r optmodels, echo=FALSE}
+## ----optmodels, echo=FALSE----------------------------------------------------------------------------------------
 # tic("Autoencoder optimization")
 # opt.AE.results <- autoenc_opt(dat, A.values = c(1:10), tr = NULL, kcv = 10, act.fun = "relu", n.epochs = 50) 
 # time.EA.opt <- toc()
@@ -162,32 +96,24 @@ lsd.width <- sqrt(mse.lsd.log*2/length(unique(df.anova.test.log$Repetition)))*
   (qt(1-0.025,lsd.log.MSE$df.residual))
 lsdfig(df.anova.test.log,"MSE","NLVs", lsd.width, col=rgb(0,1,0,0.5), ytext="log10 (MSE)", 
        xtext="Latent dimension", tittext = "Reference models")
-```
 
-Only the PCA model is showing a noticeable decay in the Mean Squared Error of the reconstructed matrices.
-A number of four latent variables (4 PCs in the PCA case and 4 units in the latent layer of the Autoencoder) is chosen.
-This selection is based on the fact that from 4 latent variables, the MSE decay slows down for the PCA model, yielding to almost non-statistically significant differences within the range between four and eight PCs.
 
-```{r refmodels}
+## ----refmodels----------------------------------------------------------------------------------------------------
 if(file.exists("../ref_models.RData") & file.exists(file="../ref_loadings.RData")){
   load("../ref_models.RData")
   load(file="../ref_loadings.RData")
 } else {
-  # model.AE <- fit_autoencoder(dat, 4, "relu")
-  # plot(model.AE$trainhist)
+  model.AE <- fit_autoencoder(dat, 4, "relu")
+  plot(model.AErelu$trainhist)
   model.PCA <- fit_pca(dat, 4)
   P.ae.ref <- as.matrix(model.AE$model$layers[[2]]$weights[[1]])
   P.pca.ref <- model.PCA$model$rotation
   save(list = c("P.ae.ref", "P.pca.ref"),file="ref_loadings.RData")
   save(list = c("model.AE", "model.PCA"),file="ref_models.RData")
 }
-```
 
-## Versioning scenario 1: change in the cell values
 
-### Missing data imputation
-
-```{r mdimputation,echo=FALSE,out.width="50%",fig.asp=0.9}
+## ----mdimputation,echo=FALSE,out.width="50%",fig.asp=0.9----------------------------------------------------------
 if(file.exists("../MissingData_models.RData")){
   load("../MissingData_models.RData")
 } else {
@@ -210,11 +136,9 @@ mdi.plots <- ggpubr::ggarrange(plotlist = lsd.results$l.plots, ncol = 2, nrow = 
                   common.legend = TRUE)
 ggpubr::annotate_figure(mdi.plots[[2]], top = ggpubr::text_grob("Experiment MD (LSD interval)",
                                        color = "black", face = "bold", size = 12))
-```
 
-### Transformation of variables
 
-```{r transform, results="hide", echo=FALSE,out.width="50%",fig.asp=0.9}
+## ----transform, results="hide", echo=FALSE,out.width="50%",fig.asp=0.9--------------------------------------------
 if(file.exists("../RowsPctge_models.RData")){
   load("../RowsPctge_models.RData")
 } else {
@@ -236,9 +160,9 @@ exp2.plots <- ggpubr::ggarrange(plotlist = exp2.lsd.results$l.plots, ncol = 2, n
                   font.label = list(size = 3, color = "black", face = "bold", family = NULL),
                   common.legend = TRUE)
 ggpubr::annotate_figure(exp2.plots, top = ggpubr::text_grob("Experiment transformation to pctage (LSD interval)", color = "black", face = "bold", size = 12))
-```
 
-```{r coxtransforn, results='hide', echo=FALSE, message=FALSE}
+
+## ----coxtransforn, results='hide', echo=FALSE, message=FALSE------------------------------------------------------
 library(AID)
 # load("ref_models.RData")
 if(file.exists("../CoxTrans_models.RData")){
@@ -260,11 +184,9 @@ exp3.plots <- ggpubr::ggarrange(plotlist = exp3.lsd.results$l.plots, ncol = 2, n
                   common.legend = TRUE)
 ggpubr::annotate_figure(exp3.mdi.plots[[2]], top = ggpubr::text_grob("Experiment BoxCox Transform. (LSD interval)",
                                        color = "black", face = "bold", size = 12))
-```
 
-## Versioning scenario 2: change in the number of rows
 
-```{r remrows, results="hide",out.width="50%",fig.asp=0.9}
+## ----remrows, results="hide",out.width="50%",fig.asp=0.9----------------------------------------------------------
 if(file.exists("../RemRows_models.RData")){
   load("../RemRows_models.RData")
 } else {
@@ -284,22 +206,8 @@ exp4.mdi.plots <- ggpubr::ggarrange(plotlist = exp4.lsd.results$l.plots, ncol = 
                   common.legend = TRUE)
 ggpubr::annotate_figure(exp4.mdi.plots[[2]], top = ggpubr::text_grob("Experiment Rows reduction (LSD interval)",
                                        color = "black", face = "bold", size = 12))
-```
 
-## Versioning scenario 3: change in the number of variables
 
-```{r remvars, results = "hide"}
+## ----remvars, results = "hide"------------------------------------------------------------------------------------
 
-```
 
-# Conclusions
-
-# References
-
-    @misc{chollet2017kerasR,
-      title={R Interface to Keras},
-      author={Chollet, Fran\c{c}ois and Allaire, JJ and others},
-      year={2017},
-      publisher={GitHub},
-      howpublished={\url{https://github.com/rstudio/keras}},
-    }
