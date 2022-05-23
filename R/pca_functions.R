@@ -13,7 +13,7 @@ pca_opt <- function(dat, A.values = c(1:10), tr = NULL, kcv = 10) {
   Xts <- X[c((nrow(X)-50):nrow(X)),,drop=F]
   Xtr <- X[-c((nrow(X)-50):nrow(X)),,drop=F]
   if (is.null(tr)){
-    tr <- createTimeSlices(c(1:nrow(Xtr)), nrow(Xtr) - kcv, horizon = 1, fixedWindow = TRUE, skip = 0)
+    tr <- createFolds(c(1:nrow(X)), k = kcv, list = TRUE, returnTrain = TRUE)
     kcv <- length(tr$train)
     if(kcv<10){
       tr <- createFolds(c(1:nrow(X)), k = nrow(X), list = TRUE, returnTrain = TRUE)

@@ -15,6 +15,7 @@ library(tidyr)
 library(tensorflow)
 source(here::here("R","pcals.R"))
 source(here::here("R","autoencoder.R"))
+source(here::here("R","autoencoder_opt.R"))
 source(here::here("R","pca_functions.R"))
 source(here::here("R","pcambtsrR.R"))
 source(here::here("R","lsdAnalysis.R"))
@@ -73,6 +74,7 @@ lapply(1:ncol(dat),function(x){
 ## ----optmodels, echo=FALSE----------------------------------------------------------------------------------------
 # tic("Autoencoder optimization")
 # opt.AE.results <- autoenc_opt(dat, A.values = c(1:10), tr = NULL, kcv = 10, act.fun = "relu", n.epochs = 50) 
+opt.AElay.results <- autoenc_opt_layers(dat, A=4, tr = NULL, kcv = 10,act.fun = "relu", n.epochs = 50)
 # time.EA.opt <- toc()
 
 # tic("PCA optimization")
