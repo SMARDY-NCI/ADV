@@ -1,7 +1,7 @@
 #' Fit Autoencoder, extract coefficients
 #'
 #' @param dat Dataset
-#' @param maxA Maximum number of neurons in latent layer
+#' @param A Number of neurons in latent layer
 #' @param kcv Number of folds used for cross-validation
 #'
 #' @return loss_results optimal autoencoder configuration
