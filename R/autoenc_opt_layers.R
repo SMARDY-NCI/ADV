@@ -28,7 +28,7 @@ autoenc_opt_layers <- function(dat, A, tr = NULL, kcv = 10,
   n_lay <- n_lay[and(n_lay > A, n_lay < ncol(Xtr))] 
   n_lay <- sort(c(n_lay, ncol(Xtr)),decreasing = TRUE)
   # Initialise the matrix storing the results of the loss function to be optimised
-  loss_opt_tr <- matrix(NA, length(n_lay), kcv)
+  loss_opt_tr_cv <- matrix(NA, length(n_lay), kcv)
   loss_opt_ts <- matrix(NA, length(n_lay), kcv)
   loss_opt_ts_cv <- matrix(NA, length(n_lay), kcv)
   # library(keras)
