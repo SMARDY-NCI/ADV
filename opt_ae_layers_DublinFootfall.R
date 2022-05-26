@@ -36,3 +36,32 @@ dat <- dat[,!(apply(dat,2,var)==0),drop=F]
 dat <- dat[,seq(1,ncol(dat),by=3)]
 dat %>% gather() %>% head()
 opt.AElay.results <- AEoptlayers(dat, A=4, tr = NULL, kcv = 10,act.fun = "relu", n.epochs = 50)
+
+save("opt.AElay.results",file="optAElayers.RData")
+
+df.anova.test <- as.data.frame(c(t(opt.AElay.results$losstscv)))
+colnames(df.anova.test) <- "MSE"
+df.anova.test$KFold <- paste0("Fold ",c(1:10))
+df.anova.test$NLayers <- as.factor(rep(c(1,2,3),each = 10))
+df.anova.test$Repetition <- as.factor(rep(c(1:10), times=3))
+lsd.MSE <- aov(MSE ~ NLayers + Repetition, data = df.anova.test)
+summary(lsd.MSE)
+mse.lsd <- sum(lsd.MSE$residuals^2)/(lsd.MSE$df.residual)
+lsd.width <- sqrt(mse.lsd*2/length(unique(df.anova.test$Repetition)))*
+  (qt(1-0.025,lsd.MSE$df.residual))
+lsdfig(df.anova.test,"MSE","NLayers","NLayers", lsd.width, col=rgb(0,1,0,0.5), 
+       graph.out = "errorbar", ytext="MSE", xtext="N.Layers", 
+       tittext = "Autoencoder architecture")
+
+df.anova.test.log <- df.anova.test
+df.anova.test.log$MSE <- log10(df.anova.test$MSE)
+lsd.log.MSE <- aov(MSE ~ NLayers + Repetition, data = df.anova.test.log)
+summary(lsd.log.MSE)
+
+mse.lsd.log <- sum(lsd.log.MSE$residuals^2)/(lsd.log.MSE$df.residual)
+exp2.lsd.results <- lsdAnalysis(exp2.data, "Method", hier = F)
+lsd.width.log <- sqrt(mse.lsd.log*2/length(unique(df.anova.test.log$Repetition)))*
+  (qt(1-0.025,lsd.log.MSE$df.residual))
+lsdfig(df.anova.test.log,"MSE","NLayers","NLayers", lsd.width.log, col=rgb(0,1,0,0.5), 
+       graph.out = "errorbar", ytext="log10 (MSE)", xtext="N.Layers", 
+       tittext = "Autoencoder architecture")

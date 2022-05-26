@@ -73,12 +73,12 @@ lapply(1:ncol(dat),function(x){
 
 ## ----optmodels, echo=FALSE----------------------------------------------------------------------------------------
 # tic("Autoencoder optimization")
-# opt.AE.results <- autoenc_opt(dat, A.values = c(1:10), tr = NULL, kcv = 10, act.fun = "relu", n.epochs = 50) 
-opt.AElay.results <- autoenc_opt_layers(dat, A=4, tr = NULL, kcv = 10,act.fun = "relu", n.epochs = 50)
+# opt.AE.results <- autoenc_opt(dat, A.values = c(1:10), tr = NULL, kcv = 10, act.fun = "relu", n.epochs = 50)
+# opt.AElay.results <- autoenc_opt_layers(dat, A=4, tr = NULL, kcv = 10,act.fun = "relu", n.epochs = 50)
 # time.EA.opt <- toc()
 
 # tic("PCA optimization")
-# opt.PCA.results <- pca_opt(dat, A.values = c(1:10), tr = opt.AE.results$tr, kcv = 10) 
+# opt.PCA.results <- pca_opt(dat, A.values = c(1:10), tr = opt.AE.results$tr, kcv = 10)
 # time.PCA.opt <- toc()
 load("../opt_models.RData")
 df.anova.test <- as.data.frame(c(as.vector(opt.AE.results$lossts[1:10,]), 
@@ -98,7 +98,8 @@ summary(lsd.log.MSE)
 mse.lsd.log <- sum(lsd.log.MSE$residuals^2)/(lsd.log.MSE$df.residual)
 lsd.width <- sqrt(mse.lsd.log*2/length(unique(df.anova.test.log$Repetition)))*
   (qt(1-0.025,lsd.log.MSE$df.residual))
-lsdfig(df.anova.test.log,"MSE","NLVs", lsd.width, col=rgb(0,1,0,0.5), ytext="log10 (MSE)", 
+lsdfig(df.anova.test.log,"MSE","NLVs","Method",
+       lsd.width, col=rgb(0,1,0,0.5), ytext="log10 (MSE)", 
        xtext="Latent dimension", tittext = "Reference models")
 
 
@@ -163,7 +164,7 @@ exp2.lsd.results <- lsdAnalysis(exp2.data, "Method", hier = F)
 exp2.plots <- ggpubr::ggarrange(plotlist = exp2.lsd.results$l.plots, ncol = 2, nrow = 4,
                   font.label = list(size = 3, color = "black", face = "bold", family = NULL),
                   common.legend = TRUE)
-ggpubr::annotate_figure(exp2.plots, top = ggpubr::text_grob("Experiment transformation to pctage (LSD interval)", color = "black", face = "bold", size = 12))
+ggpubr::annotate_figure(exp2.plots, top = ggpubr::text_grob("Experiment transformation to pctge (LSD interval)", color = "black", face = "bold", size = 12))
 
 
 ## ----coxtransforn, results='hide', echo=FALSE, message=FALSE------------------------------------------------------

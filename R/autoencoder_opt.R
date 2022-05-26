@@ -14,11 +14,11 @@ autoenc_opt <- function(dat, A.values = c(1:10), tr = NULL, kcv = 10,
   Xts <- X[c((nrow(X)-50):nrow(X)),,drop=F]
   Xtr <- X[-c((nrow(X)-50):nrow(X)),,drop=F]
   if (is.null(tr)){
-    tr <- createFolds(c(1:nrow(X)), k = kcv, list = TRUE, returnTrain = TRUE)
-    kcv <- length(tr$train)
+    tr <- createFolds(c(1:nrow(Xtr)), k = kcv, list = TRUE, returnTrain = TRUE)
+    kcv <- length(tr)
     if(kcv<10){
-      tr <- createFolds(c(1:nrow(X)), k = nrow(X), list = TRUE, returnTrain = TRUE)
-      kcv <- nrow(X)
+      tr <- createFolds(c(1:nrow(Xtr)), k = nrow(Xtr), list = TRUE, returnTrain = TRUE)
+      kcv <- nrow(Xtr)
     }
   } else {
     kcv <- length(tr)
@@ -36,9 +36,13 @@ autoenc_opt <- function(dat, A.values = c(1:10), tr = NULL, kcv = 10,
     modelA %>%
       layer_dense(units=ncol(Xtr), activation = act.fun, input_shape = ncol(Xtr), 
                   use_bias = TRUE, name = "input") %>%
-      layer_dense(units= k.A, activation = act.fun, input_shape = ncol(Xtr), 
+      layer_dense(units=16, activation = act.fun, input_shape = ncol(Xtr), 
+                  use_bias = TRUE, name = paste0("hidden_in_1")) %>%
+      layer_dense(units= k.A, activation = act.fun, input_shape = 16, 
                   use_bias = TRUE, name = "latent") %>%
-      layer_dense(units=ncol(Xtr), activation = act.fun, input_shape = k.A, 
+      layer_dense(units=16, activation = act.fun, input_shape = k.A, 
+                  use_bias = TRUE, name = paste0("hidded_out_1",n_lay[k.layer])) %>%
+      layer_dense(units=ncol(Xtr), activation = act.fun, input_shape = 16, 
                   use_bias = TRUE, name = "output")
     
     summary(modelA)
@@ -50,8 +54,8 @@ autoenc_opt <- function(dat, A.values = c(1:10), tr = NULL, kcv = 10,
     tensorflow::tf$config$run_functions_eagerly(TRUE)
     tensorflow::tf$data$experimental$enable_debug_mode()
     for (k.cv in c(1:kcv)){
-      Xtr.cv <- Xtr[tr$train[[k.cv]],,drop=F]
-      Xts.cv <- Xtr[-tr$train[[k.cv]],,drop=F]
+      Xtr.cv <- Xtr[tr[[k.cv]],,drop=F]
+      Xts.cv <- Xtr[-tr[[k.cv]],,drop=F]
       modelA %>% fit(
         x=Xtr,
         y=Xtr,
