@@ -32,10 +32,7 @@ dat <- dat[,seq(1,ncol(dat),by=3)]
 
 
 ## ----refmodels----------------------------------------------------------------------------------------------------
-if(file.exists("../ref_models.RData") & file.exists(file="../ref_loadings.RData")){
-  load("../ref_models.RData")
-  load(file="../ref_loadings.RData")
-} else {
+
   model.AE <- fit_autoencoder(dat, 4, "relu")
   plot(model.AE$trainhist)
   model.PCA <- fit_pca(dat, 4)
@@ -49,4 +46,3 @@ if(file.exists("../ref_models.RData") & file.exists(file="../ref_loadings.RData"
   P.pca.ref <- model.PCA$model$rotation
   save(list = c("P.ae.ref", "P.pca.ref", "P.ae.ref.all"),file="ref_loadings.RData")
   save(list = c("model.AE", "model.PCA"),file="ref_models.RData")
-}

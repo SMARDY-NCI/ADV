@@ -106,7 +106,7 @@ lsdfig(df.anova.test.log,"MSE","NLVs","Method",
 ## ----refmodels----------------------------------------------------------------------------------------------------
 if(file.exists("../ref_models.RData") & file.exists(file="../ref_loadings.RData")){
   load("ref_models.RData")
-  load(file="../ref_loadings.RData")
+  load(file="ref_loadings.RData")
 } else {
   model.AE <- fit_autoencoder(dat, 4, "relu")
   plot(model.AE$trainhist)

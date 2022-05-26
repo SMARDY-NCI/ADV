@@ -252,7 +252,7 @@ vautoencoder_removerows <- function (data, A, ref.P, k_ho=1000,
       model.AE_test <- fit_autoencoder(Xtr, A, "relu")
       intermediate_layer_model <- keras_model(inputs = model.AE_test$model$input, 
                                               outputs = get_layer(model.AE_test$model,"latent")$output)
-      intermediate_layer_coefs <- intermediate_layer_model$layers[[3]]$weights[[1]]
+      intermediate_layer_coefs <- as.matrix(model.AE_test$model$layers[[3]]$weights[[1]])
       intermediate_layer_output <- predict(intermediate_layer_model, Xtr)
       
       z <- ((nrow(Xtr) - 1) * (nrow(Xtr) - 1)/nrow(Xtr)) * stats::qbeta(1 - 0.05, 1, 
@@ -325,7 +325,7 @@ vae_removecells <- function (data, A, ref.P, k_ho=1000,
       model.AE_test <- fit_autoencoder(Xtr.imp, A, "relu")
       intermediate_layer_model <- keras_model(inputs = model.AE_test$model$input, 
                                               outputs = get_layer(model.AE_test$model,"latent")$output)
-      intermediate_layer_coefs <- intermediate_layer_model$layers[[3]]$weights[[1]]
+      intermediate_layer_coefs <- as.matrix(model.AE_test$model$layers[[3]]$weights[[1]])
       intermediate_layer_output <- predict(intermediate_layer_model, Xtr)
       z <- ((nrow(Xtr) - 1) * (nrow(Xtr) - 1)/nrow(Xtr)) * stats::qbeta(1 - 0.05, 1, 
                                                                         (nrow(Xtr) - 3)/2)
@@ -403,7 +403,7 @@ vae_transcols <- function (data, A, ref.P, k_ho=1000,
       model.AE_test <- fit_autoencoder(Xtr, A, "relu")
       intermediate_layer_model <- keras_model(inputs = model.AE_test$model$input, 
                                               outputs = get_layer(model.AE_test$model,"latent")$output)
-      intermediate_layer_coefs <- intermediate_layer_model$layers[[3]]$weights[[1]]
+      intermediate_layer_coefs <- as.matrix(model.AE_test$model$layers[[3]]$weights[[1]])
       intermediate_layer_output <- predict(intermediate_layer_model, Xtr)
       z <- ((nrow(Xtr) - 1) * (nrow(Xtr) - 1)/nrow(Xtr)) * stats::qbeta(1 - 0.05, 1, 
                                                                         (nrow(Xtr) - 3)/2)
@@ -426,7 +426,7 @@ vae_transcols <- function (data, A, ref.P, k_ho=1000,
 }
 
 
-#' Fit PCA with different levels of variable transformations
+#' Fit AE with different levels of variable transformations
 #'
 #' @param data A dataframe or matrix with the data
 #' @param A The dimensionality of the latent space
@@ -475,7 +475,7 @@ vae_rowpctge <- function (data, A, ref.P, k_ho=1000,
     model.AE_test <- fit_autoencoder(Xtr, A, "relu")
     intermediate_layer_model <- keras_model(inputs = model.AE_test$model$input, 
                                             outputs = get_layer(model.AE_test$model,"latent")$output)
-    intermediate_layer_coefs <- intermediate_layer_model$layers[[3]]$weights[[1]]
+    intermediate_layer_coefs <- as.matrix(model.AE_test$model$layers[[3]]$weights[[1]])
     intermediate_layer_output <- predict(intermediate_layer_model, Xtr)
     z <- ((nrow(Xtr) - 1) * (nrow(Xtr) - 1)/nrow(Xtr)) * stats::qbeta(1 - 0.05, 1, 
                                                                       (nrow(Xtr) - 3)/2)
@@ -493,4 +493,73 @@ vae_rowpctge <- function (data, A, ref.P, k_ho=1000,
                   " (", round(apply(para_test[,cols.sum], 2, sd, na.rm = TRUE), 4), ")")
   names(d.sum) <- colnames(para_test)[cols.sum]
   return(list(para_test = para_test, d.sum = d.sum, ho = ho.list))
+}
+
+#' Fit AE when columns are removed
+#'
+#' @param data A dataframe or matrix with the data
+#' @param A The dimensionality of the latent space
+#' @param k_ho The number of holdout repetitions at each percentage
+#' @param rm_pctges The percentages of rows being removed
+#'
+#' @return The model and the obtained loss function (MSE)
+#' @export
+#' 
+vae_remcols <- function (data, A, ref.P, k_ho=1000,
+													rm_pctges=c(1,5,10,seq(20,100,by=20)),
+													ho.part = NULL){
+	X <- as.matrix(data)
+	nrep <- k_ho
+	# nlevels <- length(rm_pctges)
+	nlevels <- 1
+	n.results <- nrep
+	n.elems <- ncol(X)
+	# Build list containing the results
+	para_test <- list(limspe = matrix(NA,n.results,1), 
+										limt2 = matrix(NA,n.results,1), 
+										log10mspe = matrix(NA,n.results,1))
+	
+	for(a in 1:A){
+		para_test <- cbind(para_test,as.data.frame(matrix(NA,nrow = n.results,ncol=2)))
+		colnames(para_test)[(ncol(para_test)-1):ncol(para_test)] <- 
+			c(paste0("t",a,"radius"), paste0("p",a,"corr"))
+	}
+	para_test$Repetition <- rep(c(1:nrep),each = nlevels)
+	# para_test$Coltrans <- rep(rm_pctges,times = nrep)
+	
+	print("Parameter avge (sd)")
+	cols.sum <- which(!(colnames(para_test)%in%c("Repetition")))
+	d.sum <- data.frame(matrix(NA,nrep, length(cols.sum)))
+	# rownames(d.sum) <- paste0("rw rem ", rm_pctges)
+	rownames(d.sum) <- paste0("rep ", c(1:nrep))
+	if(is.null(ho.part)){
+		ho.list <- createFolds(c(1:ncol(X)), k = k_ho, list = TRUE, returnTrain = TRUE)
+	} else {
+		ho.list <- ho.part
+	}
+	for (jrep in c(1:nrep)){
+		ho <- ho.list[[jrep]]
+		Xtr <-  sweep(X[,ho,drop=F], 1, rowSums(X[,ho,drop=F]), "/")
+		distXtr <- dist(Xtr, method = "euclidean")
+		model.AE_test <- fit_autoencoder(distXtr, A, "relu")
+		intermediate_layer_model <- keras_model(inputs = model.AE_test$model$input, 
+																						outputs = get_layer(model.AE_test$model,"latent")$output)
+		intermediate_layer_coefs <- as.matrix(model.AE_test$model$layers[[3]]$weights[[1]])
+		intermediate_layer_output <- predict(intermediate_layer_model, Xtr)
+		z <- ((nrow(Xtr) - 1) * (nrow(Xtr) - 1)/nrow(Xtr)) * stats::qbeta(1 - 0.05, 1, 
+																																			(nrow(Xtr) - 3)/2)
+		id.loc <- (para_test$Repetition==jrep)
+		for(a in c(1:A)){
+			para_test[[paste0("t",a,"radius")]][id.loc] <- sqrt(stats::var(intermediate_layer_output[, a]) * z)
+			para_test[[paste0("p",a,"corr")]][id.loc] <- abs(cor(as.numeric(intermediate_layer_coefs[,a]),
+																													 as.numeric(ref.P[,a])))
+		}
+		
+		para_test$log10mspe[id.loc] <- log10(evaluate(model.AE_test$model, Xtr, Xtr))
+		
+	}
+	d.sum <- paste0(round(colMeans(para_test[,cols.sum],na.rm = TRUE), 4), 
+									" (", round(apply(para_test[,cols.sum], 2, sd, na.rm = TRUE), 4), ")")
+	names(d.sum) <- colnames(para_test)[cols.sum]
+	return(list(para_test = para_test, d.sum = d.sum, ho = ho.list))
 }
