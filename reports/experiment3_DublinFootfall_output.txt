@@ -1,0 +1,40 @@
+Already up to date.
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+Loading required package: ggplot2
+Welcome! Want to learn more? See two factoextra-related books at https://goo.gl/ve3WBa
+
+Attaching package: ‘qqplotr’
+
+The following objects are masked from ‘package:ggplot2’:
+
+    stat_qq_line, StatQqLine
+
+Loading required package: lattice
+
+Attaching package: ‘tidyr’
+
+The following object is masked from ‘package:magrittr’:
+
+    extract
+
+
+Attaching package: ‘tensorflow’
+
+The following object is masked from ‘package:caret’:
+
+    train
+
+[1] "These variables show null variance. Consider their deletion before the PCA"
+Error in library(AID) : there is no package called ‘AID’
+Calls: source -> withVisible -> eval -> eval -> library
+Execution halted
