@@ -1,8 +1,8 @@
-require(here)
+# Ensure changes to any code have been pulled to the server
+system("git pull")
 
-args = commandArgs(trailingOnly=TRUE)
+# Run file provided as argument
+source(commandArgs(trailingOnly=TRUE)[1])
 
-source(here::here(args))
-
-# Commit results and push to github
-system("make commit_Results")
+# Commit RData files and push to github
+system("make commit_RData")
