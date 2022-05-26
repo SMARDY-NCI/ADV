@@ -16,7 +16,7 @@ AEoptlayers <- function(dat, A, tr = NULL, kcv = 10,
   Xtr <- X[-c((nrow(X)-50):nrow(X)),,drop=F]
   if (is.null(tr)){
     tr <- createFolds(c(1:nrow(Xtr)), k = kcv, list = TRUE, returnTrain = TRUE)
-    kcv <- length(tr$train)
+    kcv <- length(tr)
     if(kcv<10){
       tr <- createFolds(c(1:nrow(Xtr)), k = nrow(Xtr), list = TRUE, returnTrain = TRUE)
       kcv <- nrow(Xtr)
@@ -72,8 +72,8 @@ AEoptlayers <- function(dat, A, tr = NULL, kcv = 10,
     tensorflow::tf$config$run_functions_eagerly(TRUE)
     tensorflow::tf$data$experimental$enable_debug_mode()
     for (k.cv in c(1:kcv)){
-      Xtr.cv <- Xtr[tr$train[[k.cv]],,drop=F]
-      Xts.cv <- Xtr[-tr$train[[k.cv]],,drop=F]
+      Xtr.cv <- Xtr[tr[[k.cv]],,drop=F]
+      Xts.cv <- Xtr[-tr[[k.cv]],,drop=F]
       modelA %>% fit(
         x=Xtr,
         y=Xtr,
