@@ -167,15 +167,15 @@ fit_autoencoder <- function(X, k.A, act.fun, n.epochs=50){
   X <- as.matrix(X)
   modelA <- keras_model_sequential()
   modelA %>%
-    layer_dense(units=ncol(Xtr), activation = act.fun, input_shape = ncol(Xtr), 
+    layer_dense(units=ncol(X), activation = act.fun, input_shape = ncol(X), 
                 use_bias = TRUE, name = "input") %>%
-    layer_dense(units=16, activation = act.fun, input_shape = ncol(Xtr), 
+    layer_dense(units=16, activation = act.fun, input_shape = ncol(X), 
                 use_bias = TRUE, name = paste0("hidd_in_",n_lay[k.layer])) %>%
     layer_dense(units= k.A, activation = act.fun, input_shape = 16, 
                 use_bias = TRUE, name = "latent") %>%
     layer_dense(units=16, activation = act.fun, input_shape = k.A, 
                 use_bias = TRUE, name = paste0("hidd_out_",n_lay[k.layer])) %>%
-    layer_dense(units=ncol(Xtr), activation = act.fun, input_shape = 16, 
+    layer_dense(units=ncol(X), activation = act.fun, input_shape = 16, 
                 use_bias = TRUE, name = "output")
   
   summary(modelA)
