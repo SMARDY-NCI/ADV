@@ -7,7 +7,7 @@
 #'
 #' @return loss_results optimal autoencoder configuration
 #' @export
-AEoptlayers <- function(dat, A, tr = NULL, kcv = 10, 
+autoenc_opt_layers <- function(dat, A, tr = NULL, kcv = 10, 
                                act.fun = act.fun, n.epochs = n.epochs){
   X <- as.matrix(dat)
   # If training and testing partitions of the cross validation are not supplied 
@@ -16,7 +16,7 @@ AEoptlayers <- function(dat, A, tr = NULL, kcv = 10,
   Xtr <- X[-c((nrow(X)-50):nrow(X)),,drop=F]
   if (is.null(tr)){
     tr <- createFolds(c(1:nrow(X)), k = kcv, list = TRUE, returnTrain = TRUE)
-    kcv <- length(tr$train)
+    kcv <- length(tr)
     if(kcv<10){
       tr <- createFolds(c(1:nrow(X)), k = nrow(X), list = TRUE, returnTrain = TRUE)
       kcv <- nrow(X)
@@ -72,22 +72,22 @@ AEoptlayers <- function(dat, A, tr = NULL, kcv = 10,
     tensorflow::tf$config$run_functions_eagerly(TRUE)
     tensorflow::tf$data$experimental$enable_debug_mode()
     for (k.cv in c(1:kcv)){
-      Xtr.cv <- Xtr[tr$train[[k.cv]],,drop=F]
-      Xts.cv <- Xtr[-tr$train[[k.cv]],,drop=F]
+      Xtr.cv <- Xtr[tr[[k.cv]],,drop=F]
+      Xts.cv <- Xtr[-tr[[k.cv]],,drop=F]
       modelA %>% fit(
-        x=Xtr,
-        y=Xtr,
+        x=Xtr.cv,
+        y=Xtr.cv,
         epochs=n.epochs,
         verbose=0,
         batch_size = 5
       )
       # Evaluate the model
-      loss_opt_tr[k.A, k.cv] <- evaluate(modelA, Xtr, Xtr)
+      loss_opt_tr_cv[k.A, k.cv] <- evaluate(modelA, Xtr.cv, Xtr.cv)
       loss_opt_ts_cv[k.A, k.cv] <- evaluate(modelA, Xts.cv, Xts.cv)
       loss_opt_ts[k.A, k.cv] <- evaluate(modelA, Xts, Xts)
     }
   }
-  return(loss_results = list(losstr = loss_opt_tr, 
+  return(loss_results = list(losstr_cv = loss_opt_tr_cv, 
                              lossts = loss_opt_ts,
                              losstscv = loss_opt_ts_cv,
                              A = A, 

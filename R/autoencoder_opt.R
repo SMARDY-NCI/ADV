@@ -41,7 +41,7 @@ autoenc_opt <- function(dat, A.values = c(1:10), tr = NULL, kcv = 10,
       layer_dense(units= k.A, activation = act.fun, input_shape = 16, 
                   use_bias = TRUE, name = "latent") %>%
       layer_dense(units=16, activation = act.fun, input_shape = k.A, 
-                  use_bias = TRUE, name = paste0("hidded_out_1",n_lay[k.layer])) %>%
+                  use_bias = TRUE, name = paste0("hidden_out_1",n_lay[k.layer])) %>%
       layer_dense(units=ncol(Xtr), activation = act.fun, input_shape = 16, 
                   use_bias = TRUE, name = "output")
     

@@ -31,17 +31,17 @@ pca_opt <- function(dat, A.values = c(1:10), tr = NULL, kcv = 10) {
     for (k.cv in c(1:kcv)){
       Xtr.cv <- Xtr[tr[[k.cv]],,drop=F]
       Xts.cv <- Xtr[-tr[[k.cv]],,drop=F]
-      pca <-  X.tr %>%
+      pca <-  Xtr.cv %>%
         pcals(A = k.A)
       
       # MSE for training set
       Xrec <- sweep(sweep(pca$x%*%t(pca$rotation),2,pca$scale,"*"),2,pca$center,"+")
-      E.tr <- X.tr - Xrec
+      E.tr <- Xtr.cv - Xrec
       
       # MSE for test set of the cross-validation
-      X.prepo <- sweep(sweep(X.ts,2,pca$center,"-"),2,pca$scale,"/")
+      X.prepo <- sweep(sweep(Xts,2,pca$center,"-"),2,pca$scale,"/")
       Xrec.ts <- sweep(sweep(X.prepo%*%pca$rotation%*%t(pca$rotation),2,pca$scale,"*"),2,pca$center,"+")
-      E.ts <- X.ts - Xrec
+      E.ts <- Xts - Xrec.ts
       
       # MSE for test set
       X.cv.prepo <- sweep(sweep(Xts.cv,2,pca$center,"-"),2,pca$scale,"/")
