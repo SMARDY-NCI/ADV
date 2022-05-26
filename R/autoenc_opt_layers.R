@@ -15,11 +15,11 @@ autoenc_opt_layers <- function(dat, A, tr = NULL, kcv = 10,
   Xts <- X[c((nrow(X)-50):nrow(X)),,drop=F]
   Xtr <- X[-c((nrow(X)-50):nrow(X)),,drop=F]
   if (is.null(tr)){
-    tr <- createFolds(c(1:nrow(X)), k = kcv, list = TRUE, returnTrain = TRUE)
+    tr <- createFolds(c(1:nrow(Xtr)), k = kcv, list = TRUE, returnTrain = TRUE)
     kcv <- length(tr)
     if(kcv<10){
-      tr <- createFolds(c(1:nrow(X)), k = nrow(X), list = TRUE, returnTrain = TRUE)
-      kcv <- nrow(X)
+      tr <- createFolds(c(1:nrow(Xtr)), k = nrow(Xtr), list = TRUE, returnTrain = TRUE)
+      kcv <- nrow(Xtr)
     }
   } else {
     kcv <- length(tr)
