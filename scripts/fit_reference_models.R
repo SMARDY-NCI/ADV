@@ -39,8 +39,14 @@ if(file.exists("../ref_models.RData") & file.exists(file="../ref_loadings.RData"
   model.AE <- fit_autoencoder(dat, 4, "relu")
   plot(model.AE$trainhist)
   model.PCA <- fit_pca(dat, 4)
-  # P.ae.ref <- as.matrix(model.AE$model$layers[[2]]$weights[[1]])
-  # P.pca.ref <- model.PCA$model$rotation
-  # save(list = c("P.ae.ref", "P.pca.ref"),file="ref_loadings.RData")
+  P.ae.ref.all <- list()
+  P.ae.ref.all$input_layer <- as.matrix(model.AE$model$layers[[1]]$weights[[1]])
+  P.ae.ref.all$hidden_encoding_layer <- as.matrix(model.AE$model$layers[[2]]$weights[[1]])
+  P.ae.ref.all$latent_layer <- as.matrix(model.AE$model$layers[[3]]$weights[[1]])
+  P.ae.ref.all$hidden_decoding_layer <- as.matrix(model.AE$model$layers[[4]]$weights[[1]])
+  P.ae.ref.all$output_layer <- as.matrix(model.AE$model$layers[[5]]$weights[[1]])
+  P.ae.ref <- P.ae.ref.all$latent_layer
+  P.pca.ref <- model.PCA$model$rotation
+  save(list = c("P.ae.ref", "P.pca.ref", "P.ae.ref.all"),file="ref_loadings.RData")
   save(list = c("model.AE", "model.PCA"),file="ref_models.RData")
 }
