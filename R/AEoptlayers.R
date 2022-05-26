@@ -15,11 +15,11 @@ AEoptlayers <- function(dat, A, tr = NULL, kcv = 10,
   Xts <- X[c((nrow(X)-50):nrow(X)),,drop=F]
   Xtr <- X[-c((nrow(X)-50):nrow(X)),,drop=F]
   if (is.null(tr)){
-    tr <- createFolds(c(1:nrow(X)), k = kcv, list = TRUE, returnTrain = TRUE)
+    tr <- createFolds(c(1:nrow(Xtr)), k = kcv, list = TRUE, returnTrain = TRUE)
     kcv <- length(tr$train)
     if(kcv<10){
-      tr <- createFolds(c(1:nrow(X)), k = nrow(X), list = TRUE, returnTrain = TRUE)
-      kcv <- nrow(X)
+      tr <- createFolds(c(1:nrow(Xtr)), k = nrow(Xtr), list = TRUE, returnTrain = TRUE)
+      kcv <- nrow(Xtr)
     }
   } else {
     kcv <- length(tr)
@@ -82,7 +82,7 @@ AEoptlayers <- function(dat, A, tr = NULL, kcv = 10,
         batch_size = 5
       )
       # Evaluate the model
-      loss_opt_tr[k.A, k.cv] <- evaluate(modelA, Xtr, Xtr)
+      loss_opt_tr[k.A, k.cv] <- evaluate(modelA, Xtr.cv, Xtr.cv)
       loss_opt_ts_cv[k.A, k.cv] <- evaluate(modelA, Xts.cv, Xts.cv)
       loss_opt_ts[k.A, k.cv] <- evaluate(modelA, Xts, Xts)
     }

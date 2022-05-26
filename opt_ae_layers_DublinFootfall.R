@@ -13,13 +13,13 @@ library(keras)
 library(ggplot2)
 library(tidyr)
 library(tensorflow)
-source(here::here("R","pcals.R"))
-source(here::here("R","autoencoder.R"))
-source(here::here("R","pca_functions.R"))
-source(here::here("R","autoenc_opt_layers.R"))
-source(here::here("R","pcambtsrR.R"))
-source(here::here("R","lsdAnalysis.R"))
-source(here::here("R","lsdfig.R"))
+source(here::here("pcals.R"))
+source(here::here("autoencoder.R"))
+source(here::here("pca_functions.R"))
+source(here::here("AEoptlayers.R"))
+source(here::here("pcambtsrR.R"))
+source(here::here("lsdAnalysis.R"))
+source(here::here("lsdfig.R"))
 
 
 ## ----load data----------------------------------------------------------------------------------------------------
@@ -35,4 +35,4 @@ dat.or <- dat
 dat <- dat[,!(apply(dat,2,var)==0),drop=F]
 dat <- dat[,seq(1,ncol(dat),by=3)]
 dat %>% gather() %>% head()
-opt.AElay.results <- autoenc_opt_layers(dat, A=4, tr = NULL, kcv = 10,act.fun = "relu", n.epochs = 50)
+opt.AElay.results <- AEoptlayers(dat, A=4, tr = NULL, kcv = 10,act.fun = "relu", n.epochs = 50)

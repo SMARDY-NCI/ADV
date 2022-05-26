@@ -97,7 +97,7 @@ fit_pca <- function(X, k.A, xscale = FALSE){
 vpca_removerows <- function (data, A, ref.P, k_ho=1000,
                              rm_pctges=c(1,5,10,seq(20,80,by=20)),
                              ho.part = NULL){
-  X <- dat
+  X <- data
   nrep <- k_ho
   nlevels <- length(rm_pctges)
   n.results <- nrep*nlevels
@@ -178,7 +178,7 @@ vpca_removerows <- function (data, A, ref.P, k_ho=1000,
 vpca_removecols <- function (data, A, ref.P, k_ho=1000,
                              rm_pctges=c(1,5,10,seq(20,80,by=20)),
                              ho.part = NULL){
-  X <- dat
+  X <- data
   nrep <- k_ho
   nlevels <- length(rm_pctges)
   n.results <- nrep*nlevels
