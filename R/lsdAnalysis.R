@@ -1,4 +1,4 @@
-lsdAnalysis <- function(data.anova, factor1="", factor2=NULL, 
+lsdAnalysis <- function(data.anova, factor1="", factor2=NULL, factor.color = factor2,
                         factorrnd="Repetition", alpha = 0.05, hier=T, 
                         tittext=paste("Experiment", factor1, "(LSD intervals)"),
                         xtext = factor2){
@@ -47,7 +47,7 @@ lsdAnalysis <- function(data.anova, factor1="", factor2=NULL,
     }
     lsd.width <- sqrt(m.lsd*2/length(unique(data.anova$Repetition)))*
       (qt(1-alpha/2,lsd.Analysis[[metric_name]]$df.residual))
-    lsd.plot[[metric_name]] <- lsdfig(data.anova, metric_name, factor.x, 
+    lsd.plot[[metric_name]] <- lsdfig(data.anova, metric_name, factor.x, factor.color,
                                       lsd.width, col=rgb(0,1,0,0.5), 
                                       ytext= metric_name, xtext= factor.x, 
                                       tittext = "")
