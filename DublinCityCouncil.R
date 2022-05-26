@@ -109,7 +109,7 @@ if(file.exists("../ref_models.RData") & file.exists(file="../ref_loadings.RData"
   load(file="../ref_loadings.RData")
 } else {
   model.AE <- fit_autoencoder(dat, 4, "relu")
-  plot(model.AErelu$trainhist)
+  plot(model.AE$trainhist)
   model.PCA <- fit_pca(dat, 4)
   P.ae.ref <- as.matrix(model.AE$model$layers[[2]]$weights[[1]])
   P.pca.ref <- model.PCA$model$rotation
