@@ -29,6 +29,9 @@ summary(dat[,(apply(dat,2,var)==0),drop=F])
 dat.or <- dat
 dat <- dat[,!(apply(dat,2,var)==0),drop=F]
 dat <- dat[,seq(1,ncol(dat),by=3)]
+act.fun <- "relu"
+load("DFref_models.RData")
+load(file="DFref_loadings.RData")
 
 modelA.DF <- keras_model_sequential()
 modelA.DF %>%
@@ -43,8 +46,8 @@ modelA.DF %>%
 	layer_dense(units=ncol(dat), activation = act.fun, input_shape = 16,
 							use_bias = TRUE, name = "output")
 
-load("ref_models.RData")
-load(file="ref_loadings.RData")
+
+
 
 ## ----remrows, results="hide",out.width="50%",fig.asp=0.9----------------------------------------------------------
 pca_remrows <- vpca_removerows(data = dat, 4, ref.P = P.pca.ref, k_ho = 20, 
@@ -53,4 +56,4 @@ autoencoder_remrows <- vautoencoder_removerows(data = dat, 4, ref.P = P.ae.ref,
 																							 model.ae = modelA.DF, k_ho = 20, 
 																							 ho.part = pca_remrows$ho,
 																							 rm_pctges = c(2,5,10,seq(20,80,by=20)))
-save(list = c("pca_remrows", "autoencoder_remrows"),file="RemRows_models.RData")
+save(list = c("pca_remrows", "autoencoder_remrows"),file="DF_RemRows_models.RData")

@@ -30,6 +30,10 @@ dat.or <- dat
 dat <- dat[,!(apply(dat,2,var)==0),drop=F]
 dat <- dat[,seq(1,ncol(dat),by=3)]
 
+act.fun <- "relu"
+load("DFref_models.RData")
+load(file="DFref_loadings.RData")
+
 modelA.DF <- keras_model_sequential()
 modelA.DF %>%
 	layer_dense(units=ncol(dat), activation = act.fun, input_shape = ncol(dat),
@@ -53,5 +57,5 @@ pca_transvarscox <- vpca_transcols(data = dat, 4, ref.P = P.pca.ref,
 autoencoder_transvarscox <- vae_transcols(data = dat, 4, ref.P = P.ae.ref, 
 																					model.ae = modelA.DF, ho.part = pca_transvarscox$ho,
 																					k_ho = 20, rm_pctges = c(5,10,seq(20,80,by=20)))
-save(list = c("pca_transvarscox", "autoencoder_transvarscox"),file="CoxTrans_models.RData")
+save(list = c("pca_transvarscox", "autoencoder_transvarscox"),file="DF_coltrans_models.RData")
 

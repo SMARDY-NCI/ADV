@@ -30,9 +30,9 @@ dat.or <- dat
 dat <- dat[,!(apply(dat,2,var)==0),drop=F]
 dat <- dat[,seq(1,ncol(dat),by=3)]
 
-load("ref_models.RData")
-load(file="ref_loadings.RData")
-
+load("DFref_models.RData")
+load(file="DFref_loadings.RData")
+act.fun <- "relu"
 modelA.DF <- keras_model_sequential()
 modelA.DF %>%
 	layer_dense(units=ncol(dat), activation = act.fun, input_shape = ncol(dat),
@@ -55,4 +55,4 @@ autoencoder_remcells <- vae_removecells(data = dat, 4,
 																				ho.part = pca_remcells$ho,
 																				k_ho = 20,
 																				rm_pctges = c(1,5,10,seq(20,80,by=20)))
-save(list = c("pca_remcells", "autoencoder_remcells"),file="MissingData_models.RData")
+save(list = c("pca_remcells", "autoencoder_remcells"),file="DF_MissingData_models.RData")

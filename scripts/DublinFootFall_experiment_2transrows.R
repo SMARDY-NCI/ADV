@@ -29,8 +29,9 @@ dat.or <- dat
 dat <- dat[,!(apply(dat,2,var)==0),drop=F]
 dat <- dat[,seq(1,ncol(dat),by=3)]
 
-load("ref_models.RData")
-load(file="ref_loadings.RData")
+act.fun <- "relu"
+load("DFref_models.RData")
+load(file="DFref_loadings.RData")
 
 modelA.DF <- keras_model_sequential()
 modelA.DF %>%
@@ -56,4 +57,4 @@ autoencoder_transvars <- vae_rowpctge(data = dat, 4,
 																			ho.part = pca_transvars$ho,
 																			k_ho = 20, 
 																			rm_pctges = c(5,10,seq(20,80,by=20)))
-save(list = c("pca_transvars", "autoencoder_transvars"),file="RowsPctge_models.RData")
+save(list = c("pca_transvars", "autoencoder_transvars"),file="DF_rowstrans_models.RData")
