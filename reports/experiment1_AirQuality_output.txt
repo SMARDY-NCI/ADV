@@ -35,236 +35,28 @@ The following object is masked from ‘package:caret’:
     train
 
 [1] "These variables show null variance. Consider their deletion before the PCA"
-2022-05-27 10:34:07.618974: I tensorflow/core/util/util.cc:159] Experimental oneDNN custom operations are on. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+2022-05-27 12:04:20.260949: I tensorflow/core/util/util.cc:159] Experimental oneDNN custom operations are on. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
 Loaded Tensorflow version 2.8.0
-2022-05-27 10:34:09.786938: W tensorflow/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library 'libcuda.so.1'; dlerror: libcuda.so.1: cannot open shared object file: No such file or directory; LD_LIBRARY_PATH: /usr/lib/R/lib:/usr/lib/x86_64-linux-gnu:/usr/lib/jvm/default-java/lib/server
-2022-05-27 10:34:09.786964: W tensorflow/stream_executor/cuda/cuda_driver.cc:269] failed call to cuInit: UNKNOWN ERROR (303)
-2022-05-27 10:34:09.786987: I tensorflow/stream_executor/cuda/cuda_diagnostics.cc:156] kernel driver does not appear to be running on this host (phi): /proc/driver/nvidia/version does not exist
-2022-05-27 10:34:09.787233: I tensorflow/core/platform/cpu_feature_guard.cc:151] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  AVX2 FMA
+2022-05-27 12:04:22.538743: W tensorflow/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library 'libcuda.so.1'; dlerror: libcuda.so.1: cannot open shared object file: No such file or directory; LD_LIBRARY_PATH: /usr/lib/R/lib:/usr/lib/x86_64-linux-gnu:/usr/lib/jvm/default-java/lib/server
+2022-05-27 12:04:22.538768: W tensorflow/stream_executor/cuda/cuda_driver.cc:269] failed call to cuInit: UNKNOWN ERROR (303)
+2022-05-27 12:04:22.538791: I tensorflow/stream_executor/cuda/cuda_diagnostics.cc:156] kernel driver does not appear to be running on this host (phi): /proc/driver/nvidia/version does not exist
+2022-05-27 12:04:22.539076: I tensorflow/core/platform/cpu_feature_guard.cc:151] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  AVX2 FMA
 To enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.
 [1] "Parameter avge (sd)"
 [1] "Cells removal at 1 %"
 [1] "Parameter avge (sd)"
-Error in is.data.frame(y) : object 'P.pca.ref' not found
-Error in is.data.frame(y) : object 'P.pca.ref' not found
-In addition: Warning message:
-In is.data.frame(y) : restarting interrupted promise evaluation
-Error in is.data.frame(y) : object 'P.pca.ref' not found
-In addition: Warning message:
-In is.data.frame(y) : restarting interrupted promise evaluation
-Error in is.data.frame(y) : object 'P.pca.ref' not found
-In addition: Warning message:
-In is.data.frame(y) : restarting interrupted promise evaluation
-Error in is.data.frame(y) : object 'P.pca.ref' not found
-In addition: Warning message:
-In is.data.frame(y) : restarting interrupted promise evaluation
-Error in is.data.frame(y) : object 'P.pca.ref' not found
-In addition: Warning message:
-In is.data.frame(y) : restarting interrupted promise evaluation
-Error in is.data.frame(y) : object 'P.pca.ref' not found
-In addition: Warning message:
-In is.data.frame(y) : restarting interrupted promise evaluation
-Error in is.data.frame(y) : object 'P.pca.ref' not found
-In addition: Warning message:
-In is.data.frame(y) : restarting interrupted promise evaluation
-Error in is.data.frame(y) : object 'P.pca.ref' not found
-In addition: Warning message:
-In is.data.frame(y) : restarting interrupted promise evaluation
-Error in is.data.frame(y) : object 'P.pca.ref' not found
-In addition: Warning message:
-In is.data.frame(y) : restarting interrupted promise evaluation
 [1] "Cells removal at 5 %"
 [1] "Parameter avge (sd)"
-Error in is.data.frame(y) : object 'P.pca.ref' not found
-In addition: Warning message:
-In is.data.frame(y) : restarting interrupted promise evaluation
-Error in is.data.frame(y) : object 'P.pca.ref' not found
-In addition: Warning message:
-In is.data.frame(y) : restarting interrupted promise evaluation
-Error in is.data.frame(y) : object 'P.pca.ref' not found
-In addition: Warning message:
-In is.data.frame(y) : restarting interrupted promise evaluation
-Error in is.data.frame(y) : object 'P.pca.ref' not found
-In addition: Warning message:
-In is.data.frame(y) : restarting interrupted promise evaluation
-Error in is.data.frame(y) : object 'P.pca.ref' not found
-In addition: Warning message:
-In is.data.frame(y) : restarting interrupted promise evaluation
-Error in is.data.frame(y) : object 'P.pca.ref' not found
-In addition: Warning message:
-In is.data.frame(y) : restarting interrupted promise evaluation
-Error in is.data.frame(y) : object 'P.pca.ref' not found
-In addition: Warning message:
-In is.data.frame(y) : restarting interrupted promise evaluation
-Error in is.data.frame(y) : object 'P.pca.ref' not found
-In addition: Warning message:
-In is.data.frame(y) : restarting interrupted promise evaluation
-Error in is.data.frame(y) : object 'P.pca.ref' not found
-In addition: Warning message:
-In is.data.frame(y) : restarting interrupted promise evaluation
-Error in is.data.frame(y) : object 'P.pca.ref' not found
-In addition: Warning message:
-In is.data.frame(y) : restarting interrupted promise evaluation
 [1] "Cells removal at 10 %"
 [1] "Parameter avge (sd)"
-Error in is.data.frame(y) : object 'P.pca.ref' not found
-In addition: Warning message:
-In is.data.frame(y) : restarting interrupted promise evaluation
-Error in is.data.frame(y) : object 'P.pca.ref' not found
-In addition: Warning message:
-In is.data.frame(y) : restarting interrupted promise evaluation
-Error in is.data.frame(y) : object 'P.pca.ref' not found
-In addition: Warning message:
-In is.data.frame(y) : restarting interrupted promise evaluation
-Error in is.data.frame(y) : object 'P.pca.ref' not found
-In addition: Warning message:
-In is.data.frame(y) : restarting interrupted promise evaluation
-Error in is.data.frame(y) : object 'P.pca.ref' not found
-In addition: Warning message:
-In is.data.frame(y) : restarting interrupted promise evaluation
-Error in is.data.frame(y) : object 'P.pca.ref' not found
-In addition: Warning message:
-In is.data.frame(y) : restarting interrupted promise evaluation
-Error in is.data.frame(y) : object 'P.pca.ref' not found
-In addition: Warning message:
-In is.data.frame(y) : restarting interrupted promise evaluation
-Error in is.data.frame(y) : object 'P.pca.ref' not found
-In addition: Warning message:
-In is.data.frame(y) : restarting interrupted promise evaluation
-Error in is.data.frame(y) : object 'P.pca.ref' not found
-In addition: Warning message:
-In is.data.frame(y) : restarting interrupted promise evaluation
-Error in is.data.frame(y) : object 'P.pca.ref' not found
-In addition: Warning message:
-In is.data.frame(y) : restarting interrupted promise evaluation
 [1] "Cells removal at 20 %"
 [1] "Parameter avge (sd)"
-Error in is.data.frame(y) : object 'P.pca.ref' not found
-In addition: Warning message:
-In is.data.frame(y) : restarting interrupted promise evaluation
-Error in is.data.frame(y) : object 'P.pca.ref' not found
-In addition: Warning message:
-In is.data.frame(y) : restarting interrupted promise evaluation
-Error in is.data.frame(y) : object 'P.pca.ref' not found
-In addition: Warning message:
-In is.data.frame(y) : restarting interrupted promise evaluation
-Error in is.data.frame(y) : object 'P.pca.ref' not found
-In addition: Warning message:
-In is.data.frame(y) : restarting interrupted promise evaluation
-Error in is.data.frame(y) : object 'P.pca.ref' not found
-In addition: Warning message:
-In is.data.frame(y) : restarting interrupted promise evaluation
-Error in is.data.frame(y) : object 'P.pca.ref' not found
-In addition: Warning message:
-In is.data.frame(y) : restarting interrupted promise evaluation
-Error in is.data.frame(y) : object 'P.pca.ref' not found
-In addition: Warning message:
-In is.data.frame(y) : restarting interrupted promise evaluation
-Error in is.data.frame(y) : object 'P.pca.ref' not found
-In addition: Warning message:
-In is.data.frame(y) : restarting interrupted promise evaluation
-Error in is.data.frame(y) : object 'P.pca.ref' not found
-In addition: Warning message:
-In is.data.frame(y) : restarting interrupted promise evaluation
-Error in is.data.frame(y) : object 'P.pca.ref' not found
-In addition: Warning message:
-In is.data.frame(y) : restarting interrupted promise evaluation
 [1] "Cells removal at 40 %"
 [1] "Parameter avge (sd)"
-Error in is.data.frame(y) : object 'P.pca.ref' not found
-In addition: Warning message:
-In is.data.frame(y) : restarting interrupted promise evaluation
-Error in is.data.frame(y) : object 'P.pca.ref' not found
-In addition: Warning message:
-In is.data.frame(y) : restarting interrupted promise evaluation
-Error in is.data.frame(y) : object 'P.pca.ref' not found
-In addition: Warning message:
-In is.data.frame(y) : restarting interrupted promise evaluation
-Error in is.data.frame(y) : object 'P.pca.ref' not found
-In addition: Warning message:
-In is.data.frame(y) : restarting interrupted promise evaluation
-Error in is.data.frame(y) : object 'P.pca.ref' not found
-In addition: Warning message:
-In is.data.frame(y) : restarting interrupted promise evaluation
-Error in is.data.frame(y) : object 'P.pca.ref' not found
-In addition: Warning message:
-In is.data.frame(y) : restarting interrupted promise evaluation
-Error in is.data.frame(y) : object 'P.pca.ref' not found
-In addition: Warning message:
-In is.data.frame(y) : restarting interrupted promise evaluation
-Error in is.data.frame(y) : object 'P.pca.ref' not found
-In addition: Warning message:
-In is.data.frame(y) : restarting interrupted promise evaluation
-Error in is.data.frame(y) : object 'P.pca.ref' not found
-In addition: Warning message:
-In is.data.frame(y) : restarting interrupted promise evaluation
-Error in is.data.frame(y) : object 'P.pca.ref' not found
-In addition: Warning message:
-In is.data.frame(y) : restarting interrupted promise evaluation
 [1] "Cells removal at 60 %"
 [1] "Parameter avge (sd)"
-Error in is.data.frame(y) : object 'P.pca.ref' not found
-In addition: Warning message:
-In is.data.frame(y) : restarting interrupted promise evaluation
-Error in is.data.frame(y) : object 'P.pca.ref' not found
-In addition: Warning message:
-In is.data.frame(y) : restarting interrupted promise evaluation
-Error in is.data.frame(y) : object 'P.pca.ref' not found
-In addition: Warning message:
-In is.data.frame(y) : restarting interrupted promise evaluation
-Error in is.data.frame(y) : object 'P.pca.ref' not found
-In addition: Warning message:
-In is.data.frame(y) : restarting interrupted promise evaluation
-Error in is.data.frame(y) : object 'P.pca.ref' not found
-In addition: Warning message:
-In is.data.frame(y) : restarting interrupted promise evaluation
-Error in is.data.frame(y) : object 'P.pca.ref' not found
-In addition: Warning message:
-In is.data.frame(y) : restarting interrupted promise evaluation
-Error in is.data.frame(y) : object 'P.pca.ref' not found
-In addition: Warning message:
-In is.data.frame(y) : restarting interrupted promise evaluation
-Error in is.data.frame(y) : object 'P.pca.ref' not found
-In addition: Warning message:
-In is.data.frame(y) : restarting interrupted promise evaluation
-Error in is.data.frame(y) : object 'P.pca.ref' not found
-In addition: Warning message:
-In is.data.frame(y) : restarting interrupted promise evaluation
-Error in is.data.frame(y) : object 'P.pca.ref' not found
-In addition: Warning message:
-In is.data.frame(y) : restarting interrupted promise evaluation
 [1] "Cells removal at 80 %"
 [1] "Parameter avge (sd)"
-Error in is.data.frame(y) : object 'P.pca.ref' not found
-In addition: Warning message:
-In is.data.frame(y) : restarting interrupted promise evaluation
-Error in is.data.frame(y) : object 'P.pca.ref' not found
-In addition: Warning message:
-In is.data.frame(y) : restarting interrupted promise evaluation
-Error in is.data.frame(y) : object 'P.pca.ref' not found
-In addition: Warning message:
-In is.data.frame(y) : restarting interrupted promise evaluation
-Error in is.data.frame(y) : object 'P.pca.ref' not found
-In addition: Warning message:
-In is.data.frame(y) : restarting interrupted promise evaluation
-Error in is.data.frame(y) : object 'P.pca.ref' not found
-In addition: Warning message:
-In is.data.frame(y) : restarting interrupted promise evaluation
-Error in is.data.frame(y) : object 'P.pca.ref' not found
-In addition: Warning message:
-In is.data.frame(y) : restarting interrupted promise evaluation
-Error in is.data.frame(y) : object 'P.pca.ref' not found
-In addition: Warning message:
-In is.data.frame(y) : restarting interrupted promise evaluation
-Error in is.data.frame(y) : object 'P.pca.ref' not found
-In addition: Warning message:
-In is.data.frame(y) : restarting interrupted promise evaluation
-Error in is.data.frame(y) : object 'P.pca.ref' not found
-In addition: Warning message:
-In is.data.frame(y) : restarting interrupted promise evaluation
-Error in is.data.frame(y) : object 'P.pca.ref' not found
-In addition: Warning message:
-In is.data.frame(y) : restarting interrupted promise evaluation
 [1] "Parameter avge (sd)"
 [1] "Cells removal at 1 %"
 [1] "Parameter avge (sd)"
@@ -283,7 +75,243 @@ Total params: 357
 Trainable params: 357
 Non-trainable params: 0
 ________________________________________________________________________________
- 1/26 [>.............................] - ETA: 0s - loss: 186434.062510/26 [==========>...................] - ETA: 0s - loss: 204499.718819/26 [====================>.........] - ETA: 0s - loss: 196189.703126/26 [==============================] - 0s 6ms/step - loss: 207261.3125
-Error in is.data.frame(y) : object 'P.ae.ref' not found
-Calls: source ... eval -> eval -> vae_removecells -> cor -> is.data.frame
-Execution halted
+ 1/26 [>.............................] - ETA: 0s - loss: 123427.562510/26 [==========>...................] - ETA: 0s - loss: 125038.250019/26 [====================>.........] - ETA: 0s - loss: 116047.226626/26 [==============================] - 0s 6ms/step - loss: 118989.8594
+ 1/26 [>.............................] - ETA: 0s - loss: nan10/26 [==========>...................] - ETA: 0s - loss: nan19/26 [====================>.........] - ETA: 0s - loss: nan26/26 [==============================] - 0s 6ms/step - loss: nan
+Model: "sequential"
+________________________________________________________________________________
+ Layer (type)                       Output Shape                    Param #     
+================================================================================
+ input (Dense)                      (None, 13)                      182         
+                                                                                
+ latent (Dense)                     (None, 6)                       84          
+                                                                                
+ output (Dense)                     (None, 13)                      91          
+                                                                                
+================================================================================
+Total params: 357
+Trainable params: 357
+Non-trainable params: 0
+________________________________________________________________________________
+ 1/26 [>.............................] - ETA: 0s - loss: 123172.062510/26 [==========>...................] - ETA: 0s - loss: 124491.375019/26 [====================>.........] - ETA: 0s - loss: 115550.976626/26 [==============================] - 0s 6ms/step - loss: 118483.8594
+ 1/26 [>.............................] - ETA: 0s - loss: nan 9/26 [=========>....................] - ETA: 0s - loss: nan18/26 [===================>..........] - ETA: 0s - loss: nan26/26 [==============================] - 0s 6ms/step - loss: nan
+Model: "sequential"
+________________________________________________________________________________
+ Layer (type)                       Output Shape                    Param #     
+================================================================================
+ input (Dense)                      (None, 13)                      182         
+                                                                                
+ latent (Dense)                     (None, 6)                       84          
+                                                                                
+ output (Dense)                     (None, 13)                      91          
+                                                                                
+================================================================================
+Total params: 357
+Trainable params: 357
+Non-trainable params: 0
+________________________________________________________________________________
+ 1/26 [>.............................] - ETA: 0s - loss: 123112.835910/26 [==========>...................] - ETA: 0s - loss: 124494.328119/26 [====================>.........] - ETA: 0s - loss: 115554.726626/26 [==============================] - 0s 6ms/step - loss: 118584.0703
+ 1/26 [>.............................] - ETA: 0s - loss: nan10/26 [==========>...................] - ETA: 0s - loss: nan19/26 [====================>.........] - ETA: 0s - loss: nan26/26 [==============================] - 0s 6ms/step - loss: nan
+Model: "sequential"
+________________________________________________________________________________
+ Layer (type)                       Output Shape                    Param #     
+================================================================================
+ input (Dense)                      (None, 13)                      182         
+                                                                                
+ latent (Dense)                     (None, 6)                       84          
+                                                                                
+ output (Dense)                     (None, 13)                      91          
+                                                                                
+================================================================================
+Total params: 357
+Trainable params: 357
+Non-trainable params: 0
+________________________________________________________________________________
+ 1/26 [>.............................] - ETA: 0s - loss: 123140.421910/26 [==========>...................] - ETA: 0s - loss: 124517.648419/26 [====================>.........] - ETA: 0s - loss: 115545.976626/26 [==============================] - 0s 6ms/step - loss: 118517.4062
+ 1/26 [>.............................] - ETA: 0s - loss: nan 9/26 [=========>....................] - ETA: 0s - loss: nan18/26 [===================>..........] - ETA: 0s - loss: nan26/26 [==============================] - 0s 6ms/step - loss: nan
+Model: "sequential"
+________________________________________________________________________________
+ Layer (type)                       Output Shape                    Param #     
+================================================================================
+ input (Dense)                      (None, 13)                      182         
+                                                                                
+ latent (Dense)                     (None, 6)                       84          
+                                                                                
+ output (Dense)                     (None, 13)                      91          
+                                                                                
+================================================================================
+Total params: 357
+Trainable params: 357
+Non-trainable params: 0
+________________________________________________________________________________
+ 1/26 [>.............................] - ETA: 0s - loss: 123182.218810/26 [==========>...................] - ETA: 0s - loss: 124496.335919/26 [====================>.........] - ETA: 0s - loss: 115567.312526/26 [==============================] - 0s 6ms/step - loss: 118499.2031
+ 1/26 [>.............................] - ETA: 0s - loss: nan10/26 [==========>...................] - ETA: 0s - loss: nan19/26 [====================>.........] - ETA: 0s - loss: nan26/26 [==============================] - 0s 6ms/step - loss: nan
+Model: "sequential"
+________________________________________________________________________________
+ Layer (type)                       Output Shape                    Param #     
+================================================================================
+ input (Dense)                      (None, 13)                      182         
+                                                                                
+ latent (Dense)                     (None, 6)                       84          
+                                                                                
+ output (Dense)                     (None, 13)                      91          
+                                                                                
+================================================================================
+Total params: 357
+Trainable params: 357
+Non-trainable params: 0
+________________________________________________________________________________
+ 1/26 [>.............................] - ETA: 0s - loss: 123162.0938 9/26 [=========>....................] - ETA: 0s - loss: 129329.054717/26 [==================>...........] - ETA: 0s - loss: 119324.523426/26 [==============================] - ETA: 0s - loss: 118494.296926/26 [==============================] - 0s 6ms/step - loss: 118494.2969
+ 1/26 [>.............................] - ETA: 0s - loss: nan10/26 [==========>...................] - ETA: 0s - loss: nan19/26 [====================>.........] - ETA: 0s - loss: nan26/26 [==============================] - 0s 6ms/step - loss: nan
+Model: "sequential"
+________________________________________________________________________________
+ Layer (type)                       Output Shape                    Param #     
+================================================================================
+ input (Dense)                      (None, 13)                      182         
+                                                                                
+ latent (Dense)                     (None, 6)                       84          
+                                                                                
+ output (Dense)                     (None, 13)                      91          
+                                                                                
+================================================================================
+Total params: 357
+Trainable params: 357
+Non-trainable params: 0
+________________________________________________________________________________
+ 1/26 [>.............................] - ETA: 0s - loss: 123226.140610/26 [==========>...................] - ETA: 0s - loss: 124531.085919/26 [====================>.........] - ETA: 0s - loss: 115550.312526/26 [==============================] - 0s 6ms/step - loss: 118484.8984
+ 1/26 [>.............................] - ETA: 0s - loss: nan10/26 [==========>...................] - ETA: 0s - loss: nan19/26 [====================>.........] - ETA: 0s - loss: nan26/26 [==============================] - 0s 6ms/step - loss: nan
+Model: "sequential"
+________________________________________________________________________________
+ Layer (type)                       Output Shape                    Param #     
+================================================================================
+ input (Dense)                      (None, 13)                      182         
+                                                                                
+ latent (Dense)                     (None, 6)                       84          
+                                                                                
+ output (Dense)                     (None, 13)                      91          
+                                                                                
+================================================================================
+Total params: 357
+Trainable params: 357
+Non-trainable params: 0
+________________________________________________________________________________
+ 1/26 [>.............................] - ETA: 0s - loss: 123182.039110/26 [==========>...................] - ETA: 0s - loss: 124573.875019/26 [====================>.........] - ETA: 0s - loss: 115558.460926/26 [==============================] - 0s 6ms/step - loss: 118527.4844
+ 1/26 [>.............................] - ETA: 0s - loss: nan10/26 [==========>...................] - ETA: 0s - loss: nan19/26 [====================>.........] - ETA: 0s - loss: nan26/26 [==============================] - 0s 6ms/step - loss: nan
+Model: "sequential"
+________________________________________________________________________________
+ Layer (type)                       Output Shape                    Param #     
+================================================================================
+ input (Dense)                      (None, 13)                      182         
+                                                                                
+ latent (Dense)                     (None, 6)                       84          
+                                                                                
+ output (Dense)                     (None, 13)                      91          
+                                                                                
+================================================================================
+Total params: 357
+Trainable params: 357
+Non-trainable params: 0
+________________________________________________________________________________
+ 1/26 [>.............................] - ETA: 0s - loss: 123163.117210/26 [==========>...................] - ETA: 0s - loss: 124418.828119/26 [====================>.........] - ETA: 0s - loss: 115490.882826/26 [==============================] - 0s 6ms/step - loss: 118429.9766
+ 1/26 [>.............................] - ETA: 0s - loss: nan10/26 [==========>...................] - ETA: 0s - loss: nan19/26 [====================>.........] - ETA: 0s - loss: nan26/26 [==============================] - 0s 6ms/step - loss: nan
+Model: "sequential"
+________________________________________________________________________________
+ Layer (type)                       Output Shape                    Param #     
+================================================================================
+ input (Dense)                      (None, 13)                      182         
+                                                                                
+ latent (Dense)                     (None, 6)                       84          
+                                                                                
+ output (Dense)                     (None, 13)                      91          
+                                                                                
+================================================================================
+Total params: 357
+Trainable params: 357
+Non-trainable params: 0
+________________________________________________________________________________
+ 1/26 [>.............................] - ETA: 0s - loss: 123190.109410/26 [==========>...................] - ETA: 0s - loss: 124687.984419/26 [====================>.........] - ETA: 0s - loss: 115598.656226/26 [==============================] - 0s 6ms/step - loss: 118566.9766
+ 1/26 [>.............................] - ETA: 0s - loss: nan 9/26 [=========>....................] - ETA: 0s - loss: nan17/26 [==================>...........] - ETA: 0s - loss: nan25/26 [===========================>..] - ETA: 0s - loss: nan26/26 [==============================] - 0s 6ms/step - loss: nan
+[1] "Cells removal at 5 %"
+[1] "Parameter avge (sd)"
+Model: "sequential"
+________________________________________________________________________________
+ Layer (type)                       Output Shape                    Param #     
+================================================================================
+ input (Dense)                      (None, 13)                      182         
+                                                                                
+ latent (Dense)                     (None, 6)                       84          
+                                                                                
+ output (Dense)                     (None, 13)                      91          
+                                                                                
+================================================================================
+Total params: 357
+Trainable params: 357
+Non-trainable params: 0
+________________________________________________________________________________
+ 1/26 [>.............................] - ETA: 0s - loss: 123150.906210/26 [==========>...................] - ETA: 0s - loss: 124444.062519/26 [====================>.........] - ETA: 0s - loss: 115367.617226/26 [==============================] - 0s 6ms/step - loss: 118386.1094
+ 1/26 [>.............................] - ETA: 0s - loss: nan10/26 [==========>...................] - ETA: 0s - loss: nan19/26 [====================>.........] - ETA: 0s - loss: nan26/26 [==============================] - 0s 6ms/step - loss: nan
+Model: "sequential"
+________________________________________________________________________________
+ Layer (type)                       Output Shape                    Param #     
+================================================================================
+ input (Dense)                      (None, 13)                      182         
+                                                                                
+ latent (Dense)                     (None, 6)                       84          
+                                                                                
+ output (Dense)                     (None, 13)                      91          
+                                                                                
+================================================================================
+Total params: 357
+Trainable params: 357
+Non-trainable params: 0
+________________________________________________________________________________
+ 1/26 [>.............................] - ETA: 0s - loss: 122412.406210/26 [==========>...................] - ETA: 0s - loss: 124599.421919/26 [====================>.........] - ETA: 0s - loss: 115520.460926/26 [==============================] - 0s 6ms/step - loss: 118532.7188
+ 1/26 [>.............................] - ETA: 0s - loss: nan10/26 [==========>...................] - ETA: 0s - loss: nan19/26 [====================>.........] - ETA: 0s - loss: nan26/26 [==============================] - 0s 6ms/step - loss: nan
+Model: "sequential"
+________________________________________________________________________________
+ Layer (type)                       Output Shape                    Param #     
+================================================================================
+ input (Dense)                      (None, 13)                      182         
+                                                                                
+ latent (Dense)                     (None, 6)                       84          
+                                                                                
+ output (Dense)                     (None, 13)                      91          
+                                                                                
+================================================================================
+Total params: 357
+Trainable params: 357
+Non-trainable params: 0
+________________________________________________________________________________
+ 1/26 [>.............................] - ETA: 0s - loss: 123220.437510/26 [==========>...................] - ETA: 0s - loss: 124485.148419/26 [====================>.........] - ETA: 0s - loss: 115386.937526/26 [==============================] - 0s 6ms/step - loss: 118416.6406
+ 1/26 [>.............................] - ETA: 0s - loss: nan 9/26 [=========>....................] - ETA: 0s - loss: nan17/26 [==================>...........] - ETA: 0s - loss: nan25/26 [===========================>..] - ETA: 0s - loss: nan26/26 [==============================] - 0s 7ms/step - loss: nan
+Model: "sequential"
+________________________________________________________________________________
+ Layer (type)                       Output Shape                    Param #     
+================================================================================
+ input (Dense)                      (None, 13)                      182         
+                                                                                
+ latent (Dense)                     (None, 6)                       84          
+                                                                                
+ output (Dense)                     (None, 13)                      91          
+                                                                                
+================================================================================
+Total params: 357
+Trainable params: 357
+Non-trainable params: 0
+________________________________________________________________________________
+ 1/26 [>.............................] - ETA: 0s - loss: 124148.945310/26 [==========>...................] - ETA: 0s - loss: 124795.601619/26 [====================>.........] - ETA: 0s - loss: 115514.000026/26 [==============================] - 0s 6ms/step - loss: 118437.5547
+ 1/26 [>.............................] - ETA: 0s - loss: nan10/26 [==========>...................] - ETA: 0s - loss: nan20/26 [======================>.......] - ETA: 0s - loss: nan26/26 [==============================] - 0s 6ms/step - loss: nan
+Model: "sequential"
+________________________________________________________________________________
+ Layer (type)                       Output Shape                    Param #     
+================================================================================
+ input (Dense)                      (None, 13)                      182         
+                                                                                
+ latent (Dense)                     (None, 6)                       84          
+                                                                                
+ output (Dense)                     (None, 13)                      91          
+                                                                                
+================================================================================
+Total params: 357
+Trainable params: 357
+Non-trainable params: 0
+________________________________________________________________________________
