@@ -200,8 +200,8 @@ plot.results <- lsd.results$l.plots[grepl("p*corr", names(lsd.results$l.plots))]
 mdi.plots <- ggpubr::ggarrange(plotlist = plot.results, ncol = 2, nrow = 2,
                   font.label = list(size = 3, color = "black", face = "bold", family = NULL),
                   common.legend = TRUE)
-# ggpubr::annotate_figure(mdi.plots[[2]], top = ggpubr::text_grob("Experiment MD (LSD interval)",
-#                                        color = "black", face = "bold", size = 12))
+DF.exp1.plots <- ggpubr::annotate_figure(mdi.plots, top = ggpubr::text_grob("Case I: Missing Data Imputation - Dublin Footfall", color = "black", face = "bold", size = 12))
+DF.exp1.plots
 ```
 
 ## Versioning scenario 2: Transformation of variables
@@ -215,10 +215,12 @@ autoencoder_transvars$para_test$Method <- "AutoEncoder"
 exp2.data <- rbind(pca_transvars$para_test, autoencoder_transvars$para_test)
 exp2.lsd.results <- lsdAnalysis(exp2.data, factor1 = "Method", factor.color = "Method", 
 																hier = F)
-exp2.plots <- ggpubr::ggarrange(plotlist = exp2.lsd.results$l.plots, ncol = 2, nrow = 4,
+plot.results.exp2 <- exp2.lsd.results$l.plots[grepl("p*corr", names(exp2.lsd.results$l.plots))]
+exp2.plots <- ggpubr::ggarrange(plotlist = plot.results.exp2, ncol = 2, nrow = 2,
                   font.label = list(size = 3, color = "black", face = "bold", family = NULL),
                   common.legend = TRUE)
-ggpubr::annotate_figure(exp2.plots, top = ggpubr::text_grob("Experiment transformation to pctage (LSD interval)", color = "black", face = "bold", size = 12))
+DF.exp2.plots <- ggpubr::annotate_figure(exp2.plots, top = ggpubr::text_grob("Case II: Rowwise transformation - Dublin Footfall", color = "black", face = "bold", size = 12))
+DF.exp2.plots
 ```
 
 ### Columnwise transformation
@@ -228,12 +230,14 @@ load("../CoxTrans_models.RData")
 pca_transvarscox$para_test$Method <- "PCA"
 autoencoder_transvarscox$para_test$Method <- "AutoEncoder"
 exp3.data <- rbind(pca_transvarscox$para_test[,-c(1,2)], autoencoder_transvarscox$para_test)
-exp3.lsd.results <- lsdAnalysis(exp3.data, factor1 = "Method", factor2 = "Coltrans",factor.color = "Method", graph.out = "curve", hier = T)
-exp3.plots <- ggpubr::ggarrange(plotlist = exp3.lsd.results$l.plots, ncol = 2, nrow = 4,
+exp3.lsd.results <- lsdAnalysis(exp3.data, factor1 = "Method", factor2 = "Coltrans", factor.color = "Method", graph.out = "curve")
+plot.results.exp3 <- exp3.lsd.results$l.plots[grepl("p*corr", names(exp3.lsd.results$l.plots))]
+exp3.plots <- ggpubr::ggarrange(plotlist = plot.results.exp3$l.plots, ncol = 2, nrow = 2,
                   font.label = list(size = 3, color = "black", face = "bold", family = NULL),
                   common.legend = TRUE)
-ggpubr::annotate_figure(exp3.mdi.plots[[2]], top = ggpubr::text_grob("Experiment BoxCox Transform. (LSD interval)",
+DF.exp3.plots <- ggpubr::annotate_figure(exp3.mdi.plots, top = ggpubr::text_grob("Case III: Column-wise transformation - Dublin Footfall",
                                        color = "black", face = "bold", size = 12))
+DF.exp3.plots
 ```
 
 ## Versioning scenario 3: Change in the number of rows
@@ -243,11 +247,13 @@ load("../RemRows_models.RData")
 pca_remrows$para_test$Method <- "PCA"
 autoencoder_remrows$para_test$Method <- "AutoEncoder"
 exp4.data <- rbind(pca_remrows$para_test[,-c(1,2)], autoencoder_remrows$para_test)
-exp4.lsd.results <- lsdAnalysis(exp4.data, "Method", "RWoutpctge")
-exp4.mdi.plots <- ggpubr::ggarrange(plotlist = exp4.lsd.results$l.plots, ncol = 2, nrow = 4,
-                  font.label = list(size = 3, color = "black", face = "bold", family = NULL),
-                  common.legend = TRUE)
-ggpubr::annotate_figure(exp4.mdi.plots[[2]], top = ggpubr::text_grob("Experiment Rows reduction (LSD interval)",
+exp4.lsd.results <- lsdAnalysis(exp4.data, factor1 = "Method", factor2 = "RWoutpctge", 
+													 factor.color = "Method", graph.out = "curve", hier = T)
+plot.results.exp4 <- exp4.lsd.results$l.plots[grepl("p*corr", names(exp4.lsd.results$l.plots))]
+exp4.mdi.plots <- ggpubr::ggarrange(plotlist = plot.results.exp4$l.plots, ncol = 2, nrow = 2,
+                  font.label = list(size = 3, color = "black", face = "bold", family = NULL))
+                  # common.legend = TRUE)
+DF.exp4.plots <- ggpubr::annotate_figure(exp4.mdi.plots, top = ggpubr::text_grob("Case IV: Removal of rows - Dublin Footfall (LSD intervals)",
                                        color = "black", face = "bold", size = 12))
 ```
 

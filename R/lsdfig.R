@@ -10,13 +10,17 @@ lsdfig <- function(data,vy.name,vx.name,vg.name,yw,col=rgb(0,1,0,0.5),
     df.lines$yup <- df.lines[,vy.name] + yw
     df.lines$ylo <- df.lines[,vy.name] - yw
     
-    lsd_plot <- ggplot(df.lines, aes(x = df.lines[,vx.name], group = vg.name)) +
-      geom_errorbar(aes(ymin=ylo, ymax=yup, color=vg.name), width=.1) +
+    lsd_plot <- ggplot(df.lines, aes(x = df.lines[,vx.name], 
+    																 group = df.lines[,vg.name],
+    																 color = df.lines[,vg.name])) +
+      geom_errorbar(aes(ymin=ylo, ymax=yup), width=0.3, size = 1) +
+    	guides(color = FALSE, linetype = FALSE, fill = FALSE) +
       theme_minimal(base_size = 12) + ylab(ytext) + 
       scale_fill_manual(g.name,values=g.levels) +
       xlab(xtext) + ggtitle(tittext)
     if (grepl("p*.corr",vy.name)){
-    	lsd_plot <- lsd_plot + expand_limits(y = c(-1, 1))
+    	lsd_plot <- lsd_plot + expand_limits(y = c(-1, 1)) + 
+    		ylab(bquote("p"[.(as.numeric(gsub("\\D", "", vy.name)))]~"corr"))
     } 
   } else if(graph.out == "curve") {
     df.lines <- aggregate(data[,vy.name] ~ Method + data[,vx.name], data=data, mean)
@@ -30,10 +34,11 @@ lsdfig <- function(data,vy.name,vx.name,vg.name,yw,col=rgb(0,1,0,0.5),
     																			group = df.lines[,vg.name],
     																			fill = df.lines[,vg.name], 
     																			color = df.lines[,vg.name])) + 
-    	geom_line() + 
+    	geom_line(aes(linetype = df.lines[,vg.name]), width = 2) + 
     	geom_ribbon(aes(ymin=ylo, ymax=yup),alpha=0.5, linetype=0) + 
       theme_minimal(base_size = 12) + ylab(ytext) + 
-      labs(fill = "Method") +
+      labs(fill = "Method", linetype = "Method", color = "Method") +
+    	# guides(color = FALSE, linetype = FALSE) + 
       xlab(xtext) + ggtitle(tittext)
    if (grepl("p*.corr",vy.name)){
    	lsd_plot <- lsd_plot + expand_limits(y = c(-1, 1)) + 
