@@ -50,7 +50,7 @@ modelA.DF %>%
 pca_remcells <- vpca_removecells(data = dat, 4, ref.P = P.pca.ref, 
 																 k_ho = 20, rm_pctges = c(1,5,10,seq(20,80,by=20)))
 
-autoencoder_remcells <- vae_removecells(data = dat, 4,
+autoencoder_remcells <- vae_removecells(data = dat, 4,n.latent.layer = 3,
 																				ref.P = P.ae.ref, model.ae = modelA.DF,
 																				ho.part = pca_remcells$ho,
 																				k_ho = 20,

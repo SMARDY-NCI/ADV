@@ -45,7 +45,7 @@ modelA.AQ %>%
 pca_remcells <- vpca_removecells(data = dat, 6, ref.P = P.pca.ref, 
                                  k_ho = 10, rm_pctges = c(1,5,10,seq(20,80,by=20)))
 
-autoencoder_remcells <- vae_removecells(data = dat, 6,
+autoencoder_remcells <- vae_removecells(data = dat, 6,n.latent.layer = 2,
                                         ref.P = P.ae.ref, model.ae = modelA.AQ,
                                         ho.part = pca_remcells$ho,
                                         k_ho = 10,

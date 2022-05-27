@@ -47,6 +47,6 @@ pca_transvars <- vpca_rowpctge(data = dat, 6, ref.P = P.pca.ref,
 
 autoencoder_transvars <- vae_rowpctge(data = dat, 6, ref.P = P.ae.ref,
 																			model.ae = modelA.AQ, ho.part = pca_transvars$ho,
-                                      k_ho = 10, 
+                                      k_ho = 10, n.latent.layer = 2,
                                       rm_pctges = c(5,10,seq(20,80,by=20)))
 save(list = c("pca_transvars", "autoencoder_transvars"),file="AQ_RowsPctge_models.RData")

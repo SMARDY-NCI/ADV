@@ -45,6 +45,7 @@ load(file="AQref_loadings.RData")
 pca_remrows <- vpca_removerows(data = dat, 6, ref.P = P.pca.ref, k_ho = 20, 
                                rm_pctges = c(2,5,10,seq(20,80,by=20)))
 autoencoder_remrows <- vautoencoder_removerows(data = dat, 6, ref.P = P.ae.ref,k_ho = 20, 
-																							 model.ae = modelA.AQ, ho.part = pca_remrows$ho,
+																							 model.ae = modelA.AQ, n.latent.layer = 2,
+																							 ho.part = pca_remrows$ho,
                                                rm_pctges = c(2,5,10,seq(20,80,by=20)))
 save(list = c("pca_remrows", "autoencoder_remrows"),file="AQ_RemRows_models.RData")
