@@ -35,12 +35,12 @@ The following object is masked from ‘package:caret’:
     train
 
 [1] "These variables show null variance. Consider their deletion before the PCA"
-2022-05-27 10:19:25.757305: I tensorflow/core/util/util.cc:159] Experimental oneDNN custom operations are on. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+2022-05-27 10:34:07.618974: I tensorflow/core/util/util.cc:159] Experimental oneDNN custom operations are on. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
 Loaded Tensorflow version 2.8.0
-2022-05-27 10:19:27.890092: W tensorflow/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library 'libcuda.so.1'; dlerror: libcuda.so.1: cannot open shared object file: No such file or directory; LD_LIBRARY_PATH: /usr/lib/R/lib:/usr/lib/x86_64-linux-gnu:/usr/lib/jvm/default-java/lib/server
-2022-05-27 10:19:27.890121: W tensorflow/stream_executor/cuda/cuda_driver.cc:269] failed call to cuInit: UNKNOWN ERROR (303)
-2022-05-27 10:19:27.890145: I tensorflow/stream_executor/cuda/cuda_diagnostics.cc:156] kernel driver does not appear to be running on this host (phi): /proc/driver/nvidia/version does not exist
-2022-05-27 10:19:27.890393: I tensorflow/core/platform/cpu_feature_guard.cc:151] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  AVX2 FMA
+2022-05-27 10:34:09.786938: W tensorflow/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library 'libcuda.so.1'; dlerror: libcuda.so.1: cannot open shared object file: No such file or directory; LD_LIBRARY_PATH: /usr/lib/R/lib:/usr/lib/x86_64-linux-gnu:/usr/lib/jvm/default-java/lib/server
+2022-05-27 10:34:09.786964: W tensorflow/stream_executor/cuda/cuda_driver.cc:269] failed call to cuInit: UNKNOWN ERROR (303)
+2022-05-27 10:34:09.786987: I tensorflow/stream_executor/cuda/cuda_diagnostics.cc:156] kernel driver does not appear to be running on this host (phi): /proc/driver/nvidia/version does not exist
+2022-05-27 10:34:09.787233: I tensorflow/core/platform/cpu_feature_guard.cc:151] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  AVX2 FMA
 To enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.
 [1] "Parameter avge (sd)"
 [1] "Cells removal at 1 %"
@@ -283,7 +283,7 @@ Total params: 357
 Trainable params: 357
 Non-trainable params: 0
 ________________________________________________________________________________
- 1/26 [>.............................] - ETA: 0s - loss: 138500.593810/26 [==========>...................] - ETA: 0s - loss: 183018.546920/26 [======================>.......] - ETA: 0s - loss: 173429.593826/26 [==============================] - 0s 6ms/step - loss: 182363.3125
+ 1/26 [>.............................] - ETA: 0s - loss: 186434.062510/26 [==========>...................] - ETA: 0s - loss: 204499.718819/26 [====================>.........] - ETA: 0s - loss: 196189.703126/26 [==============================] - 0s 6ms/step - loss: 207261.3125
 Error in is.data.frame(y) : object 'P.ae.ref' not found
 Calls: source ... eval -> eval -> vae_removecells -> cor -> is.data.frame
 Execution halted
