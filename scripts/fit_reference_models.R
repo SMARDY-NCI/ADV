@@ -35,15 +35,15 @@ dat <- dat[,seq(1,ncol(dat),by=3)]
 
 modelA.DF <- keras_model_sequential()
 modelA.DF %>%
-  layer_dense(units=ncol(dat), activation = act.fun, input_shape = ncol(dat),
+  layer_dense(units=ncol(dat), activation = "relu", input_shape = ncol(dat),
               use_bias = TRUE, name = "input") %>%
-  layer_dense(units=16, activation = act.fun, input_shape = ncol(dat),
+  layer_dense(units=16, activation = "relu", input_shape = ncol(dat),
               use_bias = TRUE, name = paste0("hidden_in_1")) %>%
-  layer_dense(units= 4, activation = act.fun, input_shape = 16,
+  layer_dense(units= 4, activation = "relu", input_shape = 16,
               use_bias = TRUE, name = "latent") %>%
-  layer_dense(units=16, activation = act.fun, input_shape = 4,
+  layer_dense(units=16, activation = "relu", input_shape = 4,
               use_bias = TRUE, name = paste0("hidded_out_1")) %>%
-  layer_dense(units=ncol(dat), activation = act.fun, input_shape = 16,
+  layer_dense(units=ncol(dat), activation = "relu", input_shape = 16,
               use_bias = TRUE, name = "output")
 
 model.AE <- fit_autoencoder(dat, 4, modelA.DF, "relu")
@@ -57,5 +57,5 @@ P.ae.ref.all$hidden_decoding_layer <- as.matrix(model.AE$model$layers[[4]]$weigh
 P.ae.ref.all$output_layer <- as.matrix(model.AE$model$layers[[5]]$weights[[1]])
 P.ae.ref <- P.ae.ref.all$latent_layer
 P.pca.ref <- model.PCA$model$rotation
-save(list = c("P.ae.ref", "P.pca.ref", "P.ae.ref.all"),file="ref_loadings.RData")
-save(list = c("model.AE", "model.PCA"),file="ref_models.RData")
+save(list = c("P.ae.ref", "P.pca.ref", "P.ae.ref.all"),file="DFref_loadings.RData")
+save(list = c("model.AE", "model.PCA"),file="DFref_models.RData")
