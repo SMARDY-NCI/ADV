@@ -34,10 +34,256 @@ The following object is masked from ‘package:caret’:
 
     train
 
-Error in file(filename, "r", encoding = encoding) : 
-  cannot open the connection
-Calls: source -> withVisible -> eval -> eval -> source -> file
+[1] "These variables show null variance. Consider their deletion before the PCA"
+2022-05-27 10:19:25.757305: I tensorflow/core/util/util.cc:159] Experimental oneDNN custom operations are on. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+Loaded Tensorflow version 2.8.0
+2022-05-27 10:19:27.890092: W tensorflow/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library 'libcuda.so.1'; dlerror: libcuda.so.1: cannot open shared object file: No such file or directory; LD_LIBRARY_PATH: /usr/lib/R/lib:/usr/lib/x86_64-linux-gnu:/usr/lib/jvm/default-java/lib/server
+2022-05-27 10:19:27.890121: W tensorflow/stream_executor/cuda/cuda_driver.cc:269] failed call to cuInit: UNKNOWN ERROR (303)
+2022-05-27 10:19:27.890145: I tensorflow/stream_executor/cuda/cuda_diagnostics.cc:156] kernel driver does not appear to be running on this host (phi): /proc/driver/nvidia/version does not exist
+2022-05-27 10:19:27.890393: I tensorflow/core/platform/cpu_feature_guard.cc:151] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  AVX2 FMA
+To enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.
+[1] "Parameter avge (sd)"
+[1] "Cells removal at 1 %"
+[1] "Parameter avge (sd)"
+Error in is.data.frame(y) : object 'P.pca.ref' not found
+Error in is.data.frame(y) : object 'P.pca.ref' not found
 In addition: Warning message:
-In file(filename, "r", encoding = encoding) :
-  cannot open file '/home/alba/ADV/pcals.R': No such file or directory
+In is.data.frame(y) : restarting interrupted promise evaluation
+Error in is.data.frame(y) : object 'P.pca.ref' not found
+In addition: Warning message:
+In is.data.frame(y) : restarting interrupted promise evaluation
+Error in is.data.frame(y) : object 'P.pca.ref' not found
+In addition: Warning message:
+In is.data.frame(y) : restarting interrupted promise evaluation
+Error in is.data.frame(y) : object 'P.pca.ref' not found
+In addition: Warning message:
+In is.data.frame(y) : restarting interrupted promise evaluation
+Error in is.data.frame(y) : object 'P.pca.ref' not found
+In addition: Warning message:
+In is.data.frame(y) : restarting interrupted promise evaluation
+Error in is.data.frame(y) : object 'P.pca.ref' not found
+In addition: Warning message:
+In is.data.frame(y) : restarting interrupted promise evaluation
+Error in is.data.frame(y) : object 'P.pca.ref' not found
+In addition: Warning message:
+In is.data.frame(y) : restarting interrupted promise evaluation
+Error in is.data.frame(y) : object 'P.pca.ref' not found
+In addition: Warning message:
+In is.data.frame(y) : restarting interrupted promise evaluation
+Error in is.data.frame(y) : object 'P.pca.ref' not found
+In addition: Warning message:
+In is.data.frame(y) : restarting interrupted promise evaluation
+[1] "Cells removal at 5 %"
+[1] "Parameter avge (sd)"
+Error in is.data.frame(y) : object 'P.pca.ref' not found
+In addition: Warning message:
+In is.data.frame(y) : restarting interrupted promise evaluation
+Error in is.data.frame(y) : object 'P.pca.ref' not found
+In addition: Warning message:
+In is.data.frame(y) : restarting interrupted promise evaluation
+Error in is.data.frame(y) : object 'P.pca.ref' not found
+In addition: Warning message:
+In is.data.frame(y) : restarting interrupted promise evaluation
+Error in is.data.frame(y) : object 'P.pca.ref' not found
+In addition: Warning message:
+In is.data.frame(y) : restarting interrupted promise evaluation
+Error in is.data.frame(y) : object 'P.pca.ref' not found
+In addition: Warning message:
+In is.data.frame(y) : restarting interrupted promise evaluation
+Error in is.data.frame(y) : object 'P.pca.ref' not found
+In addition: Warning message:
+In is.data.frame(y) : restarting interrupted promise evaluation
+Error in is.data.frame(y) : object 'P.pca.ref' not found
+In addition: Warning message:
+In is.data.frame(y) : restarting interrupted promise evaluation
+Error in is.data.frame(y) : object 'P.pca.ref' not found
+In addition: Warning message:
+In is.data.frame(y) : restarting interrupted promise evaluation
+Error in is.data.frame(y) : object 'P.pca.ref' not found
+In addition: Warning message:
+In is.data.frame(y) : restarting interrupted promise evaluation
+Error in is.data.frame(y) : object 'P.pca.ref' not found
+In addition: Warning message:
+In is.data.frame(y) : restarting interrupted promise evaluation
+[1] "Cells removal at 10 %"
+[1] "Parameter avge (sd)"
+Error in is.data.frame(y) : object 'P.pca.ref' not found
+In addition: Warning message:
+In is.data.frame(y) : restarting interrupted promise evaluation
+Error in is.data.frame(y) : object 'P.pca.ref' not found
+In addition: Warning message:
+In is.data.frame(y) : restarting interrupted promise evaluation
+Error in is.data.frame(y) : object 'P.pca.ref' not found
+In addition: Warning message:
+In is.data.frame(y) : restarting interrupted promise evaluation
+Error in is.data.frame(y) : object 'P.pca.ref' not found
+In addition: Warning message:
+In is.data.frame(y) : restarting interrupted promise evaluation
+Error in is.data.frame(y) : object 'P.pca.ref' not found
+In addition: Warning message:
+In is.data.frame(y) : restarting interrupted promise evaluation
+Error in is.data.frame(y) : object 'P.pca.ref' not found
+In addition: Warning message:
+In is.data.frame(y) : restarting interrupted promise evaluation
+Error in is.data.frame(y) : object 'P.pca.ref' not found
+In addition: Warning message:
+In is.data.frame(y) : restarting interrupted promise evaluation
+Error in is.data.frame(y) : object 'P.pca.ref' not found
+In addition: Warning message:
+In is.data.frame(y) : restarting interrupted promise evaluation
+Error in is.data.frame(y) : object 'P.pca.ref' not found
+In addition: Warning message:
+In is.data.frame(y) : restarting interrupted promise evaluation
+Error in is.data.frame(y) : object 'P.pca.ref' not found
+In addition: Warning message:
+In is.data.frame(y) : restarting interrupted promise evaluation
+[1] "Cells removal at 20 %"
+[1] "Parameter avge (sd)"
+Error in is.data.frame(y) : object 'P.pca.ref' not found
+In addition: Warning message:
+In is.data.frame(y) : restarting interrupted promise evaluation
+Error in is.data.frame(y) : object 'P.pca.ref' not found
+In addition: Warning message:
+In is.data.frame(y) : restarting interrupted promise evaluation
+Error in is.data.frame(y) : object 'P.pca.ref' not found
+In addition: Warning message:
+In is.data.frame(y) : restarting interrupted promise evaluation
+Error in is.data.frame(y) : object 'P.pca.ref' not found
+In addition: Warning message:
+In is.data.frame(y) : restarting interrupted promise evaluation
+Error in is.data.frame(y) : object 'P.pca.ref' not found
+In addition: Warning message:
+In is.data.frame(y) : restarting interrupted promise evaluation
+Error in is.data.frame(y) : object 'P.pca.ref' not found
+In addition: Warning message:
+In is.data.frame(y) : restarting interrupted promise evaluation
+Error in is.data.frame(y) : object 'P.pca.ref' not found
+In addition: Warning message:
+In is.data.frame(y) : restarting interrupted promise evaluation
+Error in is.data.frame(y) : object 'P.pca.ref' not found
+In addition: Warning message:
+In is.data.frame(y) : restarting interrupted promise evaluation
+Error in is.data.frame(y) : object 'P.pca.ref' not found
+In addition: Warning message:
+In is.data.frame(y) : restarting interrupted promise evaluation
+Error in is.data.frame(y) : object 'P.pca.ref' not found
+In addition: Warning message:
+In is.data.frame(y) : restarting interrupted promise evaluation
+[1] "Cells removal at 40 %"
+[1] "Parameter avge (sd)"
+Error in is.data.frame(y) : object 'P.pca.ref' not found
+In addition: Warning message:
+In is.data.frame(y) : restarting interrupted promise evaluation
+Error in is.data.frame(y) : object 'P.pca.ref' not found
+In addition: Warning message:
+In is.data.frame(y) : restarting interrupted promise evaluation
+Error in is.data.frame(y) : object 'P.pca.ref' not found
+In addition: Warning message:
+In is.data.frame(y) : restarting interrupted promise evaluation
+Error in is.data.frame(y) : object 'P.pca.ref' not found
+In addition: Warning message:
+In is.data.frame(y) : restarting interrupted promise evaluation
+Error in is.data.frame(y) : object 'P.pca.ref' not found
+In addition: Warning message:
+In is.data.frame(y) : restarting interrupted promise evaluation
+Error in is.data.frame(y) : object 'P.pca.ref' not found
+In addition: Warning message:
+In is.data.frame(y) : restarting interrupted promise evaluation
+Error in is.data.frame(y) : object 'P.pca.ref' not found
+In addition: Warning message:
+In is.data.frame(y) : restarting interrupted promise evaluation
+Error in is.data.frame(y) : object 'P.pca.ref' not found
+In addition: Warning message:
+In is.data.frame(y) : restarting interrupted promise evaluation
+Error in is.data.frame(y) : object 'P.pca.ref' not found
+In addition: Warning message:
+In is.data.frame(y) : restarting interrupted promise evaluation
+Error in is.data.frame(y) : object 'P.pca.ref' not found
+In addition: Warning message:
+In is.data.frame(y) : restarting interrupted promise evaluation
+[1] "Cells removal at 60 %"
+[1] "Parameter avge (sd)"
+Error in is.data.frame(y) : object 'P.pca.ref' not found
+In addition: Warning message:
+In is.data.frame(y) : restarting interrupted promise evaluation
+Error in is.data.frame(y) : object 'P.pca.ref' not found
+In addition: Warning message:
+In is.data.frame(y) : restarting interrupted promise evaluation
+Error in is.data.frame(y) : object 'P.pca.ref' not found
+In addition: Warning message:
+In is.data.frame(y) : restarting interrupted promise evaluation
+Error in is.data.frame(y) : object 'P.pca.ref' not found
+In addition: Warning message:
+In is.data.frame(y) : restarting interrupted promise evaluation
+Error in is.data.frame(y) : object 'P.pca.ref' not found
+In addition: Warning message:
+In is.data.frame(y) : restarting interrupted promise evaluation
+Error in is.data.frame(y) : object 'P.pca.ref' not found
+In addition: Warning message:
+In is.data.frame(y) : restarting interrupted promise evaluation
+Error in is.data.frame(y) : object 'P.pca.ref' not found
+In addition: Warning message:
+In is.data.frame(y) : restarting interrupted promise evaluation
+Error in is.data.frame(y) : object 'P.pca.ref' not found
+In addition: Warning message:
+In is.data.frame(y) : restarting interrupted promise evaluation
+Error in is.data.frame(y) : object 'P.pca.ref' not found
+In addition: Warning message:
+In is.data.frame(y) : restarting interrupted promise evaluation
+Error in is.data.frame(y) : object 'P.pca.ref' not found
+In addition: Warning message:
+In is.data.frame(y) : restarting interrupted promise evaluation
+[1] "Cells removal at 80 %"
+[1] "Parameter avge (sd)"
+Error in is.data.frame(y) : object 'P.pca.ref' not found
+In addition: Warning message:
+In is.data.frame(y) : restarting interrupted promise evaluation
+Error in is.data.frame(y) : object 'P.pca.ref' not found
+In addition: Warning message:
+In is.data.frame(y) : restarting interrupted promise evaluation
+Error in is.data.frame(y) : object 'P.pca.ref' not found
+In addition: Warning message:
+In is.data.frame(y) : restarting interrupted promise evaluation
+Error in is.data.frame(y) : object 'P.pca.ref' not found
+In addition: Warning message:
+In is.data.frame(y) : restarting interrupted promise evaluation
+Error in is.data.frame(y) : object 'P.pca.ref' not found
+In addition: Warning message:
+In is.data.frame(y) : restarting interrupted promise evaluation
+Error in is.data.frame(y) : object 'P.pca.ref' not found
+In addition: Warning message:
+In is.data.frame(y) : restarting interrupted promise evaluation
+Error in is.data.frame(y) : object 'P.pca.ref' not found
+In addition: Warning message:
+In is.data.frame(y) : restarting interrupted promise evaluation
+Error in is.data.frame(y) : object 'P.pca.ref' not found
+In addition: Warning message:
+In is.data.frame(y) : restarting interrupted promise evaluation
+Error in is.data.frame(y) : object 'P.pca.ref' not found
+In addition: Warning message:
+In is.data.frame(y) : restarting interrupted promise evaluation
+Error in is.data.frame(y) : object 'P.pca.ref' not found
+In addition: Warning message:
+In is.data.frame(y) : restarting interrupted promise evaluation
+[1] "Parameter avge (sd)"
+[1] "Cells removal at 1 %"
+[1] "Parameter avge (sd)"
+Model: "sequential"
+________________________________________________________________________________
+ Layer (type)                       Output Shape                    Param #     
+================================================================================
+ input (Dense)                      (None, 13)                      182         
+                                                                                
+ latent (Dense)                     (None, 6)                       84          
+                                                                                
+ output (Dense)                     (None, 13)                      91          
+                                                                                
+================================================================================
+Total params: 357
+Trainable params: 357
+Non-trainable params: 0
+________________________________________________________________________________
+ 1/26 [>.............................] - ETA: 0s - loss: 138500.593810/26 [==========>...................] - ETA: 0s - loss: 183018.546920/26 [======================>.......] - ETA: 0s - loss: 173429.593826/26 [==============================] - 0s 6ms/step - loss: 182363.3125
+Error in is.data.frame(y) : object 'P.ae.ref' not found
+Calls: source ... eval -> eval -> vae_removecells -> cor -> is.data.frame
 Execution halted

@@ -1,0 +1,83 @@
+Already up to date.
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+Loading required package: ggplot2
+Welcome! Want to learn more? See two factoextra-related books at https://goo.gl/ve3WBa
+
+Attaching package: ‘qqplotr’
+
+The following objects are masked from ‘package:ggplot2’:
+
+    stat_qq_line, StatQqLine
+
+Loading required package: lattice
+
+Attaching package: ‘tidyr’
+
+The following object is masked from ‘package:magrittr’:
+
+    extract
+
+
+Attaching package: ‘tensorflow’
+
+The following object is masked from ‘package:caret’:
+
+    train
+
+[1] "These variables show null variance. Consider their deletion before the PCA"
+2022-05-27 10:27:24.210203: I tensorflow/core/util/util.cc:159] Experimental oneDNN custom operations are on. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+Loaded Tensorflow version 2.8.0
+2022-05-27 10:27:26.352170: W tensorflow/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library 'libcuda.so.1'; dlerror: libcuda.so.1: cannot open shared object file: No such file or directory; LD_LIBRARY_PATH: /usr/lib/R/lib:/usr/lib/x86_64-linux-gnu:/usr/lib/jvm/default-java/lib/server
+2022-05-27 10:27:26.352194: W tensorflow/stream_executor/cuda/cuda_driver.cc:269] failed call to cuInit: UNKNOWN ERROR (303)
+2022-05-27 10:27:26.352217: I tensorflow/stream_executor/cuda/cuda_diagnostics.cc:156] kernel driver does not appear to be running on this host (phi): /proc/driver/nvidia/version does not exist
+2022-05-27 10:27:26.352453: I tensorflow/core/platform/cpu_feature_guard.cc:151] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  AVX2 FMA
+To enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.
+Model: "sequential"
+________________________________________________________________________________
+ Layer (type)                       Output Shape                    Param #     
+================================================================================
+ input (Dense)                      (None, 13)                      182         
+                                                                                
+ latent (Dense)                     (None, 6)                       84          
+                                                                                
+ output (Dense)                     (None, 13)                      91          
+                                                                                
+================================================================================
+Total params: 357
+Trainable params: 357
+Non-trainable params: 0
+________________________________________________________________________________
+ 1/26 [>.............................] - ETA: 0s - loss: 184440.968811/26 [===========>..................] - ETA: 0s - loss: 198565.343821/26 [=======================>......] - ETA: 0s - loss: 201342.921926/26 [==============================] - 0s 6ms/step - loss: 205409.8906
+git add *.RData
+git commit -m "Updated results"
+[exp_rem_rows 7f009f2] Updated results
+ Committer: Alba Gonzalez-Cebrian <alba@phi.cloudenci.ie>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly:
+
+    git config --global user.name "Your Name"
+    git config --global user.email you@example.com
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 2 files changed, 0 insertions(+), 0 deletions(-)
+ rewrite AQref_loadings.RData (100%)
+ rewrite AQref_models.RData (99%)
+git pull
+Already up to date.
+git push
+To https://github.com/SMARDY-NCI/ADV.git
+   a4e651d..7f009f2  exp_rem_rows -> exp_rem_rows
