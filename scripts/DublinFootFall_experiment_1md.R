@@ -33,12 +33,25 @@ dat <- dat[,seq(1,ncol(dat),by=3)]
 load("ref_models.RData")
 load(file="ref_loadings.RData")
 
+modelA.DF <- keras_model_sequential()
+modelA.DF %>%
+	layer_dense(units=ncol(dat), activation = act.fun, input_shape = ncol(dat),
+							use_bias = TRUE, name = "input") %>%
+	layer_dense(units=16, activation = act.fun, input_shape = ncol(dat),
+							use_bias = TRUE, name = paste0("hidden_in_1")) %>%
+	layer_dense(units= 4, activation = act.fun, input_shape = 16,
+							use_bias = TRUE, name = "latent") %>%
+	layer_dense(units=16, activation = act.fun, input_shape = 4,
+							use_bias = TRUE, name = paste0("hidded_out_1")) %>%
+	layer_dense(units=ncol(dat), activation = act.fun, input_shape = 16,
+							use_bias = TRUE, name = "output")
+
 ## ----mdimputation,echo=FALSE,out.width="50%",fig.asp=0.9----------------------------------------------------------
 pca_remcells <- vpca_removecells(data = dat, 4, ref.P = P.pca.ref, 
 																 k_ho = 20, rm_pctges = c(1,5,10,seq(20,80,by=20)))
 
 autoencoder_remcells <- vae_removecells(data = dat, 4,
-																				ref.P = P.ae.ref,
+																				ref.P = P.ae.ref, model.ae = modelA.DF,
 																				ho.part = pca_remcells$ho,
 																				k_ho = 20,
 																				rm_pctges = c(1,5,10,seq(20,80,by=20)))

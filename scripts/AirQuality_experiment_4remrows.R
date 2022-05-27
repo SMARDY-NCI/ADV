@@ -29,10 +29,19 @@ summary(dat[,(apply(dat,2,var)==0),drop=F])
 dat.or <- dat
 dat <- dat[,!(apply(dat,2,var)==0),drop=F]
 
+modelA.AQ <- keras_model_sequential()
+modelA.AQ %>%
+	layer_dense(units=ncol(dat), activation = "relu", input_shape = ncol(dat),
+							use_bias = TRUE, name = "input") %>%
+	layer_dense(units= 6, activation = "relu", input_shape = ncol(dat),
+							use_bias = TRUE, name = "latent") %>%
+	layer_dense(units=ncol(dat), activation = "relu", input_shape = 6,
+							use_bias = TRUE, name = "output")
+
 ## ----remrows, results="hide",out.width="50%",fig.asp=0.9----------------------------------------------------------
 pca_remrows <- vpca_removerows(data = dat, 6, ref.P = P.pca.ref, k_ho = 20, 
                                rm_pctges = c(2,5,10,seq(20,80,by=20)))
 autoencoder_remrows <- vautoencoder_removerows(data = dat, 6, ref.P = P.ae.ref,k_ho = 20, 
-                                               ho.part = pca_remrows$ho,
+																							 model.ae = modelA.AQ, ho.part = pca_remrows$ho,
                                                rm_pctges = c(2,5,10,seq(20,80,by=20)))
 save(list = c("pca_remrows", "autoencoder_remrows"),file="AQ_RemRows_models.RData")

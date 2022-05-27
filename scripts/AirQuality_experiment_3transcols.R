@@ -29,12 +29,21 @@ summary(dat[,(apply(dat,2,var)==0),drop=F])
 dat.or <- dat
 dat <- dat[,!(apply(dat,2,var)==0),drop=F]
 
+modelA.AQ <- keras_model_sequential()
+modelA.AQ %>%
+	layer_dense(units=ncol(dat), activation = "relu", input_shape = ncol(dat),
+							use_bias = TRUE, name = "input") %>%
+	layer_dense(units= 6, activation = "relu", input_shape = ncol(dat),
+							use_bias = TRUE, name = "latent") %>%
+	layer_dense(units=ncol(dat), activation = "relu", input_shape = 6,
+							use_bias = TRUE, name = "output")
+
 ## ----coxtransforn, results='hide', echo=FALSE, message=FALSE------------------------------------------------------
-library(AID)
+# library(AID)
 pca_transvarscox <- vpca_transcols(data = dat, 6, ref.P = P.pca.ref, 
                                    k_ho = 10, rm_pctges = c(5,10,seq(20,80,by=20)))
-autoencoder_transvarscox <- vae_transcols(data = dat, 6, 
-                                          ref.P = P.ae.ref, ho.part = pca_transvarscox$ho,
+autoencoder_transvarscox <- vae_transcols(data = dat, 6, ref.P = P.ae.ref, 
+																					model.ae = modelA.AQ, ho.part = pca_transvarscox$ho,
                                           k_ho = 10, rm_pctges = c(5,10,seq(20,80,by=20)))
 save(list = c("pca_transvarscox", "autoencoder_transvarscox"),file="AQ_CoxTrans_models.RData")
 

@@ -19,10 +19,10 @@ source(here::here("R","lsdfig.R"))
 
 
 ## ----load data----------------------------------------------------------------------------------------------------
-dat <- readxl::read_xlsx(here::here("data","AirQualityUCI.xlsx")) %>%
-	select_if(is.numeric) %>%
-	filter(complete.cases(.))
+dat <- readxl::read_xlsx(here::here("data","AirQualityUCI.xlsx")) 
+dat[dat==-200] <- NA
 
+dat <- dat %>% select_if(is.numeric) %>% filter(complete.cases(.))
 
 ## ----delnullvar, out.width='70%'----------------------------------------------------------------------------------
 print("These variables show null variance. Consider their deletion before the PCA")
@@ -76,12 +76,21 @@ tic("PCA optimization")
 opt.PCA.results <- pca_opt(dat, A.values = c(1:10), tr = opt.AE.results$tr, kcv = 20)
 toc()
 
+modelA.AQ <- keras_model_sequential()
+modelA.AQ %>%
+	layer_dense(units=ncol(dat), activation = "relu", input_shape = ncol(dat),
+							use_bias = TRUE, name = "input") %>%
+	layer_dense(units= 6, activation = "relu", input_shape = ncol(dat),
+							use_bias = TRUE, name = "latent") %>%
+	layer_dense(units=ncol(dat), activation = "relu", input_shape = 6,
+							use_bias = TRUE, name = "output")
+
 ## ----mdimputation,echo=FALSE,out.width="50%",fig.asp=0.9----------------------------------------------------------
 pca_remcells <- vpca_removecells(data = dat, 4, ref.P = P.pca.ref, 
 																 k_ho = 20, rm_pctges = c(1,5,10,seq(20,80,by=20)))
 
 autoencoder_remcells <- vae_removecells(data = dat, 4,
-																				ref.P = P.ae.ref,
+																				ref.P = P.ae.ref, model.ae = modelA.AQ,
 																				ho.part = pca_remcells$ho,
 																				k_ho = 20,
 																				rm_pctges = c(1,5,10,seq(20,80,by=20)))
@@ -93,7 +102,7 @@ pca_transvars <- vpca_rowpctge(data = dat, 4, ref.P = P.pca.ref,
 															 k_ho = 20, rm_pctges = c(5,10,seq(20,80,by=20)))
 
 autoencoder_transvars <- vae_rowpctge(data = dat, 4, 
-																			ref.P = P.ae.ref,
+																			ref.P = P.ae.ref, model.ae = modelA.AQ,
 																			ho.part = pca_transvars$ho,
 																			k_ho = 20, 
 																			rm_pctges = c(5,10,seq(20,80,by=20)))
@@ -101,11 +110,12 @@ save(list = c("pca_transvars", "autoencoder_transvars"),file="RowsPctge_models.R
 
 
 ## ----coxtransforn, results='hide', echo=FALSE, message=FALSE------------------------------------------------------
-library(AID)
+# library(AID)
 pca_transvarscox <- vpca_transcols(data = dat, 4, ref.P = P.pca.ref, 
 																	 k_ho = 20, rm_pctges = c(5,10,seq(20,80,by=20)))
 autoencoder_transvarscox <- vae_transcols(data = dat, 4, 
-																					ref.P = P.ae.ref, ho.part = pca_transvarscox$ho,
+																					ref.P = P.ae.ref, model.ae = modelA.AQ,
+																					ho.part = pca_transvarscox$ho,
 																					k_ho = 20, rm_pctges = c(5,10,seq(20,80,by=20)))
 save(list = c("pca_transvarscox", "autoencoder_transvarscox"),file="CoxTrans_models.RData")
 
@@ -113,7 +123,8 @@ save(list = c("pca_transvarscox", "autoencoder_transvarscox"),file="CoxTrans_mod
 ## ----remrows, results="hide",out.width="50%",fig.asp=0.9----------------------------------------------------------
 pca_remrows <- vpca_removerows(data = dat, 4, ref.P = P.pca.ref, k_ho = 20, 
 															 rm_pctges = c(2,5,10,seq(20,80,by=20)))
-autoencoder_remrows <- vautoencoder_removerows(data = dat, 4, ref.P = P.ae.ref,k_ho = 20, 
+autoencoder_remrows <- vautoencoder_removerows(data = dat, 4, ref.P = P.ae.ref,
+																							 model.ae = modelA.AQ, k_ho = 20, 
 																							 ho.part = pca_remrows$ho,
 																							 rm_pctges = c(2,5,10,seq(20,80,by=20)))
 save(list = c("pca_remrows", "autoencoder_remrows"),file="RemRows_models.RData")

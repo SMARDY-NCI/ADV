@@ -163,21 +163,21 @@ plot_qr <- function(dat){
 #' @return The model and the obtained loss function (MSE)
 #' @export
 #' 
-fit_autoencoder <- function(X, k.A, act.fun, n.epochs=50){
+fit_autoencoder <- function(X, k.A, model.ae, act.fun, n.epochs=50){
   X <- as.matrix(X)
-  modelA <- keras_model_sequential()
-  modelA %>%
-    layer_dense(units=ncol(X), activation = act.fun, input_shape = ncol(X),
-                use_bias = TRUE, name = "input") %>%
-    layer_dense(units=16, activation = act.fun, input_shape = ncol(X), 
-                use_bias = TRUE, name = paste0("hidden_in_1")) %>%
-    layer_dense(units= k.A, activation = act.fun, input_shape = 16, 
-                use_bias = TRUE, name = "latent") %>%
-    layer_dense(units=16, activation = act.fun, input_shape = k.A, 
-                use_bias = TRUE, name = paste0("hidded_out_1")) %>%
-    layer_dense(units=ncol(X), activation = act.fun, input_shape = 16,
-                use_bias = TRUE, name = "output")
-  
+  # modelA <- keras_model_sequential()
+  # modelA %>%
+  #   layer_dense(units=ncol(X), activation = act.fun, input_shape = ncol(X),
+  #               use_bias = TRUE, name = "input") %>%
+  #   layer_dense(units=16, activation = act.fun, input_shape = ncol(X), 
+  #               use_bias = TRUE, name = paste0("hidden_in_1")) %>%
+  #   layer_dense(units= k.A, activation = act.fun, input_shape = 16, 
+  #               use_bias = TRUE, name = "latent") %>%
+  #   layer_dense(units=16, activation = act.fun, input_shape = k.A, 
+  #               use_bias = TRUE, name = paste0("hidded_out_1")) %>%
+  #   layer_dense(units=ncol(X), activation = act.fun, input_shape = 16,
+  #               use_bias = TRUE, name = "output")
+  modelA <- model.ae
   summary(modelA)
   # Compile the model
   modelA %>% compile(
@@ -208,7 +208,7 @@ fit_autoencoder <- function(X, k.A, act.fun, n.epochs=50){
 #' @return The model and the obtained loss function (MSE)
 #' @export
 #' 
-vautoencoder_removerows <- function (data, A, ref.P, k_ho=1000,
+vautoencoder_removerows <- function (data, A, ref.P, model.ae, k_ho=1000,
                                      rm_pctges=c(1,5,10,seq(20,80,by=20)),
                                      ho.part = NULL){
   library(caret)
@@ -249,7 +249,7 @@ vautoencoder_removerows <- function (data, A, ref.P, k_ho=1000,
       ho <- ho.list[[jmd]][[jrep]]
       Xtr <- X[-ho,,drop=F]
       Xts <- X[ho,,drop=F]
-      model.AE_test <- fit_autoencoder(Xtr, A, "relu")
+      model.AE_test <- fit_autoencoder(Xtr, A, model.ae = model.ae, "relu")
       intermediate_layer_model <- keras_model(inputs = model.AE_test$model$input, 
                                               outputs = get_layer(model.AE_test$model,"latent")$output)
       intermediate_layer_coefs <- as.matrix(model.AE_test$model$layers[[3]]$weights[[1]])
@@ -274,7 +274,7 @@ vautoencoder_removerows <- function (data, A, ref.P, k_ho=1000,
   return(list(para_test = para_test, d.sum = d.sum, ho = ho.list))
 }
 
-vae_removecells <- function (data, A, ref.P, k_ho=1000,
+vae_removecells <- function (data, A, ref.P, model.ae, k_ho=1000,
                              rm_pctges=c(1,5,10,seq(20,80,by=20)),
                              ho.part = NULL){
   X <- as.matrix(data)
@@ -322,7 +322,7 @@ vae_removecells <- function (data, A, ref.P, k_ho=1000,
       mod.tsr <-pcambtsrR(Xtr,A,maxiter = 200)
       Xtr.imp <- mod.tsr$X
       
-      model.AE_test <- fit_autoencoder(Xtr.imp, A, "relu")
+      model.AE_test <- fit_autoencoder(Xtr.imp, A, model.ae = model.ae, "relu")
       intermediate_layer_model <- keras_model(inputs = model.AE_test$model$input, 
                                               outputs = get_layer(model.AE_test$model,"latent")$output)
       intermediate_layer_coefs <- as.matrix(model.AE_test$model$layers[[3]]$weights[[1]])
@@ -349,7 +349,7 @@ vae_removecells <- function (data, A, ref.P, k_ho=1000,
 }
 
 
-vae_transcols <- function (data, A, ref.P, k_ho=1000,
+vae_transcols <- function (data, A, ref.P, model.ae, k_ho=1000,
                            rm_pctges=c(1,5,10,seq(20,100,by=20)),
                            ho.part = NULL){
   X <- as.matrix(data)
@@ -389,18 +389,19 @@ vae_transcols <- function (data, A, ref.P, k_ho=1000,
       }
       ho <- ho.list[[jmd]][[jrep]]
       Xtr <- X
-      for (jk in ho){
-        # lambda = -1. is a reciprocal transform.
-        # lambda = -0.5 is a reciprocal square root transform.
-        # lambda = 0.0 is a log transform.
-        # lambda = 0.5 is a square root transform.
-        # lambda = 1.0 is no transform.
-        out <- boxcoxnc(Xtr[,jk], method = "mle", lambda = seq(-2,2,0.5), 
-                        lambda2 = 0.0001,verbose = F, plot = F)
-        x.lambda <- out$lambda.hat
-        Xtr[,jk] <- (Xtr[,jk] ^ x.lambda - 1) / x.lambda
-      }
-      model.AE_test <- fit_autoencoder(Xtr, A, "relu")
+      Xtr[,ho] <- log(X[,ho,drop=F])
+      # for (jk in ho){
+      #   # lambda = -1. is a reciprocal transform.
+      #   # lambda = -0.5 is a reciprocal square root transform.
+      #   # lambda = 0.0 is a log transform.
+      #   # lambda = 0.5 is a square root transform.
+      #   # lambda = 1.0 is no transform.
+      #   out <- boxcoxnc(Xtr[,jk], method = "mle", lambda = seq(-2,2,0.5), 
+      #                   lambda2 = 0.0001,verbose = F, plot = F)
+      #   x.lambda <- out$lambda.hat
+      #   Xtr[,jk] <- (Xtr[,jk] ^ x.lambda - 1) / x.lambda
+      # }
+      model.AE_test <- fit_autoencoder(Xtr, A, model.ae, "relu")
       intermediate_layer_model <- keras_model(inputs = model.AE_test$model$input, 
                                               outputs = get_layer(model.AE_test$model,"latent")$output)
       intermediate_layer_coefs <- as.matrix(model.AE_test$model$layers[[3]]$weights[[1]])
@@ -436,7 +437,7 @@ vae_transcols <- function (data, A, ref.P, k_ho=1000,
 #' @return The model and the obtained loss function (MSE)
 #' @export
 #' 
-vae_rowpctge <- function (data, A, ref.P, k_ho=1000,
+vae_rowpctge <- function (data, A, ref.P, model.ae, k_ho=1000,
                           rm_pctges=c(1,5,10,seq(20,100,by=20)),
                           ho.part = NULL){
   X <- as.matrix(data)
@@ -472,7 +473,7 @@ vae_rowpctge <- function (data, A, ref.P, k_ho=1000,
     ho <- ho.list[[jrep]]
     Xtr <-  sweep(X[ho,,drop=F], 1, rowSums(X[ho,,drop=F]), "/")
     
-    model.AE_test <- fit_autoencoder(Xtr, A, "relu")
+    model.AE_test <- fit_autoencoder(Xtr, A, model.ae, "relu")
     intermediate_layer_model <- keras_model(inputs = model.AE_test$model$input, 
                                             outputs = get_layer(model.AE_test$model,"latent")$output)
     intermediate_layer_coefs <- as.matrix(model.AE_test$model$layers[[3]]$weights[[1]])
@@ -505,7 +506,7 @@ vae_rowpctge <- function (data, A, ref.P, k_ho=1000,
 #' @return The model and the obtained loss function (MSE)
 #' @export
 #' 
-vae_remcols <- function (data, A, ref.P, k_ho=1000,
+vae_remcols <- function (data, A, ref.P, model.ae, k_ho=1000,
 													rm_pctges=c(1,5,10,seq(20,100,by=20)),
 													ho.part = NULL){
 	X <- as.matrix(data)
@@ -541,7 +542,7 @@ vae_remcols <- function (data, A, ref.P, k_ho=1000,
 		ho <- ho.list[[jrep]]
 		Xtr <-  sweep(X[,ho,drop=F], 1, rowSums(X[,ho,drop=F]), "/")
 		distXtr <- dist(Xtr, method = "euclidean")
-		model.AE_test <- fit_autoencoder(distXtr, A, "relu")
+		model.AE_test <- fit_autoencoder(distXtr, A, model.ae, "relu")
 		intermediate_layer_model <- keras_model(inputs = model.AE_test$model$input, 
 																						outputs = get_layer(model.AE_test$model,"latent")$output)
 		intermediate_layer_coefs <- as.matrix(model.AE_test$model$layers[[3]]$weights[[1]])

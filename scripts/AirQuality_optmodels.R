@@ -19,10 +19,9 @@ source(here::here("R","lsdfig.R"))
 
 
 ## ----load data----------------------------------------------------------------------------------------------------
-dat <- readxl::read_xlsx(here::here("data","AirQualityUCI.xlsx")) %>%
-  select_if(is.numeric) %>%
-  filter(complete.cases(.))
-
+dat <- readxl::read_xlsx(here::here("data","AirQualityUCI.xlsx"))
+dat[dat==-200] <- NA
+dat <- dat %>% select_if(is.numeric) %>% filter(complete.cases(.))
 
 ## ----delnullvar, out.width='70%'----------------------------------------------------------------------------------
 print("These variables show null variance. Consider their deletion before the PCA")
@@ -33,12 +32,12 @@ dat <- dat[,!(apply(dat,2,var)==0),drop=F]
 ## ----univanalysis-------------------------------------------------------------------------------------------------
 summary(dat)
 boxplot(dat,
-        data=dat,
-        main="Air Quality dataset",
-        xlab="Parameter",
-        ylab="",
-        col="green3",
-        border="black"
+				data=dat,
+				main="Air Quality dataset",
+				xlab="Parameter",
+				ylab="",
+				col="green3",
+				border="black"
 )
 dat %>% gather() %>% head()
 tic("Autoencoder optimization")
