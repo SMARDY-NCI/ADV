@@ -49,7 +49,7 @@ lsdAnalysis <- function(data.anova, factor1="", factor2=NULL, factor.color = fac
       (qt(1-alpha/2,lsd.Analysis[[metric_name]]$df.residual))
     lsd.plot[[metric_name]] <- lsdfig(data.anova, metric_name, factor.x, factor.color,
                                       lsd.width, col=rgb(0,1,0,0.5), graph.out = graph.out,
-                                      ytext= metric_name, xtext= factor.x, 
+                                      ytext= metric_name, xtext= xtext, 
                                       tittext = "")
   }
   return(list(l.plots = lsd.plot, l.aov = lsd.Analysis))

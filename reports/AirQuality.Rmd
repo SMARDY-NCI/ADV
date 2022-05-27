@@ -75,9 +75,10 @@ source(here::here("R","lsdfig.R"))
 Load the data:
 
 ```{r load data}
-dat <- read.csv(here::here("data","pedestrian-count-dcc-2022.csv")) %>%
-  select_if(is.numeric) %>%
-  filter(complete.cases(.))
+dat <- readxl::read_xlsx(here::here("data","AirQualityUCI.xlsx")) 
+dat[dat==-200] <- NA
+
+dat <- dat %>% select_if(is.numeric) %>% filter(complete.cases(.))
 ```
 
 We check if there are variables with null variance that should be deleted:
@@ -87,7 +88,6 @@ print("These variables show null variance. Consider their deletion before the PC
 summary(dat[,(apply(dat,2,var)==0),drop=F])
 dat.or <- dat
 dat <- dat[,!(apply(dat,2,var)==0),drop=F]
-dat <- dat[,seq(1,ncol(dat),by=3)]
 ```
 
 Moreover, a quick exploratory data analysis is performed to study the distribution and features of the variables in the dataset, as well as the existence of phenomena such as missing data or subpopulations.
@@ -96,9 +96,9 @@ Moreover, a quick exploratory data analysis is performed to study the distributi
 summary(dat)
 boxplot(dat,
 data=dat,
-main="Counts of pedestrians per each street",
-xlab="Street",
-ylab="Counts",
+main="Air Quality",
+xlab="Parameters",
+ylab="",
 col="green3",
 border="black"
 )
@@ -146,7 +146,7 @@ pca.df <- stats::prcomp(dat,center = TRUE,scale = TRUE)
 pca.df.VE<- (pca.df$sdev^2)/sum((pca.df$sdev^2))*100
 pca.df.CumVE<- cumsum(pca.df.VE)
 pca.DF <- data.frame(rbind(pca.df.CumVE))
-writexl::write_xlsx(pca.DF,"reports\\Variance Explained DF.xlsx")
+writexl::write_xlsx(pca.DF,"reports\\Variance Explained AQ.xlsx")
 # tic("Autoencoder optimization")
 # opt.AE.results <- autoenc_opt(dat, A.values = c(1:10), tr = NULL, kcv = 10, act.fun = "relu", n.epochs = 50) 
 # time.EA.opt <- toc()
