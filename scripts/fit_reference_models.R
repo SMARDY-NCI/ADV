@@ -33,16 +33,29 @@ dat <- dat[,seq(1,ncol(dat),by=3)]
 
 ## ----refmodels----------------------------------------------------------------------------------------------------
 
-  model.AE <- fit_autoencoder(dat, 4, "relu")
-  plot(model.AE$trainhist)
-  model.PCA <- fit_pca(dat, 4)
-  P.ae.ref.all <- list()
-  P.ae.ref.all$input_layer <- as.matrix(model.AE$model$layers[[1]]$weights[[1]])
-  P.ae.ref.all$hidden_encoding_layer <- as.matrix(model.AE$model$layers[[2]]$weights[[1]])
-  P.ae.ref.all$latent_layer <- as.matrix(model.AE$model$layers[[3]]$weights[[1]])
-  P.ae.ref.all$hidden_decoding_layer <- as.matrix(model.AE$model$layers[[4]]$weights[[1]])
-  P.ae.ref.all$output_layer <- as.matrix(model.AE$model$layers[[5]]$weights[[1]])
-  P.ae.ref <- P.ae.ref.all$latent_layer
-  P.pca.ref <- model.PCA$model$rotation
-  save(list = c("P.ae.ref", "P.pca.ref", "P.ae.ref.all"),file="ref_loadings.RData")
-  save(list = c("model.AE", "model.PCA"),file="ref_models.RData")
+modelA.DF <- keras_model_sequential()
+modelA.DF %>%
+  layer_dense(units=ncol(dat), activation = act.fun, input_shape = ncol(dat),
+              use_bias = TRUE, name = "input") %>%
+  layer_dense(units=16, activation = act.fun, input_shape = ncol(dat),
+              use_bias = TRUE, name = paste0("hidden_in_1")) %>%
+  layer_dense(units= 4, activation = act.fun, input_shape = 16,
+              use_bias = TRUE, name = "latent") %>%
+  layer_dense(units=16, activation = act.fun, input_shape = 4,
+              use_bias = TRUE, name = paste0("hidded_out_1")) %>%
+  layer_dense(units=ncol(dat), activation = act.fun, input_shape = 16,
+              use_bias = TRUE, name = "output")
+
+model.AE <- fit_autoencoder(dat, 4, modelA.DF, "relu")
+plot(model.AE$trainhist)
+model.PCA <- fit_pca(dat, 4)
+P.ae.ref.all <- list()
+P.ae.ref.all$input_layer <- as.matrix(model.AE$model$layers[[1]]$weights[[1]])
+P.ae.ref.all$hidden_encoding_layer <- as.matrix(model.AE$model$layers[[2]]$weights[[1]])
+P.ae.ref.all$latent_layer <- as.matrix(model.AE$model$layers[[3]]$weights[[1]])
+P.ae.ref.all$hidden_decoding_layer <- as.matrix(model.AE$model$layers[[4]]$weights[[1]])
+P.ae.ref.all$output_layer <- as.matrix(model.AE$model$layers[[5]]$weights[[1]])
+P.ae.ref <- P.ae.ref.all$latent_layer
+P.pca.ref <- model.PCA$model$rotation
+save(list = c("P.ae.ref", "P.pca.ref", "P.ae.ref.all"),file="ref_loadings.RData")
+save(list = c("model.AE", "model.PCA"),file="ref_models.RData")
