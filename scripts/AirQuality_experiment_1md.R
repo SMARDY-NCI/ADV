@@ -29,6 +29,9 @@ summary(dat[,(apply(dat,2,var)==0),drop=F])
 dat.or <- dat
 dat <- dat[,!(apply(dat,2,var)==0),drop=F]
 
+load("AQref_models.RData")
+load(file="AQref_loadings.RData")
+
 modelA.AQ <- keras_model_sequential()
 modelA.AQ %>%
 	layer_dense(units=ncol(dat), activation = "relu", input_shape = ncol(dat),

@@ -38,6 +38,9 @@ modelA.AQ %>%
 	layer_dense(units=ncol(dat), activation = "relu", input_shape = 6,
 							use_bias = TRUE, name = "output")
 
+load("AQref_models.RData")
+load(file="AQref_loadings.RData")
+
 ## ----remrows, results="hide",out.width="50%",fig.asp=0.9----------------------------------------------------------
 pca_remrows <- vpca_removerows(data = dat, 6, ref.P = P.pca.ref, k_ho = 20, 
                                rm_pctges = c(2,5,10,seq(20,80,by=20)))

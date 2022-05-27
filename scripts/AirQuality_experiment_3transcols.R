@@ -38,6 +38,9 @@ modelA.AQ %>%
 	layer_dense(units=ncol(dat), activation = "relu", input_shape = 6,
 							use_bias = TRUE, name = "output")
 
+load("AQref_models.RData")
+load(file="AQref_loadings.RData")
+
 ## ----coxtransforn, results='hide', echo=FALSE, message=FALSE------------------------------------------------------
 # library(AID)
 pca_transvarscox <- vpca_transcols(data = dat, 6, ref.P = P.pca.ref, 
