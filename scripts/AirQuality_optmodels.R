@@ -40,19 +40,55 @@ boxplot(dat,
 				border="black"
 )
 dat %>% gather() %>% head()
-tic("Autoencoder optimization")
-# opt.AE.results <- autoenc_opt(dat, A.values = c(1:10), tr = NULL, kcv = 20, act.fun = "relu", n.epochs = 50)
-opt.AElay.results.relu <- autoenc_opt_layers(dat, A=3, tr = NULL, kcv = 10,act.fun = "relu", n.epochs = 50)
-time.EA.opt <- toc()
 
-save("opt.AElay.results.relu",file="AQ_optAElayers_relu.RData")
+if(file.exists("AQ_optAElayers_relu.RData")){
+	load("../AQ_optAElayers_relu.RData")
+} else {
+	tic("Autoencoder optimization")
+	# opt.AE.results <- autoenc_opt(dat, A.values = c(1:10), tr = NULL, kcv = 20, act.fun = "relu", n.epochs = 50)
+	opt.AElay.results.relu <- autoenc_opt_layers(dat, A=3, tr = NULL, kcv = 10,act.fun = "relu", n.epochs = 50)
+	time.EA.opt <- toc()
+	
+	save("opt.AElay.results.relu",file="AQ_optAElayers_relu.RData")
+}
 
-tic("Autoencoder optimization")
-opt.AElay.results.softmax <- autoenc_opt_layers(dat, A=3, tr = NULL, kcv = 10,act.fun = "softmax", n.epochs = 50)
-time.EA.opt <- toc()
+if(file.exists("AQ_optAElayers_softmax.RData")){
+	load("../AQ_optAElayers_softmax.RData")
+} else {
+	tic("Autoencoder optimization")
+	opt.AElay.results.softmax <- autoenc_opt_layers(dat, A=3, tr = NULL, kcv = 10,act.fun = "softmax", n.epochs = 50)
+	time.EA.opt <- toc()
+	
+	save("opt.AElay.results.softmax",file="AQ_optAElayers_softmax.RData")
+}
 
-save("opt.AElay.results.softmax",file="AQ_optAElayers_softmax.RData")
-
-# tic("PCA optimization")
-# opt.PCA.results <- pca_opt(dat, A.values = c(1:10), tr = opt.AE.results$tr, kcv = 10)
-# toc()
+opt.AElay.results.relu <- load("AQ_optAElayers_relu.RData")
+opt.AElay.results.softmax <- load("AQ_optAElayers_softmax.RData")
+# df.anova.test <- as.data.frame(c(t(opt.AElay.results.relu)))
+# colnames(df.anova.test) <- "MSE"
+# df.anova.test$KFold <- paste0("Fold ",c(1:10))
+# df.anova.test$Method <- "Autoencoder"
+# df.anova.test$NLayers <- as.factor(rep(c(1,2,3),each = 10))
+# df.anova.test$Repetition <- as.factor(rep(c(1:10), times=3))
+# lsd.MSE <- aov(MSE ~ NLayers + Repetition, data = df.anova.test)
+# summary(lsd.MSE)
+# mse.lsd <- sum(lsd.MSE$residuals^2)/(lsd.MSE$df.residual)
+# lsd.width <- sqrt(mse.lsd*2/length(unique(df.anova.test$Repetition)))*
+# 	(qt(1-0.025,lsd.MSE$df.residual))
+# lsdfig(df.anova.test,vy.name = "MSE",vx.name ="NLayers",vg.name = NULL,
+# 			 yw=lsd.width, col=rgb(0,1,0,0.5),graph.out = "errorbar", 
+# 			 ytext="MSE", xtext="N.Layers", 
+# 			 tittext = "Autoencoder architecture (Dublin Footfall data)")
+# 
+# df.anova.test.log <- df.anova.test
+# df.anova.test.log$MSE <- log10(df.anova.test$MSE)
+# lsd.log.MSE <- aov(MSE ~ NLayers + Repetition, data = df.anova.test.log)
+# summary(lsd.log.MSE)
+# 
+# mse.lsd.log <- sum(lsd.log.MSE$residuals^2)/(lsd.log.MSE$df.residual)
+# exp2.lsd.results <- lsdAnalysis(exp2.data, "Method", hier = F)
+# lsd.width.log <- sqrt(mse.lsd.log*2/length(unique(df.anova.test.log$Repetition)))*
+# 	(qt(1-0.025,lsd.log.MSE$df.residual))
+# lsdfig(df.anova.test.log,"MSE","NLayers","", lsd.width.log, col=rgb(0,1,0,0.5), 
+# 			 graph.out = "errorbar", ytext="log10 (MSE)", xtext="N.Layers", 
+# 			 tittext = "Autoencoder architecture")
