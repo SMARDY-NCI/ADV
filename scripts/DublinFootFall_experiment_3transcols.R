@@ -47,15 +47,15 @@ modelA.DF %>%
 	layer_dense(units=ncol(dat), activation = act.fun, input_shape = 16,
 							use_bias = TRUE, name = "output")
 
-load("ref_models.RData")
-load(file="ref_loadings.RData")
+load("DFref_models.RData")
+load(file="DFref_loadings.RData")
 
 ## ----coxtransforn, results='hide', echo=FALSE, message=FALSE------------------------------------------------------
 library(AID)
-pca_transvarscox <- vpca_transcols(data = dat, 4, ref.P = P.pca.ref, 
+pca_transvars <- vpca_transcols(data = dat, 4, ref.P = P.pca.ref, 
 																	 k_ho = 20, rm_pctges = c(5,10,seq(20,80,by=20)))
-autoencoder_transvarscox <- vae_transcols(data = dat, 4, ref.P = P.ae.ref, 
+autoencoder_transvars <- vae_transcols(data = dat, 4, ref.P = P.ae.ref, 
 																					model.ae = modelA.DF, ho.part = pca_transvarscox$ho,
 																					k_ho = 20, rm_pctges = c(5,10,seq(20,80,by=20)))
-save(list = c("pca_transvarscox", "autoencoder_transvarscox"),file="DF_coltrans_models.RData")
+save(list = c("pca_transvars", "autoencoder_transvars"),file="DF_coltrans_models.RData")
 
