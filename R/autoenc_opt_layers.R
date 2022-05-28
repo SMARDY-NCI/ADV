@@ -12,8 +12,10 @@ autoenc_opt_layers <- function(dat, A, tr = NULL, kcv = 10,
   X <- as.matrix(dat)
   # If training and testing partitions of the cross validation are not supplied 
   # in tr, then create them:
-  Xts <- X[c((nrow(X)-50):nrow(X)),,drop=F]
-  Xtr <- X[-c((nrow(X)-50):nrow(X)),,drop=F]
+  # Select the last 10%
+  i.ts <- round(0.9*nrow(X))
+  Xts <- X[c(i.ts:nrow(X)),,drop=F]
+  Xtr <- X[-c(i.ts:nrow(X)),,drop=F]
   if (is.null(tr)){
     tr <- createFolds(c(1:nrow(Xtr)), k = kcv, list = TRUE, returnTrain = TRUE)
     kcv <- length(tr)

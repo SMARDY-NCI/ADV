@@ -45,7 +45,13 @@ tic("Autoencoder optimization")
 opt.AElay.results.relu <- autoenc_opt_layers(dat, A=3, tr = NULL, kcv = 10,act.fun = "relu", n.epochs = 50)
 time.EA.opt <- toc()
 
-save("opt.AElay.results",file="AQ_optAElayers_relu.RData")
+save("opt.AElay.results.relu",file="AQ_optAElayers_relu.RData")
+
+tic("Autoencoder optimization")
+opt.AElay.results.softmax <- autoenc_opt_layers(dat, A=3, tr = NULL, kcv = 10,act.fun = "softmax", n.epochs = 50)
+time.EA.opt <- toc()
+
+save("opt.AElay.results.softmax",file="AQ_optAElayers_softmax.RData")
 
 # tic("PCA optimization")
 # opt.PCA.results <- pca_opt(dat, A.values = c(1:10), tr = opt.AE.results$tr, kcv = 10)
