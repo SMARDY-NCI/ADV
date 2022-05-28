@@ -42,10 +42,10 @@ boxplot(dat,
 dat %>% gather() %>% head()
 tic("Autoencoder optimization")
 # opt.AE.results <- autoenc_opt(dat, A.values = c(1:10), tr = NULL, kcv = 20, act.fun = "relu", n.epochs = 50)
-opt.AElay.results <- autoenc_opt_layers(dat, A=2, tr = NULL, kcv = 10,act.fun = "relu", n.epochs = 50)
+opt.AElay.results.relu <- autoenc_opt_layers(dat, A=3, tr = NULL, kcv = 10,act.fun = "relu", n.epochs = 50)
 time.EA.opt <- toc()
 
-save("opt.AElay.results",file="AQ_optAElayers.RData")
+save("opt.AElay.results",file="AQ_optAElayers_relu.RData")
 
 # tic("PCA optimization")
 # opt.PCA.results <- pca_opt(dat, A.values = c(1:10), tr = opt.AE.results$tr, kcv = 10)

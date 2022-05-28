@@ -54,7 +54,7 @@ lsd.width <- sqrt(mse.lsd*2/length(unique(df.anova.test$Repetition)))*
 lsdfig(df.anova.test,vy.name = "MSE",vx.name ="NLayers",vg.name = NULL,
 			 yw=lsd.width, col=rgb(0,1,0,0.5),graph.out = "errorbar", 
 			 ytext="MSE", xtext="N.Layers", 
-       tittext = "Autoencoder architecture (Dublin Footfall data")
+       tittext = "Autoencoder architecture (Dublin Footfall data)")
 
 df.anova.test.log <- df.anova.test
 df.anova.test.log$MSE <- log10(df.anova.test$MSE)
