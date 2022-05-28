@@ -62,33 +62,72 @@ if(file.exists("AQ_optAElayers_softmax.RData")){
 	save("opt.AElay.results.softmax",file="AQ_optAElayers_softmax.RData")
 }
 
-opt.AElay.results.relu <- load("AQ_optAElayers_relu.RData")
-opt.AElay.results.softmax <- load("AQ_optAElayers_softmax.RData")
-# df.anova.test <- as.data.frame(c(t(opt.AElay.results.relu)))
-# colnames(df.anova.test) <- "MSE"
-# df.anova.test$KFold <- paste0("Fold ",c(1:10))
-# df.anova.test$Method <- "Autoencoder"
-# df.anova.test$NLayers <- as.factor(rep(c(1,2,3),each = 10))
-# df.anova.test$Repetition <- as.factor(rep(c(1:10), times=3))
-# lsd.MSE <- aov(MSE ~ NLayers + Repetition, data = df.anova.test)
-# summary(lsd.MSE)
-# mse.lsd <- sum(lsd.MSE$residuals^2)/(lsd.MSE$df.residual)
-# lsd.width <- sqrt(mse.lsd*2/length(unique(df.anova.test$Repetition)))*
-# 	(qt(1-0.025,lsd.MSE$df.residual))
-# lsdfig(df.anova.test,vy.name = "MSE",vx.name ="NLayers",vg.name = NULL,
-# 			 yw=lsd.width, col=rgb(0,1,0,0.5),graph.out = "errorbar", 
-# 			 ytext="MSE", xtext="N.Layers", 
-# 			 tittext = "Autoencoder architecture (Dublin Footfall data)")
-# 
-# df.anova.test.log <- df.anova.test
-# df.anova.test.log$MSE <- log10(df.anova.test$MSE)
-# lsd.log.MSE <- aov(MSE ~ NLayers + Repetition, data = df.anova.test.log)
-# summary(lsd.log.MSE)
-# 
-# mse.lsd.log <- sum(lsd.log.MSE$residuals^2)/(lsd.log.MSE$df.residual)
-# exp2.lsd.results <- lsdAnalysis(exp2.data, "Method", hier = F)
-# lsd.width.log <- sqrt(mse.lsd.log*2/length(unique(df.anova.test.log$Repetition)))*
-# 	(qt(1-0.025,lsd.log.MSE$df.residual))
-# lsdfig(df.anova.test.log,"MSE","NLayers","", lsd.width.log, col=rgb(0,1,0,0.5), 
-# 			 graph.out = "errorbar", ytext="log10 (MSE)", xtext="N.Layers", 
-# 			 tittext = "Autoencoder architecture")
+load("AQ_optAElayers_relu.RData")
+load("AQ_optAElayers_softmax.RData")
+
+
+
+df.anova.test.relu <- as.data.frame(c(t(opt.AElay.results.relu$losstscv)))
+colnames(df.anova.test.relu) <- "MSE"
+df.anova.test.relu$KFold <- paste0("Fold ",c(1:10))
+df.anova.test.relu$Method <- "Autoencoder"
+df.anova.test.relu$ActFunction <- "ReLu"
+df.anova.test.relu$NHLayers <- as.factor(rep(c(0,1,2),each = 10))
+df.anova.test.relu$Repetition <- as.factor(rep(c(1:10), times=3))
+
+lsd.MSE <- aov(MSE ~ NHLayers + Repetition, data = df.anova.test.relu)
+summary(lsd.MSE)
+mse.lsd <- sum(lsd.MSE$residuals^2)/(lsd.MSE$df.residual)
+lsd.width <- sqrt(mse.lsd*2/length(unique(df.anova.test.relu$Repetition)))*
+	(qt(1-0.025,lsd.MSE$df.residual))
+lsdfig(df.anova.test.relu,vy.name = "MSE",vx.name ="NHLayers",vg.name = NULL,
+			 yw=lsd.width, col=rgb(0,1,0,0.5),graph.out = "errorbar",
+			 ytext="MSE", xtext="Number of Hidden Layers",
+			 tittext = "Autoencoder architecture (Air Quality data)") + 
+	scale_y_continuous(labels = function(x) format(x, scientific = TRUE))
+
+df.anova.test.relu$logMSE <- log10(df.anova.test.relu$MSE)
+lsd.logMSE <- aov(logMSE ~ NHLayers + Repetition, data = df.anova.test.relu)
+summary(lsd.logMSE)
+logmse.lsd <- sum(lsd.logMSE$residuals^2)/(lsd.logMSE$df.residual)
+loglsd.width <- sqrt(logmse.lsd*2/length(unique(df.anova.test.relu$Repetition)))*
+	(qt(1-0.025,lsd.logMSE$df.residual))
+lsdfig(df.anova.test.relu,vy.name = "logMSE",vx.name ="NHLayers",vg.name = NULL,
+			 yw=loglsd.width, col=rgb(0,1,0,0.5),graph.out = "errorbar",
+			 ytext=bquote(log[10]~MSE), xtext="Number of Hidden Layers",
+			 tittext = "Autoencoder architecture (Air Quality data)")
+
+df.anova.test.softmax <- as.data.frame(c(t(opt.AElay.results.softmax$losstscv)))
+colnames(df.anova.test.softmax) <- "MSE"
+df.anova.test.softmax$KFold <- paste0("Fold ",c(1:10))
+df.anova.test.softmax$Method <- "Autoencoder"
+df.anova.test.softmax$ActFunction <- "SoftMax"
+df.anova.test.softmax$NHLayers <- as.factor(rep(c(0,1,2),each = 10))
+df.anova.test.softmax$Repetition <- as.factor(rep(c(1:10), times=3))
+
+
+df.anova.test <- rbind(df.anova.test.relu,df.anova.test.softmax)
+df.anova.test$ActFunction <- factor(df.anova.test$ActFunction)
+df.anova.test$NHLayers <- factor(df.anova.test$NHLayers)
+lsd.MSE <- aov(MSE ~ NHLayers + ActFunction + NHLayers*ActFunction, data = df.anova.test)
+summary(lsd.MSE)
+mse.lsd <- sum(lsd.MSE$residuals^2)/(lsd.MSE$df.residual)
+lsd.width <- sqrt(mse.lsd*2/length(unique(df.anova.test$Repetition)))*
+	(qt(1-0.025,lsd.MSE$df.residual))
+lsdfig(df.anova.test.softmax,vy.name = "MSE",vx.name ="NHLayers",vg.name = NULL,
+			 yw=lsd.width, col=rgb(0,1,0,0.5),graph.out = "errorbar",
+			 ytext="MSE", xtext="N.Layers",
+			 tittext = "Autoencoder architecture (Air Quality data)")
+
+df.anova.test.log <- df.anova.test
+df.anova.test.log$MSE <- log10(df.anova.test$MSE)
+lsd.log.MSE <- aov(MSE ~ NLayers + Repetition, data = df.anova.test.log)
+summary(lsd.log.MSE)
+
+mse.lsd.log <- sum(lsd.log.MSE$residuals^2)/(lsd.log.MSE$df.residual)
+exp2.lsd.results <- lsdAnalysis(exp2.data, "Method", hier = F)
+lsd.width.log <- sqrt(mse.lsd.log*2/length(unique(df.anova.test.log$Repetition)))*
+	(qt(1-0.025,lsd.log.MSE$df.residual))
+lsdfig(df.anova.test.log,"MSE","NLayers","", lsd.width.log, col=rgb(0,1,0,0.5),
+			 graph.out = "errorbar", ytext="log10 (MSE)", xtext="N.Layers",
+			 tittext = "Autoencoder architecture")
