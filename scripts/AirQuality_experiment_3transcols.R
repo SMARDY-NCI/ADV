@@ -16,12 +16,11 @@ source(here::here("R","pcambtsrR.R"))
 source(here::here("R","lsdAnalysis.R"))
 source(here::here("R","lsdfig.R"))
 
-
 ## ----load data----------------------------------------------------------------------------------------------------
-dat <- readxl::read_xlsx(here::here("data","AirQualityUCI.xlsx")) %>%
-  select_if(is.numeric) %>%
-  filter(complete.cases(.))
+dat <- readxl::read_xlsx(here::here("data","AirQualityUCI.xlsx")) 
+dat[dat==-200] <- NA
 
+dat <- dat %>% select_if(is.numeric) %>% filter(complete.cases(.))
 
 ## ----delnullvar, out.width='70%'----------------------------------------------------------------------------------
 print("These variables show null variance. Consider their deletion before the PCA")
@@ -49,5 +48,5 @@ autoencoder_transvarscox <- vae_transcols(data = dat, 6, ref.P = P.ae.ref,
 																					model.ae = modelA.AQ, ho.part = pca_transvarscox$ho,
 																					n.latent.layer = 2,
                                           k_ho = 10, rm_pctges = c(5,10,seq(20,80,by=20)))
-save(list = c("pca_transvarscox", "autoencoder_transvarscox"),file="AQ_CoxTrans_models.RData")
+save(list = c("pca_transvarscox", "autoencoder_transvarscox"),file="AQ_coltrans_models.RData")
 

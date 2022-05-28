@@ -379,18 +379,19 @@ vpca_transcols <- function (data, A, ref.P, k_ho=1000,
       }
       ho <- ho.list[[jmd]][[jrep]]
       Xtr <- X
-      for (jk in ho){
-        # lambda = -1. is a reciprocal transform.
-        # lambda = -0.5 is a reciprocal square root transform.
-        # lambda = 0.0 is a log transform.
-        # lambda = 0.5 is a square root transform.
-        # lambda = 1.0 is no transform.
-        # print(jk)
-        out <- boxcoxnc(Xtr[,jk], method = "mle", lambda = seq(-2,2,0.5), verbose = F, plot = F,
-                        lambda2 = 0.0001)
-        x.lambda <- out$lambda.hat
-        Xtr[,jk] <- (Xtr[,jk] ^ x.lambda - 1) / x.lambda
-      }
+      Xtr[,ho] <- log(X[,ho,drop=F])
+      # for (jk in ho){
+      #   # lambda = -1. is a reciprocal transform.
+      #   # lambda = -0.5 is a reciprocal square root transform.
+      #   # lambda = 0.0 is a log transform.
+      #   # lambda = 0.5 is a square root transform.
+      #   # lambda = 1.0 is no transform.
+      #   # print(jk)
+      #   # out <- boxcoxnc(Xtr[,jk], method = "mle", lambda = seq(-2,2,0.5), verbose = F, plot = F,
+      #   #                 lambda2 = 0.0001)
+      #   # x.lambda <- out$lambda.hat
+      #   Xtr[,jk] <- (Xtr[,jk] ^ x.lambda - 1) / x.lambda
+      # }
       try({
         pcamodel_test <- fit_pca(Xtr, A, xscale = FALSE)
         Xrec_cv <- sweep(sweep(pcamodel_test$model$x%*%t(pcamodel_test$model$rotation),2,
