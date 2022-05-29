@@ -33,19 +33,23 @@ modelA.AQ <- keras_model_sequential()
 modelA.AQ %>%
 	layer_dense(units=ncol(dat), activation = "relu", input_shape = ncol(dat),
 							use_bias = TRUE, name = "input") %>%
-	layer_dense(units= 6, activation = "relu", input_shape = ncol(dat),
+	layer_dense(units=8, activation = "relu", input_shape = ncol(dat),
+							use_bias = TRUE, name = "hidden_in_1") %>%
+	layer_dense(units= 3, activation = "relu", input_shape = 8,
 							use_bias = TRUE, name = "latent") %>%
-	layer_dense(units=ncol(dat), activation = "relu", input_shape = 6,
+	layer_dense(units=8, activation = "relu", input_shape = 3,
+							use_bias = TRUE, name = "hidden_out_1") %>%
+	layer_dense(units=ncol(dat), activation = "relu", input_shape = 8,
 							use_bias = TRUE, name = "output")
 
 load("AQref_models.RData")
 load(file="AQref_loadings.RData")
 
 ## ----transform, results="hide", echo=FALSE,out.width="50%",fig.asp=0.9--------------------------------------------
-pca_transvars <- vpca_rowpctge(data = dat, 6, ref.P = P.pca.ref, 
+pca_transvars <- vpca_rowpctge(data = dat, 3, ref.P = P.pca.ref, 
                                k_ho = 10, rm_pctges = c(5,10,seq(20,80,by=20)))
 
-autoencoder_transvars <- vae_rowpctge(data = dat, 6, ref.P = P.ae.ref,
+autoencoder_transvars <- vae_rowpctge(data = dat, 3, ref.P = P.ae.ref,
 																			model.ae = modelA.AQ, ho.part = pca_transvars$ho,
                                       k_ho = 10, n.latent.layer = 2,
                                       rm_pctges = c(5,10,seq(20,80,by=20)))
