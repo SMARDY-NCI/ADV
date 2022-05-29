@@ -387,16 +387,16 @@ vpca_transcols <- function (data, A, ref.P, k_ho=1000,
       #   # lambda = 0.5 is a square root transform.
       #   # lambda = 1.0 is no transform.
       #   # print(jk)
-      #   # out <- boxcoxnc(Xtr[,jk], method = "mle", lambda = seq(-2,2,0.5), verbose = F, plot = F,
-      #   #                 lambda2 = 0.0001)
-      #   # x.lambda <- out$lambda.hat
+      #   out <- AID::boxcoxnc(Xtr[,jk], method = "mle", lambda = seq(-2,2,0.5), verbose = F, plot = F,
+      #                   lambda2 = 0)
+      #   x.lambda <- out$lambda.hat
       #   Xtr[,jk] <- (Xtr[,jk] ^ x.lambda - 1) / x.lambda
       # }
       try({
-        pcamodel_test <- fit_pca(Xtr, A, xscale = FALSE)
+        pcamodel_test <- fit_pca(Xtr, A, xscale = TRUE)
         Xrec_cv <- sweep(sweep(pcamodel_test$model$x%*%t(pcamodel_test$model$rotation),2,
                                pcamodel_test$model$scale,"*"),2,pcamodel_test$model$center,"+")
-        id.loc <- and((para_test$Repetition==jrep),(para_test$Coltrans==rm_pctges[jmd]))
+        id.loc <- ((para_test$Repetition==jrep) & (para_test$Coltrans==rm_pctges[jmd]))
         for(a in c(1:A)){
           para_test[[paste0("t",a,"radius")]][id.loc] <- pcamodel_test$model$limits_t[[paste0("pc",a)]][2]
           para_test[[paste0("p",a,"corr")]][id.loc] <- abs(cor(pcamodel_test$model$rotation[,a],

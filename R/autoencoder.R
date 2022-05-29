@@ -408,7 +408,7 @@ vae_transcols <- function (data, A, ref.P, model.ae, k_ho=1000,n.latent.layer = 
       intermediate_layer_output <- predict(intermediate_layer_model, Xtr)
       z <- ((nrow(Xtr) - 1) * (nrow(Xtr) - 1)/nrow(Xtr)) * stats::qbeta(1 - 0.05, 1, 
                                                                         (nrow(Xtr) - 3)/2)
-      id.loc <- and((para_test$Repetition==jrep),(para_test$RWoutpctge==rm_pctges[jmd]))
+      id.loc <- and((para_test$Repetition==jrep),(para_test$Coltrans==rm_pctges[jmd]))
       for(a in c(1:A)){
         para_test[[paste0("t",a,"radius")]][id.loc] <- sqrt(stats::var(intermediate_layer_output[, a]) * z)
         para_test[[paste0("p",a,"corr")]][id.loc] <- abs(cor(as.numeric(intermediate_layer_coefs[,a]),

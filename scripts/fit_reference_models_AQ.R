@@ -46,7 +46,7 @@ modelA.AQ %>%
 
 model.AE <- fit_autoencoder(dat, 3, modelA.AQ, "relu")
 plot(model.AE$trainhist)
-model.PCA <- fit_pca(dat, 3)
+model.PCA <- fit_pca(dat, 3, xscale = T)
 P.ae.ref.all <- list()
 P.ae.ref.all$input_layer <- as.matrix(model.AE$model$layers[[1]]$weights[[1]])
 P.ae.ref.all$hidden_in_layer <- as.matrix(model.AE$model$layers[[2]]$weights[[1]])

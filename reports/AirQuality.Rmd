@@ -77,7 +77,7 @@ Load the data:
 ```{r load data}
 dat <- readxl::read_xlsx(here::here("data","AirQualityUCI.xlsx")) 
 dat[dat==-200] <- NA
-
+dat.time <- dat
 dat <- dat %>% select_if(is.numeric) %>% filter(complete.cases(.))
 ```
 
@@ -154,7 +154,7 @@ writexl::write_xlsx(pca.DF,"reports\\Variance Explained AQ.xlsx")
 # tic("PCA optimization")
 # opt.PCA.results <- pca_opt(dat, A.values = c(1:10), tr = opt.AE.results$tr, kcv = 10) 
 # time.PCA.opt <- toc()
-load("../opt_models.RData")
+load("../AQ_optAElayers_relu.RData")
 df.anova.test <- as.data.frame(c(as.vector(opt.AE.results$lossts[1:10,]), 
                                      as.vector(opt.PCA.results$lossts)))
 colnames(df.anova.test) <- "MSE"
@@ -181,36 +181,42 @@ A number of four latent variables (4 PCs in the PCA case and 4 units in the late
 This selection is based on the fact that from 4 latent variables, the MSE decay slows down for the PCA model, yielding to almost non-statistically significant differences within the range between four and eight PCs.
 
 ```{r refmodels}
-if(file.exists("../ref_models.RData") & file.exists(file="../ref_loadings.RData")){
-  load("../ref_models.RData")
-  load(file="../ref_loadings.RData")
+if(file.exists("../AQref_models.RData") & file.exists(file="../AQref_loadings.RData")){
+  load("../AQref_models.RData")
+  load(file="../AQref_loadings.RData")
 } else {
   # model.AE <- fit_autoencoder(dat, 4, "relu")
   # plot(model.AE$trainhist)
   model.PCA <- fit_pca(dat, 9, xscale = F)
   P.ae.ref <- as.matrix(model.AE$model$layers[[2]]$weights[[1]])
   P.pca.ref <- model.PCA$model$rotation
-  save(list = c("P.ae.ref", "P.pca.ref"),file="ref_loadings.RData")
-  save(list = c("model.AE", "model.PCA"),file="ref_models.RData")
+  save(list = c("P.ae.ref", "P.pca.ref"),file="AQref_loadings.RData")
+  save(list = c("model.AE", "model.PCA"),file="AQref_models.RData")
 }
 ```
 
 ## Versioning scenario 1: Missing data imputation
 
 ```{r mdimputation,echo=FALSE,out.width="50%",fig.asp=0.9}
-load("../MissingData_models.RData")
+load("../AQ_MissingData_models.RData")
 pca_remcells$para_test$Method <- "PCA"
 autoencoder_remcells$para_test$Method <- "AutoEncoder"
 mdi.exp.data <- rbind(pca_remcells$para_test, autoencoder_remcells$para_test)
 mdi.exp.data$Method <- as.factor(mdi.exp.data$Method)
+mdi.exp.data$MDpctge <- as.factor(mdi.exp.data$MDpctge)
+mdi.exp.data$Repetition <- as.factor(mdi.exp.data$Repetition)
+mdi.exp.data <- mdi.exp.data[, -which(grepl("^t.",colnames(mdi.exp.data)))]
+mdi.exp.data <- mdi.exp.data[, -which(grepl("^lim.",colnames(mdi.exp.data)))]
+mdi.exp.data <- mdi.exp.data[, -which(grepl("^log.",colnames(mdi.exp.data)))]
 
 lsd.results <- lsdAnalysis(mdi.exp.data, factor1 = "Method", factor2 = "MDpctge", 
-													 factor.color = "Method", graph.out = "curve", hier = T, xtext = "missing cells (%)")
+													 factorrnd = "Repetition", factor.color = "Method", 
+													 graph.out = "curve", hier = T, xtext = "missing cells (%)")
 plot.results <- lsd.results$l.plots[grepl("p*corr", names(lsd.results$l.plots))]
-mdi.plots <- ggpubr::ggarrange(plotlist = plot.results, ncol = 2, nrow = 2,
+mdi.plots <- ggpubr::ggarrange(plotlist = plot.results, ncol = 3, nrow = 1,
                   font.label = list(size = 3, color = "black", face = "bold", family = NULL),
                   common.legend = TRUE)
-DF.exp1.plots <- ggpubr::annotate_figure(mdi.plots, top = ggpubr::text_grob("Case I: Missing Data Imputation - Dublin Footfall", color = "black", face = "bold", size = 12))
+DF.exp1.plots <- ggpubr::annotate_figure(mdi.plots, top = ggpubr::text_grob("Case I: Missing Data Imputation - Air Quality", color = "black", face = "bold", size = 12))
 DF.exp1.plots
 ```
 
@@ -236,10 +242,19 @@ DF.exp2.plots
 ### Columnwise transformation
 
 ```{r coxtransforn, results='hide', echo=FALSE, message=FALSE}
-load("../CoxTrans_models.RData")
-pca_transvarscox$para_test$Method <- "PCA"
-autoencoder_transvarscox$para_test$Method <- "AutoEncoder"
-exp3.data <- rbind(pca_transvarscox$para_test[,-c(1,2)], autoencoder_transvarscox$para_test)
+load("../AQ_coltrans_models.RData")
+load("../AQ_coltrans_models.RData")
+pca_transvars$para_test$Method <- "PCA"
+autoencoder_transvars$para_test$Method <- "AutoEncoder"
+exp3.data <- rbind(pca_transvars$para_test, autoencoder_transvars$para_test)
+exp3.data$Method <- as.factor(exp3.data$Method)
+exp3.data$Transpctge <- as.factor(rep(rep(c(5,10,seq(20,80,by=20)), each = 20), times = 2))
+exp3.data$Repetition <- as.factor(exp3.data$Repetition)
+exp3.data <- exp3.data[, -which(grepl("^t.",colnames(exp3.data)))]
+exp3.data <- exp3.data[, -which(grepl("^lim.",colnames(exp3.data)))]
+exp3.data <- exp3.data[, -which(grepl("^log.",colnames(exp3.data)))]
+
+
 exp3.lsd.results <- lsdAnalysis(exp3.data, factor1 = "Method", factor2 = "Coltrans", factor.color = "Method", graph.out = "curve")
 plot.results.exp3 <- exp3.lsd.results$l.plots[grepl("p*corr", names(exp3.lsd.results$l.plots))]
 exp3.plots <- ggpubr::ggarrange(plotlist = plot.results.exp3$l.plots, ncol = 2, nrow = 2,
