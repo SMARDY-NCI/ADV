@@ -97,7 +97,7 @@ fit_pca <- function(X, k.A, xscale = FALSE){
 #' 
 vpca_removecells <- function (data, A, ref.P, k_ho=1000,
 															rm_pctges=c(1,5,10,seq(20,80,by=20)),
-															ho.part = NULL){
+															ho.part = NULL, xscale = FALSE){
 	X <- as.matrix(data)
 	n.elems <- nrow(X)*ncol(X)
 	nrep <- k_ho
@@ -144,7 +144,7 @@ vpca_removecells <- function (data, A, ref.P, k_ho=1000,
 			Xtr.imp <- mod.tsr$X
 			
 			try({
-				pcamodel_test <- fit_pca(Xtr.imp, A)
+				pcamodel_test <- fit_pca(Xtr.imp, A, xscale = xscale)
 				Xrec_cv <- sweep(sweep(pcamodel_test$model$x%*%t(pcamodel_test$model$rotation),2,
 															 pcamodel_test$model$scale,"*"),2,pcamodel_test$model$center,"+")
 				id.loc <- and((para_test$Repetition==jrep),(para_test$MDpctge==rm_pctges[jmd]))
@@ -185,7 +185,7 @@ vpca_removecells <- function (data, A, ref.P, k_ho=1000,
 #' 
 vpca_removerows <- function (data, A, ref.P, k_ho=1000,
                              rm_pctges=c(1,5,10,seq(20,80,by=20)),
-                             ho.part = NULL){
+                             ho.part = NULL, xscale = FALSE){
   X <- data
   nrep <- k_ho
   nlevels <- length(rm_pctges)
@@ -228,7 +228,7 @@ vpca_removerows <- function (data, A, ref.P, k_ho=1000,
       Xtr <- X[-ho,,drop=F]
       Xts <- X[ho,,drop=F]
       try({
-        pcamodel_test <- fit_pca(Xtr, A)
+        pcamodel_test <- fit_pca(Xtr, A, xscale = xscale)
         Xrec_cv <- sweep(sweep(pcamodel_test$model$x%*%t(pcamodel_test$model$rotation),2,
                                pcamodel_test$model$scale,"*"),2,pcamodel_test$model$center,"+")
         id.loc <- and((para_test$Repetition==jrep),(para_test$RWoutpctge==rm_pctges[jmd]))
@@ -266,7 +266,7 @@ vpca_removerows <- function (data, A, ref.P, k_ho=1000,
 #' 
 vpca_removecols <- function (data, A, ref.P, k_ho=1000,
                              rm_pctges=c(1,5,10,seq(20,80,by=20)),
-                             ho.part = NULL){
+                             ho.part = NULL, xscale = FALSE){
   X <- data
   nrep <- k_ho
   nlevels <- length(rm_pctges)
@@ -305,7 +305,7 @@ vpca_removecols <- function (data, A, ref.P, k_ho=1000,
       ho <- ho.list[[jmd]][[jrep]]
       Xtr <- X[ho,,drop=F]
       try({
-        pcamodel_test <- fit_pca(Xtr, A)
+        pcamodel_test <- fit_pca(Xtr, A, xscale = xscale)
         Xrec_cv <- sweep(sweep(pcamodel_test$model$x%*%t(pcamodel_test$model$rotation),2,
                                pcamodel_test$model$scale,"*"),2,pcamodel_test$model$center,"+")
         for(a in c(1:A)){
@@ -341,7 +341,7 @@ vpca_removecols <- function (data, A, ref.P, k_ho=1000,
 #' 
 vpca_transcols <- function (data, A, ref.P, k_ho=1000,
                             rm_pctges=c(1,5,10,seq(20,100,by=20)),
-                            ho.part = NULL){
+                            ho.part = NULL, xscale = FALSE){
   X <- as.matrix(data)
   nrep <- k_ho
   nlevels <- length(rm_pctges)
@@ -393,7 +393,7 @@ vpca_transcols <- function (data, A, ref.P, k_ho=1000,
       #   Xtr[,jk] <- (Xtr[,jk] ^ x.lambda - 1) / x.lambda
       # }
       try({
-        pcamodel_test <- fit_pca(Xtr, A, xscale = TRUE)
+        pcamodel_test <- fit_pca(Xtr, A, xscale = xscale)
         Xrec_cv <- sweep(sweep(pcamodel_test$model$x%*%t(pcamodel_test$model$rotation),2,
                                pcamodel_test$model$scale,"*"),2,pcamodel_test$model$center,"+")
         id.loc <- ((para_test$Repetition==jrep) & (para_test$Coltrans==rm_pctges[jmd]))
@@ -431,7 +431,7 @@ vpca_transcols <- function (data, A, ref.P, k_ho=1000,
 #' 
 vpca_rowpctge <- function (data, A, ref.P, k_ho=1000,
                            rm_pctges=c(1,5,10,seq(20,100,by=20)),
-                           ho.part = NULL){
+                           ho.part = NULL, xscale = FALSE){
   X <- as.matrix(data)
   nrep <- k_ho
   # nlevels <- length(rm_pctges)
@@ -463,7 +463,7 @@ vpca_rowpctge <- function (data, A, ref.P, k_ho=1000,
     ho <- ho.list[[jrep]]
     Xtr <-  sweep(X[ho,,drop=F], 1, rowSums(X[ho,,drop=F]), "/")
     try({
-      pcamodel_test <- fit_pca(Xtr, A)
+      pcamodel_test <- fit_pca(Xtr, A, xscale = xscale)
       Xrec_cv <- sweep(sweep(pcamodel_test$model$x%*%t(pcamodel_test$model$rotation),2,
                              pcamodel_test$model$scale,"*"),2,pcamodel_test$model$center,"+")
       id.loc <- (para_test$Repetition==jrep)
