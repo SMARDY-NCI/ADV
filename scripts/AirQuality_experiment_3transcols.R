@@ -47,7 +47,7 @@ load(file="AQref_loadings.RData")
 ## ----coxtransforn, results='hide', echo=FALSE, message=FALSE------------------------------------------------------
 # library(AID)
 pca_transvars <- vpca_transcols(data = dat, 3, ref.P = P.pca.ref, 
-                                   k_ho = 10, rm_pctges = c(5,10,seq(20,80,by=20)))
+                                   k_ho = 10, rm_pctges = c(5,10,seq(20,80,by=20)), xscale = TRUE)
 autoencoder_transvars <- vae_transcols(data = dat, 3, ref.P = P.ae.ref, 
 																					model.ae = modelA.AQ, ho.part = pca_transvarscox$ho,
 																					n.latent.layer = 3,

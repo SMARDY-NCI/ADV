@@ -78,6 +78,7 @@ Load the data:
 dat <- readxl::read_xlsx(here::here("data","AirQualityUCI.xlsx")) 
 dat[dat==-200] <- NA
 dat.time <- dat
+dat.time <- dat.time %>% filter(complete.cases(.))
 dat <- dat %>% select_if(is.numeric) %>% filter(complete.cases(.))
 ```
 

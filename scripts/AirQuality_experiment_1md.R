@@ -46,8 +46,10 @@ modelA.AQ %>%
 							use_bias = TRUE, name = "output")
 
 ## ----mdimputation,echo=FALSE,out.width="50%",fig.asp=0.9----------------------------------------------------------
+load("AQ_MissingData_models.RData")
 pca_remcells <- vpca_removecells(data = dat, 3, ref.P = P.pca.ref, 
-                                 k_ho = 10, rm_pctges = c(1,5,10,seq(20,80,by=20)))
+                                 k_ho = 10, rm_pctges = c(1,5,10,seq(20,80,by=20)), 
+																 xscale = T)
 
 autoencoder_remcells <- vae_removecells(data = dat, 3, n.latent.layer = 3,
                                         ref.P = P.ae.ref, model.ae = modelA.AQ,
