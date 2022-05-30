@@ -231,7 +231,7 @@ vpca_removerows <- function (data, A, ref.P, k_ho=1000,
         pcamodel_test <- fit_pca(Xtr, A, xscale = xscale)
         Xrec_cv <- sweep(sweep(pcamodel_test$model$x%*%t(pcamodel_test$model$rotation),2,
                                pcamodel_test$model$scale,"*"),2,pcamodel_test$model$center,"+")
-        id.loc <- and((para_test$Repetition==jrep),(para_test$RWoutpctge==rm_pctges[jmd]))
+        id.loc <- ((para_test$Repetition==jrep) & (para_test$RWoutpctge==rm_pctges[jmd]))
         for(a in c(1:A)){
           para_test[[paste0("t",a,"radius")]][id.loc] <- pcamodel_test$model$limits_t[[paste0("pc",a)]][2]
           para_test[[paste0("p",a,"corr")]][id.loc] <- abs(cor(pcamodel_test$model$rotation[,a],
