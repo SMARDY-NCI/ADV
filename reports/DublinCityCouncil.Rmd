@@ -182,13 +182,15 @@ This selection is based on the fact that from 4 latent variables, the MSE decay 
 
 ```{r refmodels}
 if(file.exists("../ref_models.RData") & file.exists(file="../ref_loadings.RData")){
-  load("../ref_models.RData")
-  load(file="../ref_loadings.RData")
+  load("ref_models.RData")
+	load(file="ref_loadings.RData")
 } else {
-  # model.AE <- fit_autoencoder(dat, 4, "relu")
-  # plot(model.AE$trainhist)
-  model.PCA <- fit_pca(dat, 9, xscale = F)
-  P.ae.ref <- as.matrix(model.AE$model$layers[[2]]$weights[[1]])
+	# model.AE <- fit_autoencoder(dat, 4, "relu")
+	plot(model.AE$trainhist) + theme_minimal() + 
+		ggtitle("Training history - Dublin Footfall") + 
+		scale_y_continuous(labels = function(x) format(x, scientific = TRUE))
+	model.PCA <- fit_pca(dat, 9, xscale = F)
+	P.ae.ref <- as.matrix(model.AE$model$layers[[2]]$weights[[1]])
   P.pca.ref <- model.PCA$model$rotation
   save(list = c("P.ae.ref", "P.pca.ref"),file="ref_loadings.RData")
   save(list = c("model.AE", "model.PCA"),file="ref_models.RData")
