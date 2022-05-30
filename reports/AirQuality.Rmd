@@ -214,7 +214,7 @@ lsd.results <- lsdAnalysis(mdi.exp.data, factor1 = "Method", factor2 = "MDpctge"
 													 factorrnd = "Repetition", factor.color = "Method", 
 													 graph.out = "curve", hier = T, xtext = "missing cells (%)")
 plot.results <- lsd.results$l.plots[grepl("p*corr", names(lsd.results$l.plots))]
-mdi.plots <- ggpubr::ggarrange(plotlist = plot.results, ncol = 3, nrow = 1,
+mdi.plots <- ggpubr::ggarrange(plotlist = plot.results, ncol = 2, nrow = 2,
                   font.label = list(size = 3, color = "black", face = "bold", family = NULL),
                   common.legend = TRUE)
 DF.exp1.plots <- ggpubr::annotate_figure(mdi.plots, top = ggpubr::text_grob("Case I: Missing Data Imputation - Air Quality", color = "black", face = "bold", size = 12))

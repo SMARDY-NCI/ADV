@@ -47,7 +47,7 @@ load(file="AQref_loadings.RData")
 
 ## ----remrows, results="hide",out.width="50%",fig.asp=0.9----------------------------------------------------------
 pca_remrows <- vpca_removerows(data = dat, 3, ref.P = P.pca.ref, k_ho = 20, 
-                               rm_pctges = c(2,5,10,seq(20,80,by=20)))
+                               rm_pctges = c(2,5,10,seq(20,80,by=20)), xscale = TRUE)
 autoencoder_remrows <- vautoencoder_removerows(data = dat, 3, ref.P = P.ae.ref,k_ho = 20, 
 																							 model.ae = modelA.AQ, n.latent.layer = 3,
 																							 ho.part = pca_remrows$ho,

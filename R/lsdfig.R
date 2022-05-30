@@ -27,7 +27,7 @@ lsdfig <- function(data,vy.name,vx.name,vg.name,yw,col=rgb(0,1,0,0.5),
 				xlab(xtext) + ggtitle(tittext)
 		}
 		if (grepl("p*.corr",vy.name)){
-			lsd_plot <- lsd_plot + expand_limits(y = c(-1, 1)) + 
+			lsd_plot <- lsd_plot + expand_limits(y = c(0, 1)) + 
 				ylab(bquote("s"[.(as.numeric(gsub("\\D", "", vy.name)))]))
 		} 
 	} else if(graph.out == "curve") {
@@ -49,7 +49,7 @@ lsdfig <- function(data,vy.name,vx.name,vg.name,yw,col=rgb(0,1,0,0.5),
 			# guides(color = FALSE, linetype = FALSE) + 
 			xlab(xtext) + ggtitle(tittext)
 		if (grepl("p*.corr",vy.name)){
-			lsd_plot <- lsd_plot + expand_limits(y = c(-1, 1)) + 
+			lsd_plot <- lsd_plot + expand_limits(y = c(0, 1.05)) + 
 				ylab(bquote("s"[.(as.numeric(gsub("\\D", "", vy.name)))]))
 		} 
 	}
