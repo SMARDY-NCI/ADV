@@ -154,7 +154,7 @@ writexl::write_xlsx(pca.DF,"reports\\Variance Explained DF.xlsx")
 # tic("PCA optimization")
 # opt.PCA.results <- pca_opt(dat, A.values = c(1:10), tr = opt.AE.results$tr, kcv = 10) 
 # time.PCA.opt <- toc()
-load("../opt_models.RData")
+load("opt_models.RData")
 df.anova.test <- as.data.frame(c(as.vector(opt.AE.results$lossts[1:10,]), 
                                      as.vector(opt.PCA.results$lossts)))
 colnames(df.anova.test) <- "MSE"

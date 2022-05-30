@@ -68,12 +68,70 @@ load("AQ_optAElayers_softmax.RData")
 
 
 df.anova.test.relu <- as.data.frame(c(t(opt.AElay.results.relu$losstscv)))
-colnames(df.anova.test.relu) <- "MSE"
+colnames(df.anova.test.relu) <- "MSE_testcv"
+df.anova.test.relu$MSE_test <- c(t(opt.AElay.results.relu$lossts))
 df.anova.test.relu$KFold <- paste0("Fold ",c(1:10))
 df.anova.test.relu$Method <- "Autoencoder"
 df.anova.test.relu$ActFunction <- "ReLu"
 df.anova.test.relu$NHLayers <- as.factor(rep(c(0,1,2),each = 10))
 df.anova.test.relu$Repetition <- as.factor(rep(c(1:10), times=3))
+
+aov.mse.testcv <- summary(aov(MSE_testcv ~ NHLayers + Error(Repetition), data = df.anova.test.relu))
+mse.aov.testcv <- aov.mse.testcv[["Error: Within"]][[1]]["Residuals","Mean Sq"]
+
+aov.mse.test <- summary(aov(MSE_test ~ NHLayers + Error(Repetition), data = df.anova.test.relu))
+mse.aov.test <- aov.mse.test[["Error: Within"]][[1]]["Residuals","Mean Sq"]
+
+lsd.testcv.width <- sqrt(mse.aov.testcv*2/length(unique(df.anova.test.relu$Repetition)))*
+	(qt(1-0.025,aov.mse.testcv[["Error: Within"]][[1]]["Residuals","Df"]))
+lsd.test.width <- sqrt(mse.aov.test*2/length(unique(df.anova.test.relu$Repetition)))*
+	(qt(1-0.025,aov.mse.test[["Error: Within"]][[1]]["Residuals","Df"]))
+
+lsdfig(df.anova.test.relu,vy.name = "MSE_testcv",vx.name ="NHLayers",vg.name = NULL,
+			 yw=lsd.testcv.width, col=rgb(0,1,0,0.5),graph.out = "errorbar",
+			 ytext="MSE (cross validation)", xtext="Number of Hidden Layers",
+			 tittext = "Autoencoder architecture (Air Quality data)") + 
+	scale_y_continuous(labels = function(x) format(x, scientific = TRUE))
+
+lsdfig(df.anova.test.relu,vy.name = "MSE_test",vx.name ="NHLayers",vg.name = NULL,
+			 yw=lsd.test.width, col=rgb(0,1,0,0.5),graph.out = "errorbar",
+			 ytext="MSE (external validation)", xtext="Number of Hidden Layers",
+			 tittext = "Autoencoder architecture (Air Quality data)") + 
+	scale_y_continuous(labels = function(x) format(x, scientific = TRUE))
+
+lsd.AQopt.cv <- df.anova.test.relu[,c(-2)]
+colnames(lsd.AQopt.cv)[1] <- "MSE"
+lsd.AQopt.cv$Test <- "Cross-Validation"
+lsd.AQopt.cv$ylo <- lsd.AQopt.cv$MSE - lsd.testcv.width
+lsd.AQopt.cv$yup <- lsd.AQopt.cv$MSE + lsd.testcv.width
+lsd.AQopt.ev <- df.anova.test.relu[,-1]
+colnames(lsd.AQopt.ev)[1] <- "MSE"
+lsd.AQopt.ev$Test <- "External-Validation"
+lsd.AQopt.ev$ylo <- lsd.AQopt.ev$MSE - lsd.test.width
+lsd.AQopt.ev$yup <- lsd.AQopt.ev$MSE + lsd.test.width
+lsd.AQopt <- rbind(lsd.AQopt.cv,lsd.AQopt.ev)
+lsd.AQopt$Test <- as.factor(lsd.AQopt$Test)
+g.name <- names(lsd.AQopt[,"Test"])
+g.levels <- levels(lsd.AQopt[,"Test"])
+lsd.AQopt.plot <- aggregate(lsd.AQopt[,"MSE"] ~ lsd.AQopt[,"NHLayers"] + lsd.AQopt[,"Test"], 
+														data=lsd.AQopt, mean)
+colnames(lsd.AQopt.plot) <- c("NHLayers", "Test", "MSE")
+lsd.AQopt.plot$yup <- lsd.AQopt.plot[,"MSE"] + c(rep(lsd.testcv.width,times=3),
+																								 rep(lsd.test.width, times=3))
+lsd.AQopt.plot$ylo <- lsd.AQopt.plot[,"MSE"] - c(rep(lsd.testcv.width,times=3),
+																								 rep(lsd.test.width, times=3))
+
+lsd_plot <- ggplot(lsd.AQopt.plot, aes(x = lsd.AQopt.plot[,"NHLayers"], 
+																 color = lsd.AQopt.plot[,"Test"])) + 
+	geom_errorbar(aes(ymin=ylo, ymax=yup), width=0.3, size = 1,position=position_dodge(width=0.5)) +
+	guides(color = guide_legend("Test set", title.position = "top", title.hjust = 0.5),
+				 linetype = "none", fill = "none") +
+	theme_minimal(base_size = 12) + ylab("MSE") + theme(legend.position = "top") +
+	scale_fill_manual("Test",values=g.levels) +
+	xlab("Number of Hidden Layers") + 
+	ggtitle("Autoencoder architecture (Air Quality data)") + 
+	scale_y_continuous(labels = function(x) format(x, scientific = TRUE))
+
 
 lsd.MSE <- aov(MSE ~ NHLayers + Repetition, data = df.anova.test.relu)
 summary(lsd.MSE)
@@ -85,6 +143,14 @@ lsdfig(df.anova.test.relu,vy.name = "MSE",vx.name ="NHLayers",vg.name = NULL,
 			 ytext="MSE", xtext="Number of Hidden Layers",
 			 tittext = "Autoencoder architecture (Air Quality data)") + 
 	scale_y_continuous(labels = function(x) format(x, scientific = TRUE))
+
+
+lsdfig(df.anova.test,vy.name = "MSE_testcv",vx.name ="NHLayers",vg.name = NULL,
+			 yw=lsd.testcv.width, col=rgb(0,1,0,0.5),graph.out = "errorbar", 
+			 ytext="MSE (cross validation)", xtext="Number of Hidden Layers",
+			 tittext = "Autoencoder architecture (Dublin Footfall data)") + 
+	scale_y_continuous(labels = function(x) format(x, scientific = TRUE))
+
 
 df.anova.test.relu$logMSE <- log10(df.anova.test.relu$MSE)
 lsd.logMSE <- aov(logMSE ~ NHLayers + Repetition, data = df.anova.test.relu)
