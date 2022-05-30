@@ -20,33 +20,45 @@ lsdAnalysis <- function(data.anova, factor1="", factor2=NULL, factor.color = fac
     metric_name <- (colnames(data.anova)[j_metric])
     if(!is.null(factor2) & !hier){
       lsd.Analysis[[metric_name]] <- aov(data.anova[,metric_name] ~ 
-                                          data.anova[,factor1] + data.anova[,factor2], 
+                                          data.anova[,factor1] + data.anova[,factor2] + 
+      																	 	Error(data.anova[,factorrnd]), 
                                         data = data.anova)
       factor.x <- factor2
     } else if(!is.null(factor2) & hier){
       lsd.Analysis[[metric_name]] <- aov(data.anova[,metric_name] ~ 
-                                          data.anova[,factor1] + data.anova[,factor2]/data.anova[,factorrnd], 
+                                          data.anova[,factor1] + data.anova[,factor2] + 
+      																	 	Error(data.anova[,factor2]/data.anova[,factorrnd]), 
                                         data = data.anova)
       factor.x <- factor2
     } else if(is.null(factor2) & hier){
-      lsd.Analysis[[metric_name]] <- aov(data.anova[,metric_name] ~ 
-                                          data.anova[,factor1]/data.anova[,factorrnd], 
+      lsd.Analysis[[metric_name]] <- aov(data.anova[,metric_name] ~ data.anova[,factor1] + 
+      																	 	+ Error(data.anova[,factor1]/data.anova[,factorrnd]), 
                                         data = data.anova)
       factor.x <- factor1
     } else {
-      lsd.Analysis[[metric_name]] <- aov(data.anova[,metric_name] ~ 
-                                           data.anova[,factor1], 
-                                         data = data.anova)
+    	if (!is.null(factorrnd)){
+    		lsd.Analysis[[metric_name]] <- aov(data.anova[,metric_name] ~ 
+    																			 	data.anova[,factor1] + Error(data.anova[,factorrnd]), 
+    																			 data = data.anova)
+    	} else {
+    		lsd.Analysis[[metric_name]] <- aov(data.anova[,metric_name] ~ 
+    																			 	data.anova[,factor1], 
+    																			 data = data.anova)
+    	}
+      
       factor.x <- factor1
     }
     a.tbl <- lsd.Analysis[[metric_name]]
+    # print(a.tbl)
     n.rep <- unique(data.anova$Repetition)
-    m.lsd <- sum(a.tbl$residuals^2)/(nrow(data.anova)-2)
+    m.lsd <- summary(a.tbl)[["Error: Within"]][[1]]["Residuals","Mean Sq"]
+    # print(m.lsd)
+    # m.lsd <- sum(a.tbl$residuals^2)/(nrow(data.anova)-2)
     if (!any(grepl("Method", colnames(data.anova)))){
       data.anova$Method <- rep("PCA", nrow(data.anova))
     }
     lsd.width <- sqrt(m.lsd*2/length(unique(data.anova$Repetition)))*
-      (qt(1-alpha/2,lsd.Analysis[[metric_name]]$df.residual))
+    	(qt(1-0.025,summary(a.tbl)[["Error: Within"]][[1]]["Residuals","Df"]))
     lsd.plot[[metric_name]] <- lsdfig(data.anova, metric_name, factor.x, factor.color,
                                       lsd.width, col=rgb(0,1,0,0.5), graph.out = graph.out,
                                       ytext= metric_name, xtext= xtext, 
