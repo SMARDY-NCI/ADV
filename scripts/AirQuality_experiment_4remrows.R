@@ -8,7 +8,7 @@ library(keras)
 library(ggplot2)
 library(tidyr)
 library(tensorflow)
-source("R/pcals.R")
+source(here::here("R","pcals.R"))
 source(here::here("R","autoencoder.R"))
 source(here::here("R","autoencoder_opt.R"))
 source(here::here("R","pca_functions.R"))
@@ -18,9 +18,16 @@ source(here::here("R","lsdfig.R"))
 
 
 ## ----load data----------------------------------------------------------------------------------------------------
-dat <- readxl::read_xlsx(here::here("data","AirQualityUCI.xlsx")) %>%
-  select_if(is.numeric) %>%
-  filter(complete.cases(.))
+dat <- readxl::read_xlsx(here::here("data","AirQualityUCI.xlsx")) 
+dat[dat==-200] <- NA
+
+dat <- dat %>% select_if(is.numeric) %>% filter(complete.cases(.))
+
+## ----delnullvar, out.width='70%'----------------------------------------------------------------------------------
+print("These variables show null variance. Consider their deletion before the PCA")
+summary(dat[,(apply(dat,2,var)==0),drop=F])
+dat.or <- dat
+dat <- dat[,!(apply(dat,2,var)==0),drop=F]
 
 
 ## ----delnullvar, out.width='70%'----------------------------------------------------------------------------------
