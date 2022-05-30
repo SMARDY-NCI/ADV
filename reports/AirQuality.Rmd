@@ -105,9 +105,11 @@ border="black"
 )
 dat %>% gather() %>% head()
 
-ggplot(gather(dat), aes(value, after_stat(density))) + 
+dat.renamed <- dat
+colnames(dat.renamed) <- c(expression(paste("True CO (mg/"~m^3~")")), expression(paste("Targeted CO (mg/"~m^3,")")),expression(paste("True NMHC ("~mu~"g/"~m^3~")")), expression(paste("True Benzene ("~mu~"g/"~m^3~")")), expression(paste("Targeted NMHC ("~mu~"g/"~m^3,")")), expression(paste("True NO ("~mu~"g/"~m^3~")")), expression(paste("Targeted NO ("~mu~"g/"~m^3~")")), expression(paste("True"~NO[2]~"("~mu~"g/"~m^3~")")), expression(paste("Targeted"~NO[2]~"("~mu~"g/"~m^3~")")), expression(paste("Targeted Ozone ("~O[3]~") ("~mu~"g/"~m^3,")")), expression(paste("Temperature (ºC)")), expression(paste("Relative Humidity (%)")), expression(paste("Absolute Humidity (g/kg)")))
+ggplot(gather(dat.renamed), aes(value, after_stat(density))) + 
     geom_histogram(bins = 30) + 
-    facet_wrap(~key, scales = 'free') + 
+    facet_wrap(~key, scales = 'free', labeller = "label_parsed") + 
 	theme(strip.text.x = element_text(size = 6))
 
 p <- ggplot(dat, aes(y=value)) +
