@@ -1,0 +1,33 @@
+[1] "These variables show null variance. Consider their deletion before the PCA"
+ Talbot.st.Murrays.Pharmacy Talbot.st.Murrays.Pharmacy.IN
+ Min.   :0                  Min.   :0                    
+ 1st Qu.:0                  1st Qu.:0                    
+ Median :0                  Median :0                    
+ Mean   :0                  Mean   :0                    
+ 3rd Qu.:0                  3rd Qu.:0                    
+ Max.   :0                  Max.   :0                    
+ Talbot.st.Murrays.Pharmacy.OUT
+ Min.   :0                     
+ 1st Qu.:0                     
+ Median :0                     
+ Mean   :0                     
+ 3rd Qu.:0                     
+ Max.   :0                     
+[1] "Parameter avge (sd)"
+[1] "Rows removal at 2 %"
+[1] "Parameter avge (sd)"
+[1] "Rows removal at 5 %"
+[1] "Parameter avge (sd)"
+[1] "Rows removal at 10 %"
+[1] "Parameter avge (sd)"
+[1] "Rows removal at 20 %"
+[1] "Parameter avge (sd)"
+[1] "Rows removal at 40 %"
+[1] "Parameter avge (sd)"
+[1] "Rows removal at 60 %"
+[1] "Parameter avge (sd)"
+[1] "Rows removal at 80 %"
+[1] "Parameter avge (sd)"
+[1] "Parameter avge (sd)"
+[1] "Rows removal at 2 %"
+[1] "Parameter avge (sd)"

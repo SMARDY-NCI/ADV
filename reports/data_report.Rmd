@@ -23,7 +23,8 @@ factoextra::fviz_eig(pca,
   geom = c("bar"),
   addlabels = T
 ) +
-  geom_line(aes(x = , y = head(get_eig(pca),10)$cumulative.variance.percent),)
+  geom_line(aes(x = , y = head(get_eig(pca),10)$cumulative.variance.percent),) +
+    ylim(0,100)
 }
 
 # Create loading plot
@@ -33,9 +34,9 @@ loading_plot <- function(pca){
   pca,
   element = "var",
   title = "Loading plot",
-  geom = c("point", "text")
-)
-
+  geom = c("point")
+) + geom_label(aes(label=rownames(pca$rotation)),colour = "black", fontface = "bold")+
+  theme_bw(base_size=32)
 }
 
 # Create score plot
@@ -152,4 +153,42 @@ loading_plot(pca_power)
 
 \newpage
 
+## 2022 Pedestrian Footfall Dublin City
+
+```{r}
+dat <- read.csv(here::here("data","pedestrian-count-dcc-2022.csv")) %>%
+  select_if(is.numeric) %>%
+  filter(complete.cases(.))
+```
+
+This dataset contains Dublin city footfall counts. Jan 1- April 3 2022.
+
+```{r, out.width='70%'}
+print("These variables show null variance. Consider their deletion before the PCA")
+summary(dat[,(apply(dat,2,var)==0),drop=F])
+dat.or <- dat
+dat <- dat[,!(apply(dat,2,var)==0),drop=F]
+```
+
+
+```{r, out.width='70%'}
+source(here::here("R","pcals.R"))
+source(here::here("R","pcamels.R"))
+source(here::here("R","pcarec.R"))
+pca <-  dat %>%
+  pcals()
+
+scree_plot(pca)
+```
+
+```{r, fig.align='default', fig.show = 'hold'}
+score_plot(pca)
+loading_plot(pca)
+```
+```{r}
+pca$rotation
+```
+
+
+\newpage
 

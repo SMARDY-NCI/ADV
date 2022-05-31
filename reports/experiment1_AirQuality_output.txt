@@ -1,0 +1,81 @@
+Already up to date.
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+Loading required package: ggplot2
+Welcome! Want to learn more? See two factoextra-related books at https://goo.gl/ve3WBa
+
+Attaching package: ‘qqplotr’
+
+The following objects are masked from ‘package:ggplot2’:
+
+    stat_qq_line, StatQqLine
+
+Loading required package: lattice
+
+Attaching package: ‘tidyr’
+
+The following object is masked from ‘package:magrittr’:
+
+    extract
+
+
+Attaching package: ‘tensorflow’
+
+The following object is masked from ‘package:caret’:
+
+    train
+
+[1] "These variables show null variance. Consider their deletion before the PCA"
+2022-05-30 00:03:39.403078: I tensorflow/core/util/util.cc:159] Experimental oneDNN custom operations are on. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+Loaded Tensorflow version 2.8.0
+2022-05-30 00:03:41.564350: W tensorflow/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library 'libcuda.so.1'; dlerror: libcuda.so.1: cannot open shared object file: No such file or directory; LD_LIBRARY_PATH: /usr/lib/R/lib:/usr/lib/x86_64-linux-gnu:/usr/lib/jvm/default-java/lib/server
+2022-05-30 00:03:41.564382: W tensorflow/stream_executor/cuda/cuda_driver.cc:269] failed call to cuInit: UNKNOWN ERROR (303)
+2022-05-30 00:03:41.564407: I tensorflow/stream_executor/cuda/cuda_diagnostics.cc:156] kernel driver does not appear to be running on this host (phi): /proc/driver/nvidia/version does not exist
+2022-05-30 00:03:41.564656: I tensorflow/core/platform/cpu_feature_guard.cc:151] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  AVX2 FMA
+To enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.
+[1] "Parameter avge (sd)"
+[1] "Cells removal at 1 %"
+[1] "Parameter avge (sd)"
+[1] "Cells removal at 5 %"
+[1] "Parameter avge (sd)"
+[1] "Cells removal at 10 %"
+[1] "Parameter avge (sd)"
+[1] "Cells removal at 20 %"
+[1] "Parameter avge (sd)"
+[1] "Cells removal at 40 %"
+[1] "Parameter avge (sd)"
+[1] "Cells removal at 60 %"
+[1] "Parameter avge (sd)"
+[1] "Cells removal at 80 %"
+[1] "Parameter avge (sd)"
+[1] "Parameter avge (sd)"
+[1] "Cells removal at 1 %"
+[1] "Parameter avge (sd)"
+Model: "sequential"
+________________________________________________________________________________
+ Layer (type)                       Output Shape                    Param #     
+================================================================================
+ input (Dense)                      (None, 13)                      182         
+                                                                                
+ hidden_in_1 (Dense)                (None, 8)                       112         
+                                                                                
+ latent (Dense)                     (None, 3)                       27          
+                                                                                
+ hidden_out_1 (Dense)               (None, 8)                       32          
+                                                                                
+ output (Dense)                     (None, 13)                      117         
+                                                                                
+================================================================================
+Total params: 470
+Trainable params: 470
+Non-trainable params: 0
+________________________________________________________________________________

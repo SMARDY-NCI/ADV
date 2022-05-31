@@ -1,0 +1,77 @@
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+Loading required package: ggplot2
+Welcome! Want to learn more? See two factoextra-related books at https://goo.gl/ve3WBa
+
+Attaching package: ‘qqplotr’
+
+The following objects are masked from ‘package:ggplot2’:
+
+    stat_qq_line, StatQqLine
+
+Loading required package: lattice
+
+Attaching package: ‘tidyr’
+
+The following object is masked from ‘package:magrittr’:
+
+    extract
+
+
+Attaching package: ‘tensorflow’
+
+The following object is masked from ‘package:caret’:
+
+    train
+
+[1] "These variables show null variance. Consider their deletion before the PCA"
+ Talbot.st.Murrays.Pharmacy Talbot.st.Murrays.Pharmacy.IN
+ Min.   :0                  Min.   :0                    
+ 1st Qu.:0                  1st Qu.:0                    
+ Median :0                  Median :0                    
+ Mean   :0                  Mean   :0                    
+ 3rd Qu.:0                  3rd Qu.:0                    
+ Max.   :0                  Max.   :0                    
+ Talbot.st.Murrays.Pharmacy.OUT
+ Min.   :0                     
+ 1st Qu.:0                     
+ Median :0                     
+ Mean   :0                     
+ 3rd Qu.:0                     
+ Max.   :0                     
+2022-05-26 14:44:05.971526: I tensorflow/core/util/util.cc:159] Experimental oneDNN custom operations are on. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+Loaded Tensorflow version 2.8.0
+2022-05-26 14:44:08.089891: W tensorflow/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library 'libcuda.so.1'; dlerror: libcuda.so.1: cannot open shared object file: No such file or directory; LD_LIBRARY_PATH: /usr/lib/R/lib:/usr/lib/x86_64-linux-gnu:/usr/lib/jvm/default-java/lib/server
+2022-05-26 14:44:08.089921: W tensorflow/stream_executor/cuda/cuda_driver.cc:269] failed call to cuInit: UNKNOWN ERROR (303)
+2022-05-26 14:44:08.089945: I tensorflow/stream_executor/cuda/cuda_diagnostics.cc:156] kernel driver does not appear to be running on this host (phi): /proc/driver/nvidia/version does not exist
+2022-05-26 14:44:08.090196: I tensorflow/core/platform/cpu_feature_guard.cc:151] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  AVX2 FMA
+To enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.
+Model: "sequential"
+________________________________________________________________________________
+ Layer (type)                       Output Shape                    Param #     
+================================================================================
+ input (Dense)                      (None, 30)                      930         
+                                                                                
+ hidden_in_1 (Dense)                (None, 16)                      496         
+                                                                                
+ latent (Dense)                     (None, 4)                       68          
+                                                                                
+ hidded_out_1 (Dense)               (None, 16)                      80          
+                                                                                
+ output (Dense)                     (None, 30)                      510         
+                                                                                
+================================================================================
+Total params: 2,084
+Trainable params: 2,084
+Non-trainable params: 0
+________________________________________________________________________________
+1/9 [==>...........................] - ETA: 0s - loss: 282014.62509/9 [==============================] - ETA: 0s - loss: 714239.75009/9 [==============================] - 0s 7ms/step - loss: 714239.7500
