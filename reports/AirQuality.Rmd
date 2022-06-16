@@ -218,11 +218,12 @@ lsd.results <- lsdAnalysis(mdi.exp.data, factor1 = "Method", factor2 = "MDpctge"
 													 factorrnd = "Repetition", factor.color = "Method", 
 													 graph.out = "curve", hier = T, xtext = "missing cells (%)")
 plot.results <- lsd.results$l.plots[grepl("p*corr", names(lsd.results$l.plots))]
-mdi.plots <- ggpubr::ggarrange(plotlist = plot.results, ncol = 3, nrow = 1,
+mdi.plots <- ggpubr::ggarrange(plotlist = plot.results, ncol = 2, nrow = 2,
                   font.label = list(size = 3, color = "black", face = "bold", family = NULL),
                   common.legend = TRUE)
-DF.exp1.plots <- ggpubr::annotate_figure(mdi.plots, top = ggpubr::text_grob("Case I: Missing Data Imputation - Air Quality", color = "black", face = "bold", size = 12))
-DF.exp1.plots
+AQ.exp1.plots <- ggpubr::annotate_figure(mdi.plots, top = ggpubr::text_grob("Case I: Missing Data Imputation - Air Quality", color = "black", face = "bold", size = 12))
+ggsave(AQ.exp1.plots, filename = "CaseI_AQplots.png", width = 8, height = 6, units = "in")
+AQ.exp1.plots
 ```
 
 ## Versioning scenario 2: Transformation of variables
@@ -257,11 +258,12 @@ exp3.data$Coltrans <- as.factor(exp3.data$Coltrans)
 exp3.data$Repetition <- as.factor(exp3.data$Repetition)
 exp3.lsd.results <- lsdAnalysis(exp3.data, factor1 = "Method", factor2 = "Coltrans", factor.color = "Method", graph.out = "curve", xtext = "transformed columns (%)")
 plot.results.exp3 <- exp3.lsd.results$l.plots[grepl("p*corr", names(exp3.lsd.results$l.plots))]
-exp3.plots <- ggpubr::ggarrange(plotlist = plot.results.exp3, ncol = 3, nrow = 1,
+exp3.plots <- ggpubr::ggarrange(plotlist = plot.results.exp3, ncol = 2, nrow = 2,
                   font.label = list(size = 3, color = "black", face = "bold", family = NULL),
                   common.legend = TRUE)
-DF.exp3.plots <- ggpubr::annotate_figure(exp3.plots, top = ggpubr::text_grob("Case II: Column-wise transformation - Air Quality",color = "black", face = "bold", size = 12))
-DF.exp3.plots
+AQ.exp3.plots <- ggpubr::annotate_figure(exp3.plots, top = ggpubr::text_grob("Case II: Column-wise transformation - Air Quality",color = "black", face = "bold", size = 12))
+ggsave(AQ.exp3.plots, filename = "CaseII_AQplots.png", width = 8, height = 6, units = "in")
+AQ.exp3.plots
 ```
 
 ## Versioning scenario 3: Change in the number of rows
@@ -280,10 +282,11 @@ exp4.data <- rbind(pca_remrows$para_test[,-c(1,2)], autoencoder_remrows$para_tes
 exp4.lsd.results <- lsdAnalysis(exp4.data, factor1 = "Method", factor2 = "RWoutpctge", 
 													 factor.color = "Method", graph.out = "curve", hier = T, xtext = "deleted rows (%)")
 plot.results.exp4 <- exp4.lsd.results$l.plots[grepl("p*corr", names(exp4.lsd.results$l.plots))]
-exp4.plots <- ggpubr::ggarrange(plotlist = plot.results.exp4, ncol = 3, nrow = 1,
+exp4.plots <- ggpubr::ggarrange(plotlist = plot.results.exp4, ncol = 2, nrow = 2,
                   font.label = list(size = 3, color = "black", face = "bold", family = NULL),
                   common.legend = TRUE)
 AQ.exp4.plots <- ggpubr::annotate_figure(exp4.plots, top = ggpubr::text_grob("Case III: Subsetting rows - Air Quality",color = "black", face = "bold", size = 12))
+ggsave(AQ.exp4.plots, filename = "CaseIII_AQplots.png", width = 8, height = 6, units = "in")
 AQ.exp4.plots
 ```
 

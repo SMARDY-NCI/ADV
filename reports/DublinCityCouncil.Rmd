@@ -213,6 +213,8 @@ mdi.plots <- ggpubr::ggarrange(plotlist = plot.results, ncol = 2, nrow = 2,
                   font.label = list(size = 3, color = "black", face = "bold", family = NULL),
                   common.legend = TRUE)
 DF.exp1.plots <- ggpubr::annotate_figure(mdi.plots, top = ggpubr::text_grob("Case I: Missing Data Imputation - Dublin Footfall", color = "black", face = "bold", size = 12))
+ggsave(DF.exp1.plots, filename = "CaseI_DFplots.png", width = 8, height = 6, units = "in")
+
 DF.exp1.plots
 ```
 
@@ -232,6 +234,7 @@ exp2.plots <- ggpubr::ggarrange(plotlist = plot.results.exp2, ncol = 2, nrow = 2
                   font.label = list(size = 3, color = "black", face = "bold", family = NULL),
                   common.legend = TRUE)
 DF.exp2.plots <- ggpubr::annotate_figure(exp2.plots, top = ggpubr::text_grob("Case II: Rowwise transformation - Dublin Footfall", color = "black", face = "bold", size = 12))
+ggsave(DF.exp2.plots, filename = "CaseII_DFplots.png", width = 8, height = 6, units = "in")
 DF.exp2.plots
 ```
 
@@ -267,6 +270,7 @@ exp4.mdi.plots <- ggpubr::ggarrange(plotlist = plot.results.exp4, ncol = 2, nrow
                   common.legend = TRUE)
 DF.exp4.plots <- ggpubr::annotate_figure(exp4.mdi.plots, top = ggpubr::text_grob("Case III: Subsetting rows - Dublin Footfall",
                                        color = "black", face = "bold", size = 12))
+ggsave(DF.exp4.plots, filename = "CaseIII_DFplots.png", width = 8, height = 6, units = "in")
 ```
 
 ## Versioning scenario 4: Change in the number of variables

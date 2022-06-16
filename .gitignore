@@ -3,3 +3,9 @@
 .RData
 .Ruserdata
 *.pdf
+reports/CaseI_AQplots.png
+reports/CaseI_DFplots.png
+reports/CaseII_AQplots.png
+reports/CaseII_DFplots.png
+reports/CaseIII_AQplots.png
+reports/CaseIII_DFplots.png
