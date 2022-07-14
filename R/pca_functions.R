@@ -293,11 +293,14 @@ vpca_removecols <- function (data, A, ref.P, k_ho=1000,
   for (jmd in c(1:nlevels)){
     print(paste0("Rows removal at ", rm_pctges[jmd], " %"))
     print("Parameter avge (sd)")
-    N.lim <- floor(nrow(X) - rm_pctges[jmd]/100*nrow(X))
+    N.lim <- floor(ncol(X) - rm_pctges[jmd]/100*ncol(X))
     if(is.null(ho.part)){
-      ho  <- createTimeSlices(c(1:nrow(X)), N.lim, horizon = 1, 
-                              fixedWindow = TRUE, skip = 0)
-      ho.list[[jmd]] <- ho$train
+    	if(is.null(ho.part)){
+    		ho.list[[jmd]][[jrep]] <- sample(c(1:n.elems), rm_pctges[jmd]/100*n.elems)
+    	}
+    	ho <- ho.list[[jmd]][[jrep]]
+    	Xtr <- X[,-ho,drop=F]
+    	Xts <- X[,ho,drop=F]
     } else {
       ho.list[[jmd]] <- ho.part[[jmd]]
     }
