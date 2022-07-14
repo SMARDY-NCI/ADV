@@ -86,12 +86,15 @@ lsd_plot <- ggplot(lsd.DFopt.plot, aes(x = lsd.DFopt.plot[,"NHLayers"],
 	geom_errorbar(aes(ymin=ylo, ymax=yup), width=0.3, size = 1,position=position_dodge(width=0.5)) +
 	guides(color = guide_legend("Test set", title.position = "top", title.hjust = 0.5),
 				 linetype = "none", fill = "none") +
-	theme_minimal(base_size = 12) + ylab("MSE") + theme(legend.position = "top") +
+	theme_minimal(base_size = 9) + ylab("MSE") + theme(legend.position = "top") +
 	scale_fill_manual("Test",values=g.levels) +
 	xlab("Number of Hidden Layers") + 
 	ggtitle("Autoencoder architecture (Dublin Footfall data)") + 
 	scale_y_continuous(labels = function(x) format(x, scientific = TRUE))
-
+cairo_ps(file = "reports/DFoptlayers.eps", onefile = FALSE, fallback_resolution = 600, 
+				 width = 6, height = 4)
+lsd_plot
+dev.off()
 
 lsdfig(df.anova.test,vy.name = "MSE_testcv",vx.name ="NHLayers",vg.name = NULL,
 			 yw=lsd.testcv.width, col=rgb(0,1,0,0.5),graph.out = "errorbar", 
