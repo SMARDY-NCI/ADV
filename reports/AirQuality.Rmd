@@ -228,9 +228,14 @@ if(file.exists("../AQref_models.RData") & file.exists(file="../AQref_loadings.RD
   load(file="../AQref_loadings.RData")
 } else {
   # model.AE <- fit_autoencoder(dat, 4, "relu")
-  	plot(model.AE$trainhist) + theme_minimal() + 
+	AQp.hist <- plot(model.AE$trainhist) + theme_minimal() + 
 		ggtitle("Training history - Air Quality") + 
 		scale_y_continuous(labels = function(x) format(x, scientific = TRUE))
+cairo_ps(file = "AEhist_AQplots.eps", onefile = FALSE, fallback_resolution = 600,
+				 width = 6, height = 3)
+AQp.hist
+dev.off()
+  	
   model.PCA <- fit_pca(dat, 9, xscale = F)
   P.ae.ref <- as.matrix(model.AE$model$layers[[2]]$weights[[1]])
   P.pca.ref <- model.PCA$model$rotation
